@@ -43,10 +43,10 @@
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
-            success: function(data) {
+            success: function (data) {
                 add_row(data);
             },
-            error: function(jqXHR) {
+            error: function (jqXHR) {
                 console.log('error')
             }
         })
@@ -65,7 +65,7 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             success: location.reload(),
-            error: function(jqXHR) {
+            error: function (jqXHR) {
                 console.log('error')
             }
         })
@@ -90,7 +90,7 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             success: location.reload(),
-            error: function(jqXHR) {
+            error: function (jqXHR) {
                 console.log(jqXHR)
             }
         })
@@ -110,7 +110,7 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             success: location.reload(),
-            error: function(jqXHR) {
+            error: function (jqXHR) {
                 console.log(jqXHR)
             }
         })
@@ -124,8 +124,12 @@
             var itemid = data[i][0];
             var itemname = data[i][1];
             var iterate = data[i][2];
-            var td1 = '<td id="tdnameid' + [i] + '"><div value=' + itemname + ' id=' + 'itemname' + itemid + ' onclick="openLabel(' + 'itemname' + itemid + ',' + 'itemid' + itemid + ',' + i + ',' + itemid + ')">項目：' + itemname + '</div></td>';
-            var td2 = '<td id="tdidid' + [i] + '"><div value=' + iterate + ' id=' + 'itemid' + itemid + ' onclick="openLabel(' + 'itemname' + itemid + ',' + 'itemid' + itemid + ',' + i + ',' + itemid + ')">賠率：' + iterate + '</div></td>';
+            var td1 = '<td id="tdnameid' + [i] + '"><div value=' + itemname + ' id=' + 'itemname' + itemid +
+                ' onclick="openLabel(' + 'itemname' + itemid + ',' + 'itemid' + itemid + ',' + i + ',' + itemid +
+                ')">項目：' + itemname + '</div></td>';
+            var td2 = '<td id="tdidid' + [i] + '"><div value=' + iterate + ' id=' + 'itemid' + itemid +
+                ' onclick="openLabel(' + 'itemname' + itemid + ',' + 'itemid' + itemid + ',' + i + ',' + itemid +
+                ')">賠率：' + iterate + '</div></td>';
             var td3 = '<td id="tdid' + [i] + '">';
             var td4 = '<a role="btn" class="btn btn-danger" onclick="ajaxToDelete(' + itemid + ')">刪除</a></td>';
             var tr = $('<tr >').append(td1, td2, td3, td4);
@@ -145,8 +149,12 @@
         var inputnameid = itemnameid.attributes[1].nodeValue;
         var rateid = itemidid.attributes[1].nodeValue;
 
-        $(tdnameid).append('項目：<input required="required" name="itemname" onchange="changeDatatemp(' + inputnameid + ',' + rateid + ',' + itemid + ')" type="text" placeholder=' + itemnamevalue + ' value=' + itemnamevalue + ' id=' + inputnameid + ' >');
-        $(tdidid).append('賠率：<input required="required"  name="itemrate" onchange="changeDatatemp(' + inputnameid + ',' + rateid + ',' + itemid + ')" type="number" step="0.0001" min="0.000" max="10000" placeholder=' + ratevalue + ' value=' + ratevalue + ' id=' + rateid + '>');
+        $(tdnameid).append('項目：<input required="required" name="itemname" onchange="changeDatatemp(' + inputnameid +
+            ',' + rateid + ',' + itemid + ')" type="text" placeholder=' + itemnamevalue + ' value=' +
+            itemnamevalue + ' id=' + inputnameid + ' >');
+        $(tdidid).append('賠率：<input required="required"  name="itemrate" onchange="changeDatatemp(' + inputnameid +
+            ',' + rateid + ',' + itemid + ')" type="number" step="0.0001" min="0.000" max="10000" placeholder=' +
+            ratevalue + ' value=' + ratevalue + ' id=' + rateid + '>');
 
         store(i, itemid, inputnameid, rateid)
     }
@@ -187,7 +195,8 @@
     //製作一個單向修改的儲存按鈕
     function store(i, itemid, inputnameid, rateid) {
         var tdid = '#tdid' + i;
-        $(tdid).append('<a role="btn" class="btn btn-primary" onclick="ajaxToEdit(' + itemid + ',' + inputnameid + ',' + rateid + ')">儲存</a>');
+        $(tdid).append('<a role="btn" class="btn btn-primary" onclick="ajaxToEdit(' + itemid + ',' + inputnameid + ',' +
+            rateid + ')">儲存</a>');
         $(storeButton).show();
     }
     //-----
@@ -196,4 +205,5 @@
         $(obj).remove();
     }
     //-----
+
 </script>

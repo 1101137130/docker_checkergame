@@ -30,4 +30,6 @@ Route::get('/getAmount', 'AmountController@getAmount')->name('amount');
 Route::get('/order', 'OrderController@show')->name('order');
 Route::get('/getOrder', 'OrderController@getOrder')->name('order');
 Route::get('/registerManager', 'Auth\RegisterManager@showRegistrationForm')->name('user');
-
+Route::post('/managerRegister', 'Auth\RegisterManager@createManager')->name('user');
+Route::get('/getuser', 'Auth\RegisterManager@getUser')->name('user');
+Route::put('/editUser', 'Auth\RegisterManager@editUser')->name('user');
