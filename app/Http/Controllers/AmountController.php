@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-
 use App\Http\Controllers\Controller;
 use App\Amount;
 use Exception;
@@ -23,7 +22,6 @@ class AmountController extends Controller
         $user = Auth::user();
         $clientamount = Amount::where('user_id', $user->id)->first();
         if ($clientamount == null) {
-
             return view('amount.store', ['total' => 0]);
         }
 
@@ -35,7 +33,6 @@ class AmountController extends Controller
         $user = Auth::user();
         $clientamount = Amount::where('user_id', $user->id)->first();
         if ($clientamount == null) {
-
             return 0;
         }
         $winamount = Redis::get($user->username . $user->id);
@@ -49,7 +46,7 @@ class AmountController extends Controller
         //判斷是否初次儲值
         $clientamount = Amount::where('user_id', $user->id)->first();
 
-        if ($clientamount != null) {        //如果不是則建立新的金額紀錄 
+        if ($clientamount != null) {        //如果不是則建立新的金額紀錄
             try {
                 AmountRecord::create([
                     'user_id' => $user->id,
@@ -68,7 +65,7 @@ class AmountController extends Controller
 
                 return view('amount.store');
             }
-        } else {                            //如果是 則建立新的amount 並預設金額為0 然後在新增金額紀錄 
+        } else {                            //如果是 則建立新的amount 並預設金額為0 然後在新增金額紀錄
             try {                           //改動amount裡的金額
                 Amount::create(['user_id' => $user->id, 'amount' => $request->amount]);
                 AmountRecord::create([

@@ -93,12 +93,34 @@
 
                 <div class="panel-body">
                     <div class="links">
-                        <label for="username"> 帳號名稱</label>
-                        <div id="username" onclick="openrow(this.id)"></div>
-                        <label for="email"> Email</label>
-                        <div id="email" onclick="openrow(this.id)">
-                            </>
-                        </div>
+                        <form action="{{url('editUser')}}" method="POST">
+                            {{csrf_field()}}
+                            <label for="username"> 帳號名稱</label>
+                            <div id="username" onclick="openrow(this.id)"></div>
+                            <div class="form-group{{ $errors->has('username') ? ' has-error' : '' }}">
+                                <div id="usernameinput"></div>
+                                 @if ($errors->has('username'))
+                                <span class="help-block">
+                                    <strong>{{ $errors->first('username') }}</strong>
+                                </span>
+                                @endif
+                            </div>
+                                <label for="email"> Email</label>
+                            <div id="email" onclick="openrow(this.id)"></div>
+                            <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
+                                <div id="emailinput"></div>
+                                 @if ($errors->has('email'))
+                                <span class="help-block">
+                                    <strong>{{ $errors->first('email') }}</strong>
+                                </span>
+                                @endif
+                            </div>
+                            <div id="savebtn"></div>
+                                <input id="userid" type="hidden" name="id">
+                                
+                        </form>
+
+
 
                         @if ($manager_editor == true)
                         <a href="{{ url('registerManager') }}">Create a Manager User</a>
@@ -117,43 +139,55 @@
 <script>
     window.onload = getData;
     var userId;
+    var count = 0;
 
     function openrow(itemnameid) {
-
+        stroeid = itemnameid + 'input'
+        itemid = '#' + itemnameid;
+        var tdnameid = itemid + 'input';
+        var itemnamevalue = $(itemid).text()
+        var text = "text"
         delRow(itemnameid)
 
-        var tdnameid = '#' + itemnameid;
-        var itemnamevalue = $(tdnameid).text()
 
-        $(tdnameid).append('<input required="required" name=' + itemnameid + '  type="text" placeholder=' +
+        if (itemnameid == 'email') {
+            text = "email"
+
+        }
+        $(tdnameid).append('<input required="required" name=' + itemnameid + '  type="' + text + '" placeholder=' +
             itemnamevalue + ' id=' + itemnameid + ' >');
+        if (count == 0) {
 
-        store(itemnameid)
+            store()
+            count++;
+        }
+
     }
 
-    function ajaxToEdit(itemnameid) {
+    // function ajaxToEdit(itemnameid) {
+    //     itemid = '#' + itemnameid;
+    //     var itemval = $(itemid).val()
+    //     console.log(itemnameid)
+    //     console.log(itemval)
+    //     $.ajax({
+    //         type: "POST",
+    //         url: "{{url('editUser')}}",
+    //         dataType: "json",
+    //         data: {
+    //             id: userId,
+    //             item: itemnameid,
+    //             data: itemval
 
-        var itemval = $(itemnameid).val()
-
-        $.ajax({
-            type: "PUT",
-            url: "{{url('editUser')}}",
-            dataType: "json",
-            data: {
-                id: userId,
-                item: itemnameid,
-                data: itemval
-
-            },
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            success: location.reload(),
-            error: function (jqXHR) {
-                console.log(jqXHR)
-            }
-        })
-    }
+    //         },
+    //         headers: {
+    //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    //         },
+    //         success: location.reload(),
+    //         error: function (data) {
+    //             console.log(data)
+    //         }
+    //     })
+    // }
 
     function getData() {
 
@@ -167,8 +201,7 @@
             success: function (data) {
                 $("#username").html(data['username'])
                 $("#email").html(data['email'])
-                userId = data['id'];
-                console.log(data['id']);
+                $("#userid").val(data['id']);
             },
             error: function (jqXHR) {
                 console.log('error')
@@ -176,9 +209,12 @@
         })
     }
 
-    function store(id) {
-        var tdid = "#" + id;
-        $(tdid).append('<a role="btn" class="btn btn-primary" onclick="ajaxToEdit(' + id + ')">儲存</a>');
+    function store() {
+
+        var item = '<input type="submit" class="btn btn-primary" value="儲存">'
+
+        $('#savebtn').append(item);
+
     }
 
     function delRow(obj) {

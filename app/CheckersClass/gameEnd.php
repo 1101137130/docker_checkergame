@@ -7,6 +7,16 @@ use App\CheckersClass\convertStatus;
 
 class gameEnd
 {
+    private static $_instance  = null ;
+   
+    public static function getInstance()
+    {
+        if (self::$_instance === null) {
+            self::$_instance = new self();
+        }
+
+        return self::$_instance;
+    }
     public function end($request, $result)
     {
         $i = 0;
@@ -22,24 +32,22 @@ class gameEnd
     public function toClientBet($item, $result)
     {
         if ($item[0] == '贏') {
-
-            if($item[4] == $result[3]){
+            if ($item[4] == $result[3]) {
                 $this->alterData(1, $item);
 
                 return 1;
-            }else{
+            } else {
                 $this->alterData(0, $item);
 
                 return 0;
             }
-            
         }
         if ($item[0] == '輸') {
-            if($item[4] == $result[3]){
+            if ($item[4] == $result[3]) {
                 $this->alterData(0, $item);
 
                 return 0;
-            }else{
+            } else {
                 $this->alterData(1, $item);
 
                 return 1;
@@ -83,10 +91,8 @@ class gameEnd
         }
 
         if ($ob > 9 && $ob !=9) {
-
             return 1;
         } else {
-
             return 0;
         }
     }
@@ -99,30 +105,24 @@ class gameEnd
             $ob += $result[$i][$object - 1];
         }
         if ($ob % 2 == 1) {
-
             return 1;
         } else {
-
             return 0;
         }
     }
 
     public function alterData($result, $item)
     {
-        $updatorder = new updateOrder;
-        $status = new convertStatus;
+        $updatorder = updateOrder::getInstance();
 
         if ($result) {
-
             $array = $updatorder->update($item, 'win'); //更改訂單狀態 為贏
             if ($array[0] == false) {
                 echo $array[1];
             }
         } else {
-
             $array = $updatorder->update($item, 'lost'); //更改訂單狀態 為輸
             if ($array[0] == false) {
-
                 echo $array[1];
             }
         }

@@ -10,18 +10,27 @@ use App\CheckersClass\checkRateTheSame;
 
 class orderCreate
 {
+    private static $_instance  = null ;
+   
+    public static function getInstance()
+    {
+        if (self::$_instance === null) {
+            self::$_instance = new self();
+        }
+
+        return self::$_instance;
+    }
     public function new($item) //order處理
     {
-        $checkandUpadate = new checkUpdateUserAmount;
-        //item[0]-> itemname; item[1]->itemid  
-        //item[2]-> rate ; item[3] -> amount 
+        $checkandUpadate = checkUpdateUserAmount::getInstance();
+        //item[0]-> itemname; item[1]->itemid
+        //item[2]-> rate ; item[3] -> amount
         //item[4]-> ocject 1:莊家 2:閒家
 
         $user = Auth::user();
         $data = $checkandUpadate->check($user, $item[3]);
 
         if ($data[0] == true) {
-             
             $checkrate = checkRateTheSame::check($item[1], $item[2]);
             
             if ($checkrate == false) {
@@ -48,8 +57,8 @@ class orderCreate
                 return $error;
             }
         } else {
-
-            return $data;;
+            return $data;
+            ;
         }
     }
 }

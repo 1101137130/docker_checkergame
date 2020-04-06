@@ -13,8 +13,6 @@ use Illuminate\Support\Facades\DB;
 
 class RegisterManager extends Controller
 {
-    use RegistersUsers;
-
     public function __construct()
     {
         $this->middleware('auth');
@@ -34,14 +32,40 @@ class RegisterManager extends Controller
             'password' => 'required|string|min:6|confirmed',
         ]);
     }
-    public function editUser($id, $item, $data)
+    protected function validatUser(array $data)
     {
-        $user = User::find($id)->first();
-        try {
-            $user->update([$item => $data]);
-            return true;
-        } catch (Exception $error) {
-            throw $error;
+        return Validator::make($data, [
+            'username' => 'string|max:20|unique:users',
+            'email' => 'string|email|max:255|unique:users']);
+    }
+    public function editUser(Request $request)
+    {
+        $this->validatUser($request->all())->validate();
+        $user = User::find($request->id)->first();
+        if ($request->username == null) {
+            try {
+                $user->update(['email' => $request->email]);
+                return redirect('home');
+            } catch (Exception $e) {
+                return $e->getMessage();
+            }
+        }
+        if ($request->email == null) {
+            try {
+                $user->update(['username' => $request->username]);
+                return redirect('home');
+            } catch (Exception $e) {
+                return $e->getMessage();
+            }
+        } else {
+            try {
+                $user->update(['username' => $request->username,'email' => $request->email]);
+                $request->session()->flash('status', '修改成功！');
+
+                return redirect('home');
+            } catch (Exception $error) {
+                return $error->getMessage();
+            }
         }
     }
     public function getUser()

@@ -4,7 +4,16 @@ namespace App\CheckersClass;
 
 class gameStart
 {
+    private static $_instance  = null ;
+   
+    public static function getInstance()
+    {
+        if (self::$_instance === null) {
+            self::$_instance = new self();
+        }
 
+        return self::$_instance;
+    }
     public function start()
     {
         $banker = array(1, 2, 3, 4, 5);
@@ -61,7 +70,7 @@ class gameStart
 
     public function getResult($result) //取得總賽果
     {
-        $bankercount = 0;                   
+        $bankercount = 0;
         $playercount = 0;
         for ($i = 0; $i <= 2; $i++) {
             if ($result[$i][2] == 1) {
@@ -73,13 +82,10 @@ class gameStart
         }
         
         if ($bankercount >= 2) {
-
             return 1;
         } elseif ($playercount >= 2) {
-
             return 2;
         } else {
-
             return 3;
         }
     }

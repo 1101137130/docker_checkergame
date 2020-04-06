@@ -6,6 +6,16 @@ use Illuminate\Support\Facades\Redis;
 
 class setItemname
 {
+    private static $_instance  = null ;
+   
+    public static function getInstance()
+    {
+        if (self::$_instance === null) {
+            self::$_instance = new self();
+        }
+
+        return self::$_instance;
+    }
     public function setItemname()
     {
         $items = Item::all();
@@ -18,5 +28,4 @@ class setItemname
             Redis::set('itemtotal', $total);
         }
     }
-
 }

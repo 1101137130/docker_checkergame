@@ -10,6 +10,16 @@ use Illuminate\Support\Facades\Redis;
 
 class updateOrder
 {
+    private static $_instance  = null ;
+   
+    public static function getInstance()
+    {
+        if (self::$_instance === null) {
+            self::$_instance = new self();
+        }
+
+        return self::$_instance;
+    }
     public function update($item, $status)
     {
         $user = Auth::user();
@@ -19,20 +29,16 @@ class updateOrder
             $redisUser = Redis::get($usert);
             
             if ($redisUser == null) {
-
                 Redis::set($usert, $item[2] * $item[3]); //item[2]=賠率 item[3]=金額
-                
             } else {
-
                 Redis::set($usert, $redisUser + $item[2] * $item[3]);
             }
-          
         }
 
-        $convertstatuse = new convertStatus;
-        $status = $convertstatuse->convertWinLostStatus($status);
+        $convertstatus = convertStatus::getInstance();
+        $status = $convertstatus->convertWinLostStatus($status);
 
-        $order = new Order;
+        $order = Order::getInstance();
         try {
             $order
                 ->where('item_id', $item[1])
@@ -44,7 +50,6 @@ class updateOrder
 
             return array(true, '');
         } catch (Exception $e) {
-
             $array = array(false, $e);
 
             return $array;

@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redis;
 use App\CheckersClass\setItemname;
 
-
 class HomeController extends Controller
 {
     /**
@@ -60,7 +59,7 @@ class HomeController extends Controller
     public function data()
     {
         if (!Redis::get('isItemSetyet')) {
-            $setitemname = new setItemname;
+            $setitemname = setItemname::getInstance();
             $setitemname->setItemname();
         }
         $data = Redis::get('Item');
@@ -76,8 +75,8 @@ class HomeController extends Controller
     public function clientorder(Request $request)
     {
         $user = Auth::user();
-        $gamestart = new gameStart;
-        $ordercreate = new orderCreate;
+        $gamestart =  gameStart::getInstance();
+        $ordercreate = orderCreate::getInstance();
 
         $order = $request->order;
 
@@ -93,7 +92,7 @@ class HomeController extends Controller
                 }
             }
 
-            $gameend = new gameEnd;
+            $gameend = gameEnd::getInstance();
 
             $result = $gamestart->start();
 

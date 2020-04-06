@@ -8,6 +8,16 @@ use App\AmountRecord;
 
 class checkUpdateUserAmount
 {
+    private static $_instance  = null ;
+   
+    public static function getInstance()
+    {
+        if (self::$_instance === null) {
+            self::$_instance = new self();
+        }
+
+        return self::$_instance;
+    }
     public function check($user, $amount)
     {
         $amountmodel = Amount::where('user_id', $user->id)->first();
@@ -23,7 +33,6 @@ class checkUpdateUserAmount
 
             return  $data;
         } else {
-
             return $this->update($user, $amount);
         }
     }
@@ -49,7 +58,7 @@ class checkUpdateUserAmount
         //判斷是否初次儲值
         $clientamount = Amount::where('user_id', $user->id)->first();
 
-        if ($clientamount != null) {        //如果不是則建立新的金額紀錄 
+        if ($clientamount != null) {        //如果不是則建立新的金額紀錄
             try {
                 AmountRecord::create([
                     'user_id' => $user->id,
@@ -65,14 +74,14 @@ class checkUpdateUserAmount
 
                 return view('amount.store');
             }
-        } else {                            //如果是 則建立新的amount 並預設金額為0 然後在新增金額紀錄 
+        } else {                            //如果是 則建立新的amount 並預設金額為0 然後在新增金額紀錄
             try {
                 AmountRecord::create([
                     'user_id' => $user->id,
                     'amount' => 0,
                     'status' => 4           //status:4代表以儲值方式加錢
                 ]);
-                //建立新的金額紀錄 
+                //建立新的金額紀錄
                 Amount::create(['user_id' => $user->id, 'amount' => $request->amount]);
                 $request->session()->flash('status', '儲值成功！');
 

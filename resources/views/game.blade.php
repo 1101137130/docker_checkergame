@@ -57,7 +57,10 @@
                         <select class="form-control" id="object1winlost">
                         </select>
 
-                        <input data-toggle="tooltip" data-placement="bottom" id="object1winlostamount" class="form-control" type="number" onchange="dataToNap('object1winlost',this.id,1)" onmouseover="compute(this.id, this.value, 'object1winlost')" placeholder="請輸入金額" step="5" min="0">
+                        <input data-toggle="tooltip" data-placement="bottom" id="object1winlostamount"
+                            class="form-control" type="number" onchange="dataToNap('object1winlost',this.id,1)"
+                            onmouseover="compute(this.id, this.value, 'object1winlost')" placeholder="請輸入金額" step="5"
+                            min="0">
 
                     </td>
                     <td style="text-align: center;">
@@ -65,7 +68,10 @@
                         <select class="form-control" id="object2winlost">
                         </select>
 
-                        <input data-toggle="tooltip" data-placement="bottom" onmouseover="compute(this.id, this.value, 'object2winlost')" type="number" class="form-control" id="object2winlostamount" onchange="dataToNap('object2winlost',this.id,2)" placeholder="請輸入金額" step="5" min="0">
+                        <input data-toggle="tooltip" data-placement="bottom"
+                            onmouseover="compute(this.id, this.value, 'object2winlost')" type="number"
+                            class="form-control" id="object2winlostamount"
+                            onchange="dataToNap('object2winlost',this.id,2)" placeholder="請輸入金額" step="5" min="0">
 
                     </td>
                 </tr>
@@ -76,7 +82,10 @@
                         <select class="form-control" id="object1bigsmall">
                         </select>
 
-                        <input data-toggle="tooltip" data-placement="bottom" onmouseover="compute(this.id, this.value, 'object1bigsmall')" type="number" class="form-control" id="object1bigsmallamount" onchange="dataToNap('object1bigsmall',this.id,1)" placeholder="請輸入金額" step="5" min="0">
+                        <input data-toggle="tooltip" data-placement="bottom"
+                            onmouseover="compute(this.id, this.value, 'object1bigsmall')" type="number"
+                            class="form-control" id="object1bigsmallamount"
+                            onchange="dataToNap('object1bigsmall',this.id,1)" placeholder="請輸入金額" step="5" min="0">
                     </td>
 
                     <td style="text-align: center;">
@@ -84,7 +93,10 @@
                         <select class="form-control" id="object2bigsmall">
                         </select>
 
-                        <input data-toggle="tooltip" data-placement="bottom" onmouseover="compute(this.id, this.value, 'object2bigsmall')" type="number" class="form-control" id="object2bigsmallamount" onchange="dataToNap('object2bigsmall',this.id,2)" placeholder="請輸入金額" step="5" min="0">
+                        <input data-toggle="tooltip" data-placement="bottom"
+                            onmouseover="compute(this.id, this.value, 'object2bigsmall')" type="number"
+                            class="form-control" id="object2bigsmallamount"
+                            onchange="dataToNap('object2bigsmall',this.id,2)" placeholder="請輸入金額" step="5" min="0">
 
                     </td>
                 </tr>
@@ -95,7 +107,10 @@
                         <select class="form-control" id="object1singledouble">
                         </select>
 
-                        <input data-toggle="tooltip" data-placement="bottom" onmouseover="compute(this.id, this.value, 'object1singledouble')" type="number" class="form-control" id="object1singledoubleamount" onchange="dataToNap('object1singledouble',this.id,1)" placeholder="請輸入金額" step="5" min="0">
+                        <input data-toggle="tooltip" data-placement="bottom"
+                            onmouseover="compute(this.id, this.value, 'object1singledouble')" type="number"
+                            class="form-control" id="object1singledoubleamount"
+                            onchange="dataToNap('object1singledouble',this.id,1)" placeholder="請輸入金額" step="5" min="0">
 
                     </td>
                     <td style="text-align: center;">
@@ -103,7 +118,10 @@
                         <select class="form-control" id="object2singledouble">
                         </select>
 
-                        <input data-toggle="tooltip" data-placement="bottom" onmouseover="compute(this.id, this.value, 'object2singledouble')" type="number" class="form-control" id="object2singledoubleamount" onchange="dataToNap('object2singledouble',this.id,2)" placeholder="請輸入金額" step="5" min="0">
+                        <input data-toggle="tooltip" data-placement="bottom"
+                            onmouseover="compute(this.id, this.value, 'object2singledouble')" type="number"
+                            class="form-control" id="object2singledoubleamount"
+                            onchange="dataToNap('object2singledouble',this.id,2)" placeholder="請輸入金額" step="5" min="0">
 
                     </td>
                 </tr>
@@ -130,7 +148,7 @@
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
-            success: function(data) {
+            success: function (data) {
 
                 var object1winlost = document.getElementById('object1winlost')
                 var object2winlost = document.getElementById('object2winlost')
@@ -155,7 +173,7 @@
                 object2singledouble.options.add(new Option(data[5][1] + '：' + data[5][2], data[5]))
 
             },
-            error: function(jqXHR) {
+            error: function (jqXHR) {
                 console.log('error')
             }
         })
@@ -171,7 +189,7 @@
             posibleWinAmount += ordersarray[i][3] * ordersarray[i][2];
         }
 
-        array.push('\n' + '預估獲利：' + posibleWinAmount)
+        array.push('\n' + '預估獲利：' + Math.round(posibleWinAmount))
         return array;
     }
 
@@ -212,7 +230,7 @@
             data: {
                 order: ordersarray
             },
-            success: function(data) {
+            success: function (data) {
                 console.log(data)
                 if (typeof data == typeof 'string') {
                     location.reload();
@@ -233,14 +251,15 @@
                     if (data[4] != null) {
                         for (var i = 0; i < data[4].length; i++) {
                             array[i] = new Array;
-                            array[i].push('\n' + '項目：' + toChinese(data[4][i][4]) + ' ' + data[4][i][0] + ' 結果：' + toWinLost(data[4][i][5]))
+                            array[i].push('\n' + '項目：' + toChinese(data[4][i][4]) + ' ' + data[4][i][0] +
+                                ' 結果：' + toWinLost(data[4][i][5]))
                         }
 
                         alert(array)
                     }
                 }
             },
-            error: function(jqXHR) {
+            error: function (jqXHR) {
                 console.log(jqXHR)
             }
         })
@@ -315,7 +334,8 @@
         rate = $(rateid).val()
         if (rate != null) {
             var arry = rate.split(',')
-            $(id).attr('title', '預估可贏 ：' + amount * arry[2]);
+            $(id).attr('title', '預估可贏 ：' + Math.round(amount * arry[2]));
         }
     }
+
 </script>
