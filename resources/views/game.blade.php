@@ -40,7 +40,7 @@
     <form action="{{url('game')}}" method="POST">
         {{csrf_field()}}
         <table class="table table-hover">
-            <tbody>
+            <tbody id="tbody">
 
                 <tr>
                     <td style="text-align: center;">
@@ -51,80 +51,6 @@
                     </td>
                 </tr>
 
-                <tr>
-                    <td style="text-align: center;">
-
-                        <select class="form-control" id="object1winlost">
-                        </select>
-
-                        <input data-toggle="tooltip" data-placement="bottom" id="object1winlostamount"
-                            class="form-control" type="number" onchange="dataToNap('object1winlost',this.id,1)"
-                            onmouseover="compute(this.id, this.value, 'object1winlost')" placeholder="請輸入金額" step="5"
-                            min="0">
-
-                    </td>
-                    <td style="text-align: center;">
-
-                        <select class="form-control" id="object2winlost">
-                        </select>
-
-                        <input data-toggle="tooltip" data-placement="bottom"
-                            onmouseover="compute(this.id, this.value, 'object2winlost')" type="number"
-                            class="form-control" id="object2winlostamount"
-                            onchange="dataToNap('object2winlost',this.id,2)" placeholder="請輸入金額" step="5" min="0">
-
-                    </td>
-                </tr>
-
-                <tr>
-                    <td style="text-align: center;">
-
-                        <select class="form-control" id="object1bigsmall">
-                        </select>
-
-                        <input data-toggle="tooltip" data-placement="bottom"
-                            onmouseover="compute(this.id, this.value, 'object1bigsmall')" type="number"
-                            class="form-control" id="object1bigsmallamount"
-                            onchange="dataToNap('object1bigsmall',this.id,1)" placeholder="請輸入金額" step="5" min="0">
-                    </td>
-
-                    <td style="text-align: center;">
-
-                        <select class="form-control" id="object2bigsmall">
-                        </select>
-
-                        <input data-toggle="tooltip" data-placement="bottom"
-                            onmouseover="compute(this.id, this.value, 'object2bigsmall')" type="number"
-                            class="form-control" id="object2bigsmallamount"
-                            onchange="dataToNap('object2bigsmall',this.id,2)" placeholder="請輸入金額" step="5" min="0">
-
-                    </td>
-                </tr>
-
-                <tr>
-                    <td style="text-align: center;">
-
-                        <select class="form-control" id="object1singledouble">
-                        </select>
-
-                        <input data-toggle="tooltip" data-placement="bottom"
-                            onmouseover="compute(this.id, this.value, 'object1singledouble')" type="number"
-                            class="form-control" id="object1singledoubleamount"
-                            onchange="dataToNap('object1singledouble',this.id,1)" placeholder="請輸入金額" step="5" min="0">
-
-                    </td>
-                    <td style="text-align: center;">
-
-                        <select class="form-control" id="object2singledouble">
-                        </select>
-
-                        <input data-toggle="tooltip" data-placement="bottom"
-                            onmouseover="compute(this.id, this.value, 'object2singledouble')" type="number"
-                            class="form-control" id="object2singledoubleamount"
-                            onchange="dataToNap('object2singledouble',this.id,2)" placeholder="請輸入金額" step="5" min="0">
-
-                    </td>
-                </tr>
             </tbody>
         </table>
         <div style="text-align: center;">
@@ -149,28 +75,31 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             success: function (data) {
+                console.log(data)
+                for (var i = 0; i <= data.length; i++) {
+                    $('#tbody').append(
+                        '<tr>' +
+                        '<td style="text-align: center;">' +
+                        '<label for="bankerS' + data[i][0] +
+                        '">' + data[i][1] + '：' + data[i][2] +
+                        '</label>' +
+                        '<input onchange=dataToMap("bankerS' + data[i][0] +
+                        '") id="bankerS' + data[i][0] +
+                        '"  type="number"  placeholder="請輸入金額" min="0">' +
+                        '</td>' +
+                        '<td style="text-align: center;">' +
+                        '<label for="playerS' + data[i][0] +
+                        '">' + data[i][1] + '：' + data[i][2] +
+                        '</label>' +
+                        '<input onchange=dataToMap("playerS' + data[i][0] +
+                        '") id="playerS' + data[i][0] +
+                        '"  type="number"  placeholder="請輸入金額" min="0">' +
+                        '</td>' +
+                        '</tr>'
 
-                var object1winlost = document.getElementById('object1winlost')
-                var object2winlost = document.getElementById('object2winlost')
-                var object1bigsmall = document.getElementById('object1bigsmall')
-                var object2bigsmall = document.getElementById('object2bigsmall')
-                var object1singledouble = document.getElementById('object1singledouble')
-                var object2singledouble = document.getElementById('object2singledouble')
+                    )
+                }
 
-                object1winlost.options.add(new Option(data[0][1] + '：' + data[0][2], data[0]))
-                object1winlost.options.add(new Option(data[1][1] + '：' + data[1][2], data[1]))
-                object2winlost.options.add(new Option(data[0][1] + '：' + data[0][2], data[0]))
-                object2winlost.options.add(new Option(data[1][1] + '：' + data[1][2], data[1]))
-
-                object1bigsmall.options.add(new Option(data[2][1] + '：' + data[2][2], data[2]))
-                object1bigsmall.options.add(new Option(data[3][1] + '：' + data[3][2], data[3]))
-                object2bigsmall.options.add(new Option(data[2][1] + '：' + data[2][2], data[2]))
-                object2bigsmall.options.add(new Option(data[3][1] + '：' + data[3][2], data[3]))
-
-                object1singledouble.options.add(new Option(data[4][1] + '：' + data[4][2], data[4]))
-                object1singledouble.options.add(new Option(data[5][1] + '：' + data[5][2], data[5]))
-                object2singledouble.options.add(new Option(data[4][1] + '：' + data[4][2], data[4]))
-                object2singledouble.options.add(new Option(data[5][1] + '：' + data[5][2], data[5]))
 
             },
             error: function (jqXHR) {
@@ -189,7 +118,7 @@
             posibleWinAmount += ordersarray[i][3] * ordersarray[i][2];
         }
 
-        array.push('\n' + '預估獲利：' + Math.round(posibleWinAmount))
+        array.push('\n' + '預估獲利：' + posibleWinAmount)
         return array;
     }
 
@@ -203,7 +132,7 @@
     }
 
     function mapToString() { //建立一個string來接map裡的資料 
-        var ordersarray = new Array(); //因為map不能轉成json 所以不能傳道後台
+        var ordersarray = new Array(); //因為map不能轉成json 所以不能傳至後台
         var i = 0;
         for (let entry of order.keys()) {
             var j = 0;
@@ -216,6 +145,7 @@
             }
             i++
         }
+        console.log(ordersarray)
         return ordersarray
     }
 
@@ -305,22 +235,29 @@
         }
     }
 
-    function dataToNap(id, amountid, object) {
-        var item = document.getElementById(id).value
+    function dataToMap(id) {
+        iid = '#' + id;
+        amount = $(iid).val();
 
-        var item = item.split(",");
-        var amount = document.getElementById(amountid).value
-
+        var objectId = id.split("S");
+        var object = objectId[0] == 'banker' ? 1 : 2;
+        var itemid = objectId[1];
+        var itemNameAndRate = $('label[for=' + id + ']').text().split("：")
+        console.log($('label[for=' + id + ']').text())
+        console.log(itemNameAndRate)
+        itemName = itemNameAndRate[0];
+        itemRate = itemNameAndRate[1];
         //金額不為0則新增一個map 並放入 外部map-order
         //金額為0則判斷外部map有無此id 有則做刪除
         if (amount != 0) {
             const ord = new Map();
-            ord.set('itemname', item[1])
-            ord.set('itemid', item[0])
-            ord.set('rate', item[2])
+            ord.set('itemname', itemName)
+            ord.set('itemid', itemid)
+            ord.set('rate', itemRate)
             ord.set('amount', amount)
             ord.set('object', object)
             order.set(id, ord)
+            console.log(order.get(id))
         } else {
             if (order.has(id)) {
                 order.delete(id)
@@ -334,7 +271,7 @@
         rate = $(rateid).val()
         if (rate != null) {
             var arry = rate.split(',')
-            $(id).attr('title', '預估可贏 ：' + Math.round(amount * arry[2]));
+            $(id).attr('title', '預估可贏 ：' + amount * arry[2]);
         }
     }
 

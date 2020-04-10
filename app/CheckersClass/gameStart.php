@@ -24,14 +24,12 @@ class gameStart
         $result = array();
 
         for ($i = 0; $i <= 2; $i++) {
-            //$result[$i] = $this->compare($banker[$i], $player[$i]);
             $result[$i] = $this->compare($banker[$i], $player[$i]);
         }
 
         $finalresult = $this->getResult($result);
         
         array_push($result, $finalresult); //將結果一起併入回傳陣列
-
         return $result;
     }
 
@@ -90,40 +88,5 @@ class gameStart
         }
     }
     
-    // public function compare($ob1, $ob2)
-    // {
-    //     $arrayob = array(
-    //         'object1' => array('card' => $ob1),
-    //         'object2' => array('card' => $ob2)
-    //     );
-    //     if ($ob1 == $ob2) {
-    //         $result = array('result' => '平手');
-    //         array_push($arrayob, $result);
 
-    //         return $arrayob;
-    //     }
-    //     if ($ob1 == 1 && $ob2 == 5) {
-    //         $result = array('result' => '莊家');
-    //         array_push($arrayob, $result);
-
-    //         return $arrayob;
-    //     } elseif ($ob1 == 5 && $ob2 == 1) {
-    //         $result = array('result' => '閒家');
-    //         array_push($arrayob, $result);
-
-    //         return $arrayob;
-    //     } else {
-    //         if ($ob1 - $ob2 > 0) {
-    //             $result = array('result' => '莊家');
-    //             array_push($arrayob, $result);
-
-    //             return $arrayob;
-    //         } else {
-    //             $result = array('result' => '閒家');
-    //             array_push($arrayob, $result);
-
-    //             return $arrayob;
-    //         }
-    //     }
-    // }
 }

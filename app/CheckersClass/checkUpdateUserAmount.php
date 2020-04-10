@@ -51,7 +51,16 @@ class checkUpdateUserAmount
             return  $data;
         }
     }
+    public function undo($user, $amount)
+    {
+        try {
+            Amountrecord::create(['user_id' => $user->id, 'amount' => $amount, 'status' => 6]); //status'6'後續錯誤已扣款加回
+        } catch (Exception $error) {
+            $data = array(false, $error);
 
+            throw  $data;
+        }
+    }
     public function create($user, $request)
     {
 
@@ -70,7 +79,7 @@ class checkUpdateUserAmount
 
                 return redirect('game');
             } catch (Exception $e) {
-                echo $e;
+                throw $e;
 
                 return view('amount.store');
             }
@@ -87,7 +96,7 @@ class checkUpdateUserAmount
 
                 return redirect('game');
             } catch (Exception $e) {
-                echo $e;
+                throw $e;
 
                 return view('amount.store');
             }
