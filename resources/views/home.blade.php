@@ -123,9 +123,12 @@
 
 
                         @if ($manager_editor == true)
-                        <a href="{{ url('registerManager') }}">Create a Manager User</a>
+                        <a href="{{ url('registerManager') }}">建立管理者</a>
                         @endif
-                        <a href="{{ url('/order') }}">Orders</a>
+                        @if ($view_orders == true)
+                        <a href="{{ url('/orders') }}">查看所有注單</a>
+                        @endif
+                        <a href="{{ url('/order') }}">個人注單</a>
 
                     </div>
                 </div>

@@ -29,10 +29,10 @@ class orderCreate
 
         $user = Auth::user();
         $data = $checkandUpadate->check($user, $item[3]);
-
+        $convertStatus = convertStatus::getInstance();
+        $newOrdersStatus=$convertStatus->convertOrdersStatus('new');
         if ($data[0] == true) {
             $checkrate = checkRateTheSame::check($item[1], $item[2]);
-            
             if ($checkrate == false) {
                 $error = '賠率已變動請重新下單！';
                 $data = array(false, $error);
@@ -46,14 +46,14 @@ class orderCreate
                     'item_id' => $item[1],
                     'amount' => $item[3],
                     'bet_object' => $item[4],
-                    'status' => 1, //新建
+                    'status' => $newOrdersStatus, 
                     'item_rate' => $item[2]
                 ]);
                 $data = array(true, '');
                 return $data;
             } catch (Exception $e) {
                 $error = array(false, $e);
-
+                $checkandUpadate->undo($user, $item[3]);
                 return $error;
             }
         } else {

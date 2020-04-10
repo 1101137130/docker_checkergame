@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container">
-
+    <a role="btn" href="{{url('Raterecord')}}">查看紀錄</a>
     <table class="table table-hover" id="table">
     </table>
 
@@ -20,7 +20,18 @@
         </span>
         @endif
         賠率：<input type="number" name="rate" placeholder="請輸入賠率" step="0.1000" min="0.000" max="10000">
-        <input type="submit" value="新增">
+
+        <div>
+            <input type="radio" id="compare" name="compare" value="totalcompare">
+            <label for="compare">總比較</label>
+        </div>
+        <div>
+            <input type="radio" id="compare" name="compare" value="onebyonecompare">
+            <label for="compare">逐個比較</label>
+        </div>
+        <div id=totalcompare></div>
+        <div id=onebyonecompare></div>
+        <input name="submit" class="btn btn-primary" type="submit" value="新增">
 
     </form>
     <p id="storeButton" hidden><a type=role class="btn btn-primary" onclick="allEdit()">儲存</a></p>
@@ -30,9 +41,132 @@
 </script>
 
 <script>
-    window.onload = getData;
+    window.onload = start;
     var ItemEditarray = new Array();
     var EditCount = 0;
+
+    function start() {
+        getData();
+        comparechage();
+    }
+
+    function comparechage() {
+        $('[name=compare]').change(function () {
+            var checked = $('[name=compare]:checked')
+            console.log(checked.val());
+            if (checked.val() == 'totalcompare') {
+                totalcompare();
+            }
+            if (checked.val() == 'onebyonecompare') {
+                onebyonecompare();
+            }
+
+        })
+
+    }
+
+    function onebyonecompare() {
+        var firsround;
+        var secondround;
+        var thirdround;
+
+        $('#totalcompare').html('');
+        $('[name=itemname]').val('');
+
+        var data = '第一局' + comparation('firstround') + '</br>' +
+            '第二局' + comparation('secondround') + '</br>' +
+            '第三局' + comparation('thirdround') + '</br>'
+        $('#onebyonecompare').append(data)
+        $('[name=firstround]').change(function () {
+            firsround = $('[name=firstround]:checked').val()
+            check();
+        })
+        $('[name=secondround]').change(function () {
+            secondround = $('[name=secondround]:checked').val()
+            check();
+        })
+        $('[name=thirdround]').change(function () {
+            thirdround = $('[name=thirdround]:checked').val()
+            check();
+        })
+
+        function check() {
+
+            if (firsround == secondround && secondround == thirdround) {
+                $("input[name='submit']").attr('disabled', 'disabled');
+                $('[name=itemname]').val('');
+            } else {
+                if (firsround != null && secondround != null && thirdround != null) {
+                    $("input[name='submit']").removeAttr('disabled');
+                    f = converter(firsround);
+                    s = converter(secondround);
+                    t = converter(thirdround);
+                    $('[name=itemname]').val(f + s + t);
+
+                } else {
+                    $('[name=itemname]').val('');
+                }
+            }
+
+
+        }
+
+    }
+
+    function comparation(name) {
+        var win = '<input type="radio" id="total" name="' + name + '" value="win">' + '<label for="total">贏</label>';
+        var lost = '<input type="radio" id="total" name="' + name + '" value="lost">' + '<label for="total">輸</label>';
+        var single = '<input type="radio" id="total" name="' + name + '" value="single">' +
+            '<label for="total">單</label>';
+        var double = '<input type="radio" id="total" name="' + name + '" value="double">' +
+            '<label for="total">雙</label>';
+        var big = '<input type="radio" id="total" name="' + name + '" value="big">' + '<label for="total">大</label>';
+        var small = '<input type="radio" id="total" name="' + name + '" value="small">' +
+            '<label for="total">小</label>';
+        var draw = '<input type="radio" id="total" name="' + name + '" value="draw">' +
+            '<label for="total">平</label>';
+        return win + lost + draw + single + double + big + small;
+    }
+
+    function totalcompare() {
+        $('#onebyonecompare').html('');
+        $('[name=itemname]').val('');
+
+        var data = comparation('total');
+
+        $('#totalcompare').append(data)
+        $('[name=total]').change(function () {
+            var checked = $('[name=total]:checked')
+            var val = converter(checked.val())
+            $('[name=itemname]').val(val)
+
+        })
+    }
+
+    function converter(data) {
+        if (data == 'win') {
+            return '贏'
+        }
+        if (data == 'lost') {
+            return '輸'
+        }
+        if (data == 'big') {
+            return '大'
+        }
+        if (data == 'small') {
+            return '小'
+        }
+        if (data == 'single') {
+            return '單'
+        }
+        if (data == 'double') {
+            return '雙'
+        }
+        if (data == 'draw') {
+            return '平'
+        }
+
+    }
     //這是從第一次從前端去跟後端要資料的function
     function getData() {
 

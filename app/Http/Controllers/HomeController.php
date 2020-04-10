@@ -79,8 +79,7 @@ class HomeController extends Controller
         $ordercreate = orderCreate::getInstance();
 
         $order = $request->order;
-
-
+        
         if ($order != "true") {
             foreach ($order as $item) {
                 $data = $ordercreate->new($item);

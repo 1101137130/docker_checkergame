@@ -14,6 +14,10 @@
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="{{ asset('js/datetimebuild/jquery.js') }}"></script>
+
+
 </head>
 
 
@@ -24,7 +28,8 @@
                 <div class="navbar-header">
 
                     <!-- Collapsed Hamburger -->
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#app-navbar-collapse">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                        data-target="#app-navbar-collapse">
                         <span class="sr-only">Toggle Navigation</span>
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
@@ -53,11 +58,16 @@
                         <li><a href="{{ route('register') }}">Register</a></li>
 
                         @else
-                        <li >您的金額還有：<li id="amount"></li></li>
+                        <li>您的金額還有：
+                        <li id="amount"></li>
+                        </li>
                         <li> || </li>
-                        <li >您獲勝的金額：<li id="winamount"></li></li>
+                        <li>您獲勝的金額：
+                        <li id="winamount"></li>
+                        </li>
                         <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                                aria-expanded="false">
                                 {{ Auth::user()->name }} <span class="caret"></span>
                             </a>
                             <ul class="dropdown-menu" role="menu">
@@ -70,10 +80,12 @@
                                                      document.getElementById('amount-form').submit();">
                                         Store
                                     </a>
-                                    <form id="amount-form" action="{{ url('amount') }}" method="GET" style="display: none;">
+                                    <form id="amount-form" action="{{ url('amount') }}" method="GET"
+                                        style="display: none;">
 
                                     </form>
-                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                    <form id="logout-form" action="{{ route('logout') }}" method="POST"
+                                        style="display: none;">
                                         {{ csrf_field() }}
                                     </form>
                                 </li>
@@ -98,15 +110,21 @@
     </div>
 
     <!-- Scripts -->
+
     <script src="{{ asset('js/app.js') }}"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"> </script>
+
+
+    <script src="{{ asset('js/datetimebuild/jquery.datetimepicker.full.min.js') }}"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+
+
     <script>
         //window.onload = getAmount;
-        $(function() {
+        $(function () {
             getAmount()
         });
-        function getAmount(){
+
+        function getAmount() {
             $.ajax({
                 type: "GET",
                 url: "{{url('getAmount')}}",
@@ -114,16 +132,51 @@
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
-                success: function(data) {
+                success: function (data) {
                     $('#amount').html(parseFloat(data[0]))
                     $('#winamount').html(parseFloat(data[1]))
 
                 },
-                error: function(jqXHR) {
+                error: function (jqXHR) {
                     console.log(jqXHR)
                 }
             })
         }
+
+        function timeconvert(unixtimestamp) {
+            // Months array
+            var months_arr = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+            // Convert timestamp to milliseconds
+            var date = new Date(unixtimestamp * 1000);
+
+            // Year
+            var year = date.getFullYear();
+
+            // Month
+            var month = months_arr[date.getMonth()];
+
+            // Day
+            var day = date.getDate();
+
+            // Hours
+            var hours = date.getHours();
+
+            // Minutes
+            var minutes = "0" + date.getMinutes();
+
+            // Seconds
+            var seconds = "0" + date.getSeconds();
+
+            // Display date time in MM-dd-yyyy h:m:s format
+            var convdataTime = month + '-' + day + '-' + year + ' ' + hours + ':' + minutes.substr(-2) + ':' +
+                seconds
+                .substr(-2);
+
+            return convdataTime;
+
+        }
+
     </script>
 
 </body>
