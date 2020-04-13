@@ -128,7 +128,7 @@
         }
 
         $.ajax({
-            type: "POST",
+            type: "GET",
             url: "{{url('getOrdersData')}}",
             dataType: "json",
             headers: {

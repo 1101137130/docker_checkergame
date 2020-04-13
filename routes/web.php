@@ -18,6 +18,7 @@ Route::get('/', function () {
 $q=Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+Route::get('itemrule', 'ItemController@getItemRule')->name('Item');
 Route::resource('item', 'ItemController');
 Route::post('item/edit', 'ItemController@edit');
 Route::resource('order', 'OrderController');
@@ -34,7 +35,7 @@ Route::get('/registerManager', 'Auth\RegisterManager@showRegistrationForm')->nam
 Route::post('/managerRegister', 'Auth\RegisterManager@createManager')->name('user');
 Route::get('/getuser', 'Auth\RegisterManager@getUser')->name('user');
 Route::post('/editUser', 'Auth\RegisterManager@editUser')->name('user');
-Route::post('/getOrdersData', 'OrderController@getData')->name('order');
+Route::get('/getOrdersData', 'OrderController@getData')->name('order');
 Route::get('getItemname', 'ItemController@getItemName');
 Route::get('getRaterecordDataAll', 'RaterecordController@getDataAll');
 Route::post('getRaterecordDataByUser', 'RaterecordController@getDataByUser');

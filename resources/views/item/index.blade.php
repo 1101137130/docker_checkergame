@@ -22,17 +22,17 @@
         賠率：<input type="number" name="rate" placeholder="請輸入賠率" step="0.1000" min="0.000" max="10000">
 
         <div>
-            <input type="radio" id="compare" name="compare" value="totalcompare">
+            <input type="radio" id="compare" name="compare" value="totalCompare">
             <label for="compare">總比較</label>
         </div>
         <div>
-            <input type="radio" id="compare" name="compare" value="onebyonecompare">
+            <input type="radio" id="compare" name="compare" value="singleCompare">
             <label for="compare">逐個比較</label>
         </div>
-        <div id=totalcompare></div>
-        <div id=onebyonecompare></div>
+        <div id=totalCompare></div>
+        <div id=singleCompare></div>
         <input name="submit" class="btn btn-primary" type="submit" value="新增">
-
+        <a role="button" href="{{url('itemrule')}}">規則</a>
     </form>
     <p id="storeButton" hidden><a type=role class="btn btn-primary" onclick="allEdit()">儲存</a></p>
 </div>
@@ -47,45 +47,44 @@
 
     function start() {
         getData();
-        comparechage();
+        compareChange();
     }
 
-    function comparechage() {
-        $('[name=compare]').change(function () {
+    function compareChange() {
+        $('[name=compare]').change(function() {
             var checked = $('[name=compare]:checked')
             console.log(checked.val());
-            if (checked.val() == 'totalcompare') {
-                totalcompare();
+            if (checked.val() == 'totalCompare') {
+                totalCompare();
             }
-            if (checked.val() == 'onebyonecompare') {
-                onebyonecompare();
+            if (checked.val() == 'singleCompare') {
+                singleCompare();
             }
 
         })
-
     }
 
-    function onebyonecompare() {
+    function singleCompare() {
         var firsround;
         var secondround;
         var thirdround;
 
-        $('#totalcompare').html('');
+        $('#totalCompare').html('');
         $('[name=itemname]').val('');
 
         var data = '第一局' + comparation('firstround') + '</br>' +
             '第二局' + comparation('secondround') + '</br>' +
             '第三局' + comparation('thirdround') + '</br>'
-        $('#onebyonecompare').append(data)
-        $('[name=firstround]').change(function () {
+        $('#singleCompare').append(data)
+        $('[name=firstround]').change(function() {
             firsround = $('[name=firstround]:checked').val()
             check();
         })
-        $('[name=secondround]').change(function () {
+        $('[name=secondround]').change(function() {
             secondround = $('[name=secondround]:checked').val()
             check();
         })
-        $('[name=thirdround]').change(function () {
+        $('[name=thirdround]').change(function() {
             thirdround = $('[name=thirdround]:checked').val()
             check();
         })
@@ -128,14 +127,14 @@
         return win + lost + draw + single + double + big + small;
     }
 
-    function totalcompare() {
-        $('#onebyonecompare').html('');
+    function totalCompare() {
+        $('#singleCompare').html('');
         $('[name=itemname]').val('');
 
         var data = comparation('total');
 
-        $('#totalcompare').append(data)
-        $('[name=total]').change(function () {
+        $('#totalCompare').append(data)
+        $('[name=total]').change(function() {
             var checked = $('[name=total]:checked')
             var val = converter(checked.val())
             $('[name=itemname]').val(val)
@@ -177,10 +176,10 @@
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
-            success: function (data) {
+            success: function(data) {
                 add_row(data);
             },
-            error: function (jqXHR) {
+            error: function(jqXHR) {
                 console.log('error')
             }
         })
@@ -199,13 +198,13 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             success: location.reload(),
-            error: function (jqXHR) {
+            error: function(jqXHR) {
                 console.log('error')
             }
         })
     }
     //------
-    //這是提供單比資料修改的ajax
+    //這是提供單筆資料修改的ajax
     function ajaxToEdit(id, itemnameid, inputrateid) {
 
         var itemname = $(itemnameid).val()
@@ -223,8 +222,8 @@
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
-            success: location.reload(),
-            error: function (jqXHR) {
+            success:location.reload(),
+            error: function(jqXHR) {
                 console.log(jqXHR)
             }
         })
@@ -244,7 +243,7 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             success: location.reload(),
-            error: function (jqXHR) {
+            error: function(jqXHR) {
                 console.log(jqXHR)
             }
         })
@@ -339,5 +338,4 @@
         $(obj).remove();
     }
     //-----
-
 </script>

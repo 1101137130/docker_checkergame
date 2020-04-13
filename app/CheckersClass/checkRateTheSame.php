@@ -6,16 +6,16 @@ use App\Item;
 
 class checkRateTheSame
 {
-    // private static $_instance  = null ;
+    private static $_instance  = null ;
    
-    // public static function getInstance()
-    // {
-    //     if (self::$_instance === null) {
-    //         self::$_instance = new self();
-    //     }
+    public static function getInstance()
+    {
+        if (self::$_instance === null) {
+            self::$_instance = new self();
+        }
 
-    //     return self::$_instance;
-    // }
+        return self::$_instance;
+    }
     public static function check($id, $rate)
     {
         $itemrate=Item::find($id);

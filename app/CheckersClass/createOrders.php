@@ -33,7 +33,9 @@ class createOrders
         $convertStatus = convertStatus::getInstance();
         $newOrdersStatus=$convertStatus->convertOrdersStatus('new');
         if ($data[0] == true) {
-            $checkrate = checkRateTheSame::check($item[1], $item[2]);
+            $checkRateTheSame = checkRateTheSame::getInstance();
+            $checkrate = $checkRateTheSame->check($item[1], $item[2]);
+
             if ($checkrate == false) {
                 $error = '賠率已變動請重新下單！';
                 $data = array(false, $error);

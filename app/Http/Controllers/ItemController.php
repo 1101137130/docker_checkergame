@@ -72,7 +72,6 @@ class ItemController extends Controller
     }
     public function getItemName()
     {
-
         $data = Redis::get('Item');
         $data = json_decode($data, true);
         $array = array();
@@ -85,7 +84,6 @@ class ItemController extends Controller
     public function update(Request $request)
     {
         $this->middleware('itemratemanage');
-        $this->validator($request);
 
         $item = Item::find($request->id);
         $changed = false;
@@ -97,6 +95,7 @@ class ItemController extends Controller
                 $changed = true;
             }
             if ($item->itemname != $request->itemname) {
+                $this->validator($request);
                 $item->update(['itemname' => $request->itemname]);
                 Redis::set('isItemSetyet', false);  //修改redis資料
                 $changed = true;
@@ -115,24 +114,24 @@ class ItemController extends Controller
     {
         $this->middleware('itemratemanage');
         $this->validator($request);
-        $user = Auth::user();
-        //未完成功能
-        // if ($request->compare == 'totalcompare') {
-        // }
-        // if ($request->compare == 'onebyonecompare') {
-        // }
-        //end
+
         try {
             $item = Item::create($request->all());
             $request->session()->flash('status', '新增成功！');
             Redis::set('isItemSetyet', false); //修改redis資料
-
+            
             return redirect('item');
         } catch (Exception $e) {
             throw $e;
         }
 
         return $item;
+    }
+    public function getItemRule()
+    {
+        $this->middleware('itemratemanage');
+        
+        return view('item.rule');
     }
 
     public function store()
