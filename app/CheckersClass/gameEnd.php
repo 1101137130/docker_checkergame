@@ -4,7 +4,6 @@ namespace App\CheckersClass;
 
 use App\CheckersClass\updateOrder;
 use Illuminate\Support\Facades\Auth;
-use App\Order;
 
 class gameEnd
 {
@@ -59,13 +58,7 @@ class gameEnd
     {
         $updatorder = updateOrder::getInstance();
         $user = Auth::user();
-        $order =  Order::getInstance();
-        $order
-                ->where('item_id', $item[1])
-                ->where('user_id', $user->id)
-                ->where('bet_object', $item[4])
-                ->orderBy('created_at', 'desc')
-                ->first();
+
         if ($result) {
             $array = $updatorder->update($item, 'win'); //更改訂單狀態 為贏
             if ($array[0] == false) {

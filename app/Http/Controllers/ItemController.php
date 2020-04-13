@@ -14,11 +14,13 @@ class ItemController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('itemratemanage');
+        $this->middleware('auth');
     }
 
     public function index()
     {
+        $this->middleware('itemratemanage');
+
         $items = Item::all();
 
         return view('item.index', [
@@ -28,6 +30,7 @@ class ItemController extends Controller
 
     public function destroy(Request $request)
     {
+        $this->middleware('itemratemanage');
         try {
             $item = Item::find($request->id);
             $item->delete();
@@ -40,12 +43,14 @@ class ItemController extends Controller
 
     public function show($id)
     {
+        $this->middleware('itemratemanage');
         $item = Item::find($id);
         return redirect(['item' => $item]);
     }
 
     public function edit(Request $request)
     {
+        $this->middleware('itemratemanage');
         try {
             foreach ($request->temp as $e) {
                 $item = Item::find($e[0]);
@@ -67,12 +72,19 @@ class ItemController extends Controller
     }
     public function getItemName()
     {
+
         $data = Redis::get('Item');
-        $array = json_decode($data, true);
+        $data = json_decode($data, true);
+        $array = array();
+
+        for ($i = 0;$i<=count($data)-1;$i++) {
+            array_push($array, array('id'=>$data[$i]['id'],'itemname'=>$data[$i]['itemname']));
+        }
         return $array;
     }
     public function update(Request $request)
     {
+        $this->middleware('itemratemanage');
         $this->validator($request);
 
         $item = Item::find($request->id);
@@ -101,6 +113,7 @@ class ItemController extends Controller
     }
     public function create(Request $request)
     {
+        $this->middleware('itemratemanage');
         $this->validator($request);
         $user = Auth::user();
         //未完成功能
@@ -124,6 +137,7 @@ class ItemController extends Controller
 
     public function store()
     {
+        $this->middleware('itemratemanage');
         $items = Item::all();
         $restult = array();
         $i = 0;

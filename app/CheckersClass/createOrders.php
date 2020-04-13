@@ -7,8 +7,9 @@ use Exception;
 use Illuminate\Support\Facades\Auth;
 use App\CheckersClass\checkUpdateUserAmount;
 use App\CheckersClass\checkRateTheSame;
+use Illuminate\Support\Facades\Redis;
 
-class orderCreate
+class createOrders
 {
     private static $_instance  = null ;
    
@@ -49,6 +50,7 @@ class orderCreate
                     'status' => $newOrdersStatus, 
                     'item_rate' => $item[2]
                 ]);
+                Redis::set('isOrderUsersSetyet', false);
                 $data = array(true, '');
                 return $data;
             } catch (Exception $e) {

@@ -2,11 +2,12 @@
 
 namespace App\CheckersClass;
 
-use App\Order;
+
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use App\CheckersClass\convertStatus;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\DB;
 
 class updateOrder
 {
@@ -31,7 +32,7 @@ class updateOrder
         $convertOrdersStatus = convertStatus::getInstance();
         $status = $convertOrdersStatus->convertOrdersStatus($status);
 
-        $order = Order::getInstance();
+        $order = DB::table('orders');
         try {
             $order
                 ->where('item_id', $item[1])
@@ -52,7 +53,7 @@ class updateOrder
     {
         $convertOrdersStatus = convertStatus::getInstance();
         $status = $convertOrdersStatus->convertOrdersStatus($status);
-        $order = Order::getInstance();
+        $order = DB::table('orders');
         try {
             $order
                 ->where('id', $id)

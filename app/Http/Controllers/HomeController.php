@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Item;
 use App\CheckersClass\gameStart;
 use App\CheckersClass\gameEnd;
-use App\CheckersClass\orderCreate;
+use App\CheckersClass\createOrders;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redis;
 use App\CheckersClass\setItemname;
@@ -76,13 +76,13 @@ class HomeController extends Controller
     {
         $user = Auth::user();
         $gamestart =  gameStart::getInstance();
-        $ordercreate = orderCreate::getInstance();
+        $createOrders = createOrders::getInstance();
 
         $order = $request->order;
         
         if ($order != "true") {
             foreach ($order as $item) {
-                $data = $ordercreate->new($item);
+                $data = $createOrders->new($item);
 
                 if ($data[0] != true) {
                     $request->session()->flash('error', $data[1]);

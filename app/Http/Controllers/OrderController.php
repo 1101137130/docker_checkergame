@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Order;
 use Exception;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
@@ -15,38 +17,59 @@ class OrderController extends Controller
         $this->middleware('auth');
     }
 
-
     public function deleteorder(Request $request)
     {
         $updateOrder = updateOrder::getInstance();
         $result = $updateOrder->cancel($request->id, $request->status);
         return $result;
     }
-    public function ordersSelector($userid = null, $itemid=null, $temp=null, $date=null)
+    public function ordersSelector($data)
     {
-        $orders=Order::getInstance()->all();
-        if($temp != null){
-        $temp = $temp->temp * 100;
-        $orders->slice($temp);
+        $temp =0;
+        $userid= $data->userid == 'NaN'? null :$data->userid;
+        $itemid= $data->itemid == 'NaN'? null :$data->itemid;
+        $startdate= $data->startdate == 'NaN'? 0 :$data->startdate;
+        $enddate= $data->enddate == 'NaN'? time() :$data->enddate;
+        $status= $data->status == 'NaN'? null :$data->status;
+        $betobject = $data->betobject =='NaN' ? null : $data->betobject;
 
+        $data->temp == 0 ? $temp = 0 : $temp = $data->temp*100;
+        $orders=DB::table('orders')->get()
+         ->where('created_at', '<=', $enddate)
+         ->where('created_at', '>=', $startdate);
+        if ($userid != null) {
+            $orders = $orders->where('user_id', $userid);
         }
-        if ($date != null) {
-            $startdate=$date->startdate;
-            $enddate=$date->enddate;
-      
-            $orders->whereBetween('created_at', [$startdate,$enddate]);
+        if ($itemid != null) {
+            $orders = $orders->where('item_id', $itemid);
         }
-        
+        if ($status != null) {
+            $orders = $orders->where('status', $status);
+        }
+        if ($betobject != null) {
+            $orders = $orders->where('bet_object', $betobject);
+        }
+        $data=$orders->slice($temp)->take(100);
+        return json_decode($data, true);
     }
-    public function getOrdersDataBytime(Request $re)
+    public function getUserName()
     {
-        $startdate=$re->startdate;
-        $enddate=$re->enddate;
-        
-        $orders=Order::whereBetween('created_at', [$startdate,$enddate])->take(100)->get();
-
-        return $orders;
+        if (Redis::get('isOrderUsersSetyet')==true) {
+            $orderUsers = Redis::get('OrderUsers');
+            $data = json_decode($orderUsers, true);
+            return $data ;
+        } else {
+            $data = DB::table('orders')
+            ->join('users', 'users.id', '=', 'orders.user_id')
+            ->select('orders.user_id', 'users.username')
+            ->distinct('user_id')
+            ->get();
+            Redis::set('OrderUsers', $data);
+            Redis::set('isOrderUsersSetyet', true);
+            return $data;
+        }
     }
+ 
     public function getOrder()
     {
         $user = Auth::user();
@@ -56,24 +79,11 @@ class OrderController extends Controller
     }
     public function all()
     {
-        $user = Auth::user();
-        if ($user['view_orders'] == 1) {
-            return view('order.all');
-        }
+        return view('order.all');
     }
-    public function getData()
+    public function getData(Request $request)
     {
-        $orders = Order::all()->take(100);
-        
-        return json_encode($orders, true);
-    }
-    public function tempData(Request $re)
-    {
-        if ($re->temp==0) {
-            self::getData();
-        }
-        $data = $re->temp * 100;
-        $orders = Order::all()->slice($data)->take(100);
+        $orders = $this->ordersSelector($request);
         
         return json_encode($orders, true);
     }

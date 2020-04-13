@@ -1,83 +1,162 @@
 @extends('layouts.app')
 @section('content')
 <div class="container">
-    <button class="btn btn-primary" onclick="getOrders('all')">取所有值</button>
     <label for="date_timepicker_start">開始日期</label>
     <input type="text" id="date_timepicker_start" name="date_timepicker_start">
     <label for="date_timepicker_end">結束日期</label>
     <input type="text" id="date_timepicker_end" name="date_timepicker_end">
-    <button class="btn btn-primary" onclick="getOrders('date')">範圍搜索</button>
-    <div id="tablelocation"></div>
+    <div>
+        <span id="useriddiv"></span>
+        <label for="betobject">下注對象</label>
+        <select id="betobject">
+            <option value=""></option>
+            <option value="1">莊家</option>
+            <option value="2">閒家</option>
+        </select>
+        <label for="itemid">下單項目</label>
+        <select id="itemid">
+            <option value=""></option>
+        </select>
+        <label for="status">注單狀態</label>
+        <select id="status">
+            <option value=""></option>
+            <option value="1">新建</option>
+            <option value="2">贏</option>
+            <option value="3">輸</option>
+            <option value="4">註銷</option>
+            <option value="5">作廢</option>
+        </select>
+        <button class="btn btn-primary" onclick="getOrders()">範圍搜索</button>
+    </div>
+
+    <div id="tablelocation">
+
+    </div>
 </div>
 <link href="{{ asset('css/jquery.css') }}" rel="stylesheet">
 <script>
-    window.onload = getItemName
+    window.onload = start
     var datatemp = 0;
+    var itemIdName;
+    userid = null;
+
+    function start() {
+        getItemName();
+        getUserAuthority();
+
+        jQuery(function() {
+            jQuery('#date_timepicker_start').datetimepicker({
+                format: 'Y-m-d H:m',
+                onShow: function(ct) {
+                    this.setOptions({
+                        maxDate: jQuery('#date_timepicker_end').val() ? jQuery(
+                            '#date_timepicker_end').val() : Date.now()
+                    })
+                }
+            });
+            jQuery('#date_timepicker_end').datetimepicker({
+                format: 'Y/m/d H:m',
+                onShow: function(ct) {
+                    this.setOptions({
+                        minDate: jQuery('#date_timepicker_start').val() ? jQuery(
+                            '#date_timepicker_start').val() : false
+                    })
+                }
+            });
+        });
+    }
+
+    function getUserAuthority() {
+        $.ajax({
+            type: "GET",
+            url: "{{url('getuser')}}",
+            dataType: "json",
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(data) {
+                if (data.view_orders == 1) {
+                    userauth = 1;
+                    $('#useriddiv').append(
+                        '<label for="userid">下單者</label>' +
+                        '<select id="userid">' +
+                        '<option value=""></option>' +
+                        '</select>')
+                } else {
+                    userid = data.id;
+                    userauth = 0;
+                }
+                getUserName();
+
+            },
+            error: function(jqXHR) {
+                console.log(jqXHR)
+            }
+        })
+    }
 
     function getStartEndDateValue(data) {
         data = '#date_timepicker_' + data;
         datavalue = $(data).val()
         datavalue = new Date(datavalue);
         if (datavalue == '') {
-            datavalue = new Date();
+            return '';
         }
         return datavalue.getTime() / 1000
     }
 
-    function getOrders(condition) {
-        table(false);
-        if (condition == 'date') {
-            startdate = getStartEndDateValue('start');
-            enddate = getStartEndDateValue('end');
+    function getUserItemValue(id) {
+        id = '#' + id;
+        $data = $(id).val();
+        return $data;
+    }
 
-            $.ajax({
-                type: "GET",
-                url: "{{url('getOrdersDataBytime')}}",
-                dataType: "json",
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                data: {
-                    startdate: startdate,
-                    enddate: enddate
-                },
-                success: function (data) {
-                    buildData(data)
+    function getOrders() {
+        table(0);
+        startdate = getStartEndDateValue('start');
+        enddate = getStartEndDateValue('end');
+        itemid = getUserItemValue('itemid');
+        status = $('#status').val();
+        betobject = $('#betobject').val();
 
-                },
-                error: function (jqXHR) {
-                    console.log(jqXHR)
-                }
-            })
+        if (userauth == 0) {
+            userid = userid;
+            table(2);
+        } else {
+            userid = getUserItemValue('userid');
+            table(1)
         }
-        if (condition == 'all') {
-            $.ajax({
-                type: "POST",
-                url: "{{url('ordersAll')}}",
-                dataType: "json",
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                success: function (data) {
-                    buildData(data)
-                },
-                error: function (jqXHR) {
-                    console.log(jqXHR)
-                }
-            })
 
-        }
+        $.ajax({
+            type: "POST",
+            url: "{{url('getOrdersData')}}",
+            dataType: "json",
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            data: {
+                startdate: startdate,
+                enddate: enddate,
+                temp: datatemp,
+                userid: userid,
+                itemid: itemid,
+                status: status,
+                betobject: betobject
+            },
+            success: function(data) {
+                buildData(data, userauth)
+            },
+            error: function(jqXHR) {
+                console.log(jqXHR)
+            }
+        })
     }
 
     function table(command) {
-        if (command == 0) {
-            $('#tablelocation').html('');
-        }
+
         if (command == 1) {
-            $('#tablelocation').append('<table id="DataTalbe" class="display">' +
-                ' <thead>' +
-                '<tr>' +
-                ' <th style="text-align: center;">單號</th>' +
+            dataHead =
+                '<th style="text-align: center;">單號</th>' +
                 '<th style="text-align: center;">下注者</th>' +
                 '<th style="text-align: center;">下注方</th>' +
                 '<th style="text-align: center;">下注項目</th>' +
@@ -85,33 +164,65 @@
                 '<th style="text-align: center;">下注金額</th>' +
                 '<th style="text-align: center;">當下賠率</th>' +
                 '<th style="text-align: center;">下注日期</th>' +
-                '<th style="text-align: center;">註銷</th>' +
-                '</tr>' +
+                '<th style="text-align: center;">註銷</th>';
+            dataFoot =
+                '<th style="text-align: center;"></th>' +
+                '<th style="text-align: center;"></th>' +
+                '<th style="text-align: center;"></th>' +
+                '<th style="text-align: center;"></th>' +
+                '<th style="text-align: center;"></th>' +
+                '<th style="text-align: center;"></th>' +
+                '<th style="text-align: center;"></th>' +
+                '<th style="text-align: center;"></th>';
+        }
+        if (command == 2) {
+            dataHead =
+                '<th style="text-align: center;">下注方</th>' +
+                '<th style="text-align: center;">下注項目</th>' +
+                '<th style="text-align: center;">注單狀態</th>' +
+                '<th style="text-align: center;">下注金額</th>' +
+                '<th style="text-align: center;">當下賠率</th>' +
+                '<th style="text-align: center;">下注日期</th>';
+            dataFoot =
+                '<th style="text-align: center;"></th>' +
+                '<th style="text-align: center;"></th>' +
+                '<th style="text-align: center;"></th>' +
+                '<th style="text-align: center;"></th>' +
+                '<th style="text-align: center;"></th>';
+        }
+        if (command != 0) {
+            append = '<table id="DataTalbe" class="display">' +
+                ' <thead>' +
+                '<tr>';
+            append = append + dataHead;
+
+            append = append + '</tr>' +
                 '</thead>' +
                 '<tbody id="tbody">' +
                 '</tbody>' +
                 '<tfoot>' +
-                '<tr>' +
-                '<th id="lastdata" style="text-align: center;"></th>' +
-                '<th style="text-align: center;"></th>' +
-                '<th style="text-align: center;"></th>' +
-                '<th style="text-align: center;"></th>' +
-                '<th style="text-align: center;"></th>' +
-                '<th style="text-align: center;"></th>' +
-                '<th style="text-align: center;"></th>' +
-                '<th style="text-align: center;"></th>' +
-                '<th id="nextdata" style="text-align: center;"></th>' +
+                '<tr>';
+            append = append + dataFoot
+
+            append = append + '<th style="text-align: center;"></th>' +
                 '</tr>' +
                 '</tfoot>' +
-                '</table>')
+                '</table>' +
+                '<div><span id="lastdata"></span><span id="nextdata"></span></div>';
+
+            $('#tablelocation').append(append);
+        } else {
+            $('#tablelocation').html('');
         }
+
 
     }
 
-    function buildData(data) {
-
-        table(true);
-        $.each(data, function (i, data) {
+    function buildData(data, userauth) {
+        if (datatemp != 0) {
+            buildButton('last');
+        }
+        $.each(data, function(i, data) {
             if (data.bet_object == 1) {
                 data.bet_object = '莊家'
             } else {
@@ -133,8 +244,10 @@
 
 
             var body = '<tr id="order' + data.id + '">';
-            body += '<td style="text-align: center;">' + data.id + "</td>";
-            body += '<td style="text-align: center;">' + data.username + "</td>";
+            if (userauth == 1) {
+                body += '<td style="text-align: center;">' + data.id + "</td>";
+                body += '<td style="text-align: center;">' + data.username + "</td>";
+            }
             body += '<td style="text-align: center;">' + data.bet_object +
                 "</td>";
             body += '<td style="text-align: center;">' + putitemname(data.item_id) +
@@ -147,53 +260,89 @@
                 .item_rate) + "</td>";
             body += '<td style="text-align: center;">' + data.created_at +
                 "</td>";
-            body += '<td style="text-align: center;">' + '<button class="btn btn-danger" onclick="cancel(' +
-                data.id + ')">註銷</button> ' +
-                "</td>";
+            if (userauth == 1) {
+                body += '<td style="text-align: center;">' + '<button class="btn btn-danger" onclick="cancel(' +
+                    data.id + ')">註銷</button> ' +
+                    "</td>";
+            }
+
             body += "</tr>";
             $(body).appendTo($("tbody"));
         });
-        // $("#DataTalbe").DataTable();
         $('#DataTalbe').DataTable({
             destroy: true,
-            initComplete: function () {
+            initComplete: function() {
                 var api = this.api();
 
-                api.columns().indexes().flatten().each(function (i) {
-                    if (i > 0 && i < 7) {
-                        var column = api.column(i);
-                        var select = $(
-                                '<select><option value=""></option></select>'
-                            )
-                            .appendTo($(column.footer()).empty())
-                            .on('change', function () {
-                                var val = $.fn.dataTable.util
-                                    .escapeRegex(
-                                        $(this).val()
-                                    );
+                api.columns().indexes().flatten().each(function(i) {
+                    if (userauth == 1) {
+                        if (i > 0 && i < 7) {
+                            var column = api.column(i);
+                            var select = $(
+                                    '<select><option value=""></option></select>'
+                                )
+                                .appendTo($(column.footer()).empty())
+                                .on('change', function() {
+                                    var val = $.fn.dataTable.util
+                                        .escapeRegex(
+                                            $(this).val()
+                                        );
 
-                                column
-                                    .search(val ? '^' + val +
-                                        '$' :
-                                        '', true, false)
-                                    .draw();
-                            });
+                                    column
+                                        .search(val ? '^' + val +
+                                            '$' :
+                                            '', true, false)
+                                        .draw();
+                                });
 
-                        column.data().unique().sort().each(
-                            function (d,
-                                j) {
+                            column.data().unique().sort().each(
+                                function(d,
+                                    j) {
 
-                                select.append(
-                                    '<option value="' +
-                                    d + '">' + d +
-                                    '</option>')
-                            });
+                                    select.append(
+                                        '<option value="' +
+                                        d + '">' + d +
+                                        '</option>')
+                                });
+                        }
+                    }
+                    if (userauth == 0) {
+                        if (i < 5) {
+                            var column = api.column(i);
+                            var select = $(
+                                    '<select><option value=""></option></select>'
+                                )
+                                .appendTo($(column.footer()).empty())
+                                .on('change', function() {
+                                    var val = $.fn.dataTable.util
+                                        .escapeRegex(
+                                            $(this).val()
+                                        );
+
+                                    column
+                                        .search(val ? '^' + val +
+                                            '$' :
+                                            '', true, false)
+                                        .draw();
+                                });
+
+                            column.data().unique().sort().each(
+                                function(d,
+                                    j) {
+
+                                    select.append(
+                                        '<option value="' +
+                                        d + '">' + d +
+                                        '</option>')
+                                });
+                        }
+
                     }
 
                 });
             }
         });
-        $('#DataTalbe').on('page.dt', function () {
+        $('#DataTalbe').on('page.dt', function() {
             var info = $(this).DataTable().page.info();
             if (info.end == info.recordsTotal) {
                 buildButton('next');
@@ -202,6 +351,7 @@
                 $('#nextdata').html('');
             }
         });
+
 
     }
 
@@ -214,91 +364,80 @@
         }
     }
 
-    function getdata() {
-        $.ajax({
-            type: "POST",
-            url: "{{url('tempData')}}",
-            dataType: "json",
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            data: {
-                temp: datatemp
-            },
-            success: function (data) {
-
-                buildData(data);
-                if (datatemp != 0) {
-                    buildButton('last')
-                }
-
-            },
-            error: function (jqXHR) {
-                console.log(jqXHR)
-            }
-        })
-    }
-
     function lastDatafunction() {
         table(false);
         datatemp = datatemp - 1;
-        getdata();
+        getOrders();
+
     }
 
     function nextDatafunction() {
         table(false);
         datatemp++;
-        getdata()
+        getOrders()
 
     }
     var itemname;
-    jQuery(function () {
-        jQuery('#date_timepicker_start').datetimepicker({
-            format: 'Y-m-d H:m',
-            onShow: function (ct) {
-                this.setOptions({
-                    maxDate: jQuery('#date_timepicker_end').val() ? jQuery(
-                        '#date_timepicker_end').val() : Date.now()
-                })
-            }
-        });
-        jQuery('#date_timepicker_end').datetimepicker({
-            format: 'Y/m/d H:m',
-            onShow: function (ct) {
-                this.setOptions({
-                    minDate: jQuery('#date_timepicker_start').val() ? jQuery(
-                        '#date_timepicker_start').val() : false
-                })
-            }
-        });
-    });
+
 
     function getItemName() {
-        $
         $.ajax({
             type: "GET",
-            url: "{{url('itemname')}}",
+            url: "{{url('getItemname')}}",
             dataType: "json",
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
 
-            success: function (data) {
-                itemname = data
+            success: function(data) {
+                itemIdName = data;
+                $.each(data, function(i, data) {
+                    itemnNameAppend(data.id, data.itemname)
+                })
+
             },
-            error: function (jqXHR) {
+            error: function(jqXHR) {
                 console.log(jqXHR)
             }
         })
     }
 
     function putitemname(id) {
-        for (var i = 0; i <= itemname.length; i++) {
-            if (itemname[i].id == id) {
-                return itemname[i].itemname;
+        for (var i = 0; i <= itemIdName.length; i++) {
+            if (itemIdName[i].id == id) {
+                return itemIdName[i].itemname;
             }
         }
 
+    }
+
+    function getUserName() {
+        $.ajax({
+            type: "GET",
+            url: "{{url('getOrderUserName')}}",
+            dataType: "json",
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+
+            success: function(data) {
+                $.each(data, function(i, data) {
+                    userNameAppend(data.user_id, data.username)
+                })
+
+            },
+            error: function(jqXHR) {
+                console.log(jqXHR)
+            }
+        })
+    }
+
+    function itemnNameAppend(id, value) {
+        $("#itemid").append($("<option></option>").attr("value", id).text(value));
+    }
+
+    function userNameAppend(id, value) {
+        $("#userid").append($("<option></option>").attr("value", id).text(value));
     }
 
     function cancel(id) {
@@ -313,19 +452,17 @@
                 id: id,
                 status: 'cancel'
             },
-            success: function (data) {
+            success: function(data) {
                 var orderid = '#order' + id
                 var statusid = '#status' + id
 
                 $(orderid).css("background-color", "#FFB5B5")
                 $(statusid).html("註銷")
-                console.log(data)
             },
-            error: function (jqXHR) {
+            error: function(jqXHR) {
                 console.log(jqXHR)
             }
         })
     }
-
 </script>
 @endsection

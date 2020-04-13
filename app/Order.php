@@ -8,14 +8,6 @@ class Order extends Model
 {
     private static $_instance  = null ;
    
-    public static function getInstance()
-    {
-        if (self::$_instance === null) {
-            self::$_instance = new self();
-        }
-
-        return self::$_instance;
-    }
     protected $fillable = [
         'username', 'amount', 'user_id', 'item_id', 'bet_object', 'status', 'item_rate'
     ];
