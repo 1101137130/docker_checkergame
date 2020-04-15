@@ -99,7 +99,7 @@ class HomeController extends Controller
             array_push($result, $gameend->end($order, $result));
             $winamount = Redis::get($user->username . $user->id);
             $winamount != null ? array_push($result, $winamount) : array_push($result, 0);
-
+            
             return $result;
         } else {
             $result = $gamestart->start();

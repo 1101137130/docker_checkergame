@@ -8,31 +8,63 @@
 
     <form action="{{url('item/create')}}" method="GET">
         {{csrf_field()}}
-        @if ($errors->has('itemname'))
-        <span class="help-block">
-            <strong>{{$errors->first('itemname')}}</strong></br>
-        </span>
-        @endif
-        品項：<input type="text" placeholder="請輸入品項" name="itemname">
-        @if ($errors->has('rate'))
-        <span class="help-block">
-            <strong>{{$errors->first('rate')}}</strong></br>
-        </span>
-        @endif
-        賠率：<input type="number" name="rate" placeholder="請輸入賠率" step="0.1000" min="0.000" max="10000">
+        <div>
+            @if ($errors->has('itemname'))
+            <span class="help-block">
+                <strong>{{$errors->first('itemname')}}</strong></br>
+            </span>
+            @endif
+            品項：<input type="text" placeholder="請輸入品項" name="itemname">
+            @if ($errors->has('rate'))
+            <span class="help-block">
+                <strong>{{$errors->first('rate')}}</strong></br>
+            </span>
+            @endif
+            賠率：<input type="number" name="rate" placeholder="請輸入賠率" step="0.1000" min="0.000" max="10000">
 
-        <div>
-            <input type="radio" id="compare" name="compare" value="totalCompare">
-            <label for="compare">總比較</label>
         </div>
-        <div>
-            <input type="radio" id="compare" name="compare" value="singleCompare">
-            <label for="compare">逐個比較</label>
+        @if($errors->has('winRequire1')||$errors->has('winRequire2')||$errors->has('winRequire3')||$errors->has('winRequire4')||$errors->has('winRequire5'))
+        <span class="help-block">
+            <strong>{{$errors->first('winRequire1')}}</strong></br>
+        </span>
+        <span class="help-block">
+            <strong>{{$errors->first('winRequire2')}}</strong></br>
+        </span>
+        <span class="help-block">
+            <strong>{{$errors->first('winRequire3')}}</strong></br>
+        </span>
+        <span class="help-block">
+            <strong>{{$errors->first('winRequire4')}}</strong></br>
+        </span>
+        <span class="help-block">
+            <strong>{{$errors->first('winRequire5')}}</strong></br>
+        </span>
+        @endif
+        <input type="radio" id="single" name="compare" value="singleCompare">
+        <label for="singleCompare">單局比較</label>
+        <div id="singleCompare">
         </div>
-        <div id=totalCompare></div>
-        <div id=singleCompare></div>
-        <input name="submit" class="btn btn-primary" type="submit" value="新增">
-        <a role="button" href="{{url('itemrule')}}">規則</a>
+        @if ($errors->has('specialCards1')||$errors->has('specialCards2')||$errors->has('specialCards3'))
+        <span class="help-block">
+            <strong>{{$errors->first('specialCards1')}}</strong></br>
+        </span>
+        <span class="help-block">
+            <strong>{{$errors->first('specialCards2')}}</strong></br>
+        </span>
+        <span class="help-block">
+            <strong>{{$errors->first('specialCards3')}}</strong></br>
+        </span>
+        @endif
+        <input type="radio" id="special" name="compare" value="special">
+        <label for="special">特殊牌型</label>
+        <div id="specialCards"></div>
+        <input type="radio" id="total" name="compare" value="total">
+        <label for="total">總數</label>
+        <div id="totalCompare"></div>
+        <input type="radio" id="extend" name="compare" value="extend">
+        <label for="extend">現有規則</label>
+        <div id="extendCompare"></div>
+
     </form>
     <p id="storeButton" hidden><a type=role class="btn btn-primary" onclick="allEdit()">儲存</a></p>
 </div>
@@ -44,130 +76,67 @@
     window.onload = start;
     var ItemEditarray = new Array();
     var EditCount = 0;
+    var itemrules = new Map;
 
     function start() {
-        getData();
+        getItemsData();
         compareChange();
     }
 
-    function compareChange() {
-        $('[name=compare]').change(function() {
-            var checked = $('[name=compare]:checked')
-            console.log(checked.val());
-            if (checked.val() == 'totalCompare') {
-                totalCompare();
+    function putItemRulesData(data) {
+        console.log(data)
+        $.each(data, function(i, data) {
+            $('#selectFirst').append('<option value='+data.id+'>'+data.itemname+'</option>');
+            $('#selectSecond').append('<option value='+data.id+'>'+data.itemname+'</option>');
+            $('#selectThird').append('<option value='+data.id+'>'+data.itemname+'</option>');
+        })
+    }
+
+    function getItemRulesData() {
+        $.ajax({
+            type: "GET",
+            url: "{{url('itemrule')}}",
+            dataType: "json",
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(data) {
+                putItemRulesData(data);
+            },
+            error: function(jqXHR) {
+                console.log('error')
             }
-            if (checked.val() == 'singleCompare') {
-                singleCompare();
-            }
-
         })
     }
 
-    function singleCompare() {
-        var firsround;
-        var secondround;
-        var thirdround;
-
-        $('#totalCompare').html('');
-        $('[name=itemname]').val('');
-
-        var data = '第一局' + comparation('firstround') + '</br>' +
-            '第二局' + comparation('secondround') + '</br>' +
-            '第三局' + comparation('thirdround') + '</br>'
-        $('#singleCompare').append(data)
-        $('[name=firstround]').change(function() {
-            firsround = $('[name=firstround]:checked').val()
-            check();
-        })
-        $('[name=secondround]').change(function() {
-            secondround = $('[name=secondround]:checked').val()
-            check();
-        })
-        $('[name=thirdround]').change(function() {
-            thirdround = $('[name=thirdround]:checked').val()
-            check();
-        })
-
-        function check() {
-
-            if (firsround == secondround && secondround == thirdround) {
-                $("input[name='submit']").attr('disabled', 'disabled');
-                $('[name=itemname]').val('');
-            } else {
-                if (firsround != null && secondround != null && thirdround != null) {
-                    $("input[name='submit']").removeAttr('disabled');
-                    f = converter(firsround);
-                    s = converter(secondround);
-                    t = converter(thirdround);
-                    $('[name=itemname]').val(f + s + t);
-
-                } else {
-                    $('[name=itemname]').val('');
-                }
-            }
-
-
+    function disabledRadio() {
+        c1 = $("input[name='specialCards1']:checked").val()
+        c2 = $("input[name='specialCards2']:checked").val()
+        c3 = $("input[name='specialCards3']:checked").val()
+        if (c1 == c2) {
+            $("input[name='specialCards2']").prop("checked", false);
+        }
+        if (c1 == c3) {
+            $("input[name='specialCards3']").prop("checked", false);
+        }
+        if (c2 == c3) {
+            $("input[name='specialCards3']").prop("checked", false);
         }
 
     }
 
-    function comparation(name) {
-        var win = '<input type="radio" id="total" name="' + name + '" value="win">' + '<label for="total">贏</label>';
-        var lost = '<input type="radio" id="total" name="' + name + '" value="lost">' + '<label for="total">輸</label>';
-        var single = '<input type="radio" id="total" name="' + name + '" value="single">' +
-            '<label for="total">單</label>';
-        var double = '<input type="radio" id="total" name="' + name + '" value="double">' +
-            '<label for="total">雙</label>';
-        var big = '<input type="radio" id="total" name="' + name + '" value="big">' + '<label for="total">大</label>';
-        var small = '<input type="radio" id="total" name="' + name + '" value="small">' +
-            '<label for="total">小</label>';
-        var draw = '<input type="radio" id="total" name="' + name + '" value="draw">' +
-            '<label for="total">平</label>';
-        return win + lost + draw + single + double + big + small;
+    function setInputOperator() {
+        var val;
+        val = $('#operator').val()
+        $('#inputOpertor').val(val);
     }
 
-    function totalCompare() {
-        $('#singleCompare').html('');
-        $('[name=itemname]').val('');
-
-        var data = comparation('total');
-
-        $('#totalCompare').append(data)
-        $('[name=total]').change(function() {
-            var checked = $('[name=total]:checked')
-            var val = converter(checked.val())
-            $('[name=itemname]').val(val)
-
-        })
-    }
-
-    function converter(data) {
-        if (data == 'win') {
-            return '贏'
-        }
-        if (data == 'lost') {
-            return '輸'
-        }
-        if (data == 'big') {
-            return '大'
-        }
-        if (data == 'small') {
-            return '小'
-        }
-        if (data == 'single') {
-            return '單'
-        }
-        if (data == 'double') {
-            return '雙'
-        }
-        if (data == 'draw') {
-            return '平'
-        }
-
+    function clearTotal() {
+        $('#total').val('');
+        $('#operator').val('');
     }
     //這是從第一次從前端去跟後端要資料的function
-    function getData() {
+    function getItemsData() {
 
         $.ajax({
             type: "POST",
@@ -222,7 +191,7 @@
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
-            success:location.reload(),
+            success: location.reload(),
             error: function(jqXHR) {
                 console.log(jqXHR)
             }
@@ -338,4 +307,185 @@
         $(obj).remove();
     }
     //-----
+
+    function compareChange() {
+        $('[name=compare]').change(function() {
+            var checked = $('[name=compare]:checked')
+
+            if (checked.val() == 'special') {
+                $('#singleCompare').html('');
+                $('#extendCompare').html('');
+                $('#totalCompare').html('');
+                specialAppend()
+            }
+            if (checked.val() == 'singleCompare') {
+                $('#specialCards').html('');
+                $('#extendCompare').html('');
+                $('#totalCompare').html('');
+                singleAppend();
+            }
+            if (checked.val() == 'total') {
+                $('#singleCompare').html('');
+                $('#specialCards').html('');
+                $('#extendCompare').html('');
+                totalAppend();
+            }
+            if (checked.val() == 'extend') {
+                $('#singleCompare').html('');
+                $('#specialCards').html('');
+                $('#totalCompare').html('');
+                extendAppend();
+                getItemRulesData();
+
+            }
+        })
+    }
+
+    function totalAppend() {
+        $('#totalCompare').append(
+            '<select id="operator" onchange="setInputOperator()">' +
+            '            <option></option>' +
+            '<option value="0">=</option>' +
+            '<option value="1"><</option>' +
+            '<option value="2"><=</option>' +
+            '<option value="3">></option>' +
+            '<option value="4">>=</option>' +
+            '</select>' +
+            '<input id="inputOpertor" name="operator" type="hidden">' +
+            '<input type="hidden" name="totalCompare" value="true">' +
+            '<input type="text" style="width:240" placeholder="請輸入數字，若超過一個請用 , 分開" id="total" name="total">' +
+            '<a role="button" class="btn btn-danger" onclick="clearTotal()">清空</a>' +
+            '<input type="submit" class="btn btn-primary" value="確認">')
+
+    }
+
+    function extendAppend() {
+        $('#extendCompare').append(
+            '<table border="1">'+
+            '<tr>'+
+            '<td>第一局</td>'+
+            '<td>第二局</td>'+
+            '<td>第三局</td>'+
+            '</tr>'+
+            '<tr>'+
+            '<td>'+
+            '<select id="selectFirst">'+
+            '</select>'+
+            '</td>'+
+            '<td>'+
+            '<select id="selectSecond">'+
+            '</select>'+
+            '</td>'+
+            '<td>'+
+            '<select id="selectThird">'+
+            '</select>'+
+            '</td>'+
+            '</table>'
+
+        );
+    }
+
+    function specialAppend() {
+        $('#specialCards').append(
+            '<table border="1">' +
+            '<tr>' +
+            '<td style="text-align: center;">局數</td>' +
+            '<td style="text-align: center;">1</td>' +
+            '<td style="text-align: center;">2</td>' +
+            '<td style="text-align: center;">3</td>' +
+            '</tr>' +
+            '<tr>' +
+            '<td style="text-align: center;">我方獲勝所需</td>' +
+            '<td style="text-align: center;">' +
+            '<label><input type="radio" name="specialCards1" value="1">1</label>' +
+            '<label><input type="radio" name="specialCards1" value="2">2</label>' +
+            '<label><input type="radio" name="specialCards1" value="3">3</label>' +
+            '<label><input type="radio" name="specialCards1" value="4">4</label>' +
+            '<label><input type="radio" name="specialCards1" value="5">5</label>' +
+            '</td>' +
+            '<td style="text-align: center;">' +
+            '<label><input type="radio" name="specialCards2" value="1">1</label>' +
+            '<label><input type="radio" name="specialCards2" value="2">2</label>' +
+            '<label><input type="radio" name="specialCards2" value="3">3</label>' +
+            '<label><input type="radio" name="specialCards2" value="4">4</label>' +
+            '<label><input type="radio" name="specialCards2" value="5">5</label>' +
+            '</td>' +
+            '<td style="text-align: center;">' +
+            '<label><input type="radio" name="specialCards3" value="1">1</label>' +
+            '<label><input type="radio" name="specialCards3" value="2">2</label>' +
+            '<label><input type="radio" name="specialCards3" value="3">3</label>' +
+            '<label><input type="radio" name="specialCards3" value="4">4</label>' +
+            '<label><input type="radio" name="specialCards3" value="5">5</label>' +
+            '</td>' +
+            '</tr>' +
+            '</table>');
+        $('#specialCards').append(
+            '<input type="hidden" name="special" value="true">' +
+            '<input type="submit" class="btn btn-primary" value="確認">')
+        $("input[name='specialCards1']").change(function() {
+            disabledRadio();
+        })
+        $("input[name='specialCards2']").change(function() {
+            disabledRadio();
+        })
+        $("input[name='specialCards3']").change(function() {
+            disabledRadio();
+        })
+    }
+
+    function singleAppend() {
+        $('#singleCompare').append(
+            '<table border="1">' +
+            '<tr>' +
+            '<td style="text-align: center;">對方結果</td>' +
+            '<td style="text-align: center;">1</td>' +
+            '<td style="text-align: center;">2</td>' +
+            '<td style="text-align: center;">3</td>' +
+            '<td style="text-align: center;">4</td>' +
+            '<td style="text-align: center;">5</td>' +
+            '</tr>' +
+            '<tr>' +
+            '<td style="text-align: center;">我方獲勝所需</td>' +
+            '<td style="text-align: center;">' +
+            '<label><input type="checkbox" name="winRequire1[]" value="1">1</label>' +
+            '<label><input type="checkbox" name="winRequire1[]" value="2">2</label>' +
+            '<label><input type="checkbox" name="winRequire1[]" value="3">3</label>' +
+            '<label><input type="checkbox" name="winRequire1[]" value="4">4</label>' +
+            '<label><input type="checkbox" name="winRequire1[]" value="5">5</label>' +
+            '</td>' +
+            '<td style="text-align: center;">' +
+            '<label><input type="checkbox" name="winRequire2[]" value="1">1</label>' +
+            '<label><input type="checkbox" name="winRequire2[]" value="2">2</label>' +
+            '<label><input type="checkbox" name="winRequire2[]" value="3">3</label>' +
+            '<label><input type="checkbox" name="winRequire2[]" value="4">4</label>' +
+            '<label><input type="checkbox" name="winRequire2[]" value="5">5</label>' +
+            '</td>' +
+            '<td style="text-align: center;">' +
+            '<label><input type="checkbox" name="winRequire3[]" value="1">1</label>' +
+            '<label><input type="checkbox" name="winRequire3[]" value="2">2</label>' +
+            '<label><input type="checkbox" name="winRequire3[]" value="3">3</label>' +
+            '<label><input type="checkbox" name="winRequire3[]" value="4">4</label>' +
+            '<label><input type="checkbox" name="winRequire3[]" value="5">5</label>' +
+            '</td>' +
+            '<td style="text-align: center;">' +
+            '<label><input type="checkbox" name="winRequire4[]" value="1">1</label>' +
+            '<label><input type="checkbox" name="winRequire4[]" value="2">2</label>' +
+            '<label><input type="checkbox" name="winRequire4[]" value="3">3</label>' +
+            '<label><input type="checkbox" name="winRequire4[]" value="4">4</label>' +
+            '<label><input type="checkbox" name="winRequire4[]" value="5">5</label>' +
+            '</td>' +
+            '<td style="text-align: center;">' +
+            '<label><input type="checkbox" name="winRequire5[]" value="1">1</label>' +
+            '<label><input type="checkbox" name="winRequire5[]" value="2">2</label>' +
+            '<label><input type="checkbox" name="winRequire5[]" value="3">3</label>' +
+            '<label><input type="checkbox" name="winRequire5[]" value="4">4</label>' +
+            '<label><input type="checkbox" name="winRequire5[]" value="5">5</label>' +
+            '</td>' +
+            '</tr>' +
+            '</table>');
+        $('#singleCompare').append(
+            '<input type="hidden" name="singleCompare" value="true">' +
+            '<input type="submit" class="btn btn-primary" value="確認">')
+
+    }
 </script>

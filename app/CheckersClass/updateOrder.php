@@ -39,7 +39,6 @@ class updateOrder
                 ->where('user_id', $user->id)
                 ->where('bet_object', $item[4])
                 ->orderBy('created_at','desc')
-                ->first()
                 ->update(['status' => $status]);
 
             return array(true, '');

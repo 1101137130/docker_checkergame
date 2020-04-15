@@ -145,7 +145,6 @@
             }
             i++
         }
-        console.log(ordersarray)
         return ordersarray
     }
 
@@ -257,7 +256,6 @@
             ord.set('amount', amount)
             ord.set('object', object)
             order.set(id, ord)
-            console.log(order.get(id))
         } else {
             if (order.has(id)) {
                 order.delete(id)

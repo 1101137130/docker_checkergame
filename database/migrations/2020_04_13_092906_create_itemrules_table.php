@@ -16,12 +16,15 @@ class CreateItemrulesTable extends Migration
         Schema::create('itemrules', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->bigInteger('item_id')->unsigned();
-            $table->tinyInteger('one')->nullable();
-            $table->tinyInteger('twp')->nullable();
-            $table->tinyInteger('three')->nullable();
-            $table->tinyInteger('four')->nullable();
-            $table->tinyInteger('five')->nullable();
-            $table->string('specialcards', 5)->nullable();
+            $table->mediumInteger('one')->nullable();
+            $table->mediumInteger('two')->nullable();
+            $table->mediumInteger('three')->nullable();
+            $table->mediumInteger('four')->nullable();
+            $table->mediumInteger('five')->nullable();
+            $table->mediumInteger('special_cards')->nullable();
+            $table->string('extend_exist_rule')->nullable();
+            $table->string('total')->nullable();
+            $table->tinyInteger('operator')->nullable();
             $table->tinyInteger('status')->default(1);
             $table->Integer('created_at');
             $table->Integer('updated_at');

@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Item;
+use App\Itemrule;
 use App\Raterecord;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ItemController extends Controller
 {
@@ -34,8 +36,10 @@ class ItemController extends Controller
         try {
             $item = Item::find($request->id);
             $item->delete();
+            $itemrule = Itemrule::where('item_id', $request->id)->delete();
+
             $request->session()->flash('status', '刪除成功！');
-            Redis::del($item->itemname);
+            Redis::set('isItemSetyet', false);  //修改redis資料
         } catch (Exception $e) {
             throw $e;
         }
@@ -68,6 +72,31 @@ class ItemController extends Controller
         $this->validate($data, [
             'itemname' => 'required|max:15|unique:items',
             'rate' => 'required',
+        ]);
+    }
+    public function specialValidator($data)
+    {
+        $this->validate($data, [
+            'specialCards1' => 'required',
+            'specialCards2' => 'required',
+            'specialCards3' => 'required',
+        ]);
+    }
+    public function totalValidator($data)
+    {
+        $this->validate($data, [
+            'operator' => 'required',
+            'total' => 'required',
+        ]);
+    }
+    public function singleCompareValidator($data)
+    {
+        $this->validate($data, [
+            'winRequire1' => 'required',
+            'winRequire2' => 'required',
+            'winRequire3' => 'required',
+            'winRequire4' => 'required',
+            'winRequire5' => 'required',
         ]);
     }
     public function getItemName()
@@ -110,28 +139,96 @@ class ItemController extends Controller
             throw $e;
         }
     }
+   
     public function create(Request $request)
     {
         $this->middleware('itemratemanage');
         $this->validator($request);
 
         try {
+            $special_cards = null;
+            $one = null;
+            $two  = null;
+            $three  = null;
+            $four  = null;
+            $five  = null;
+            $operator = null;
+            $total = null;
+
+            if ($request->special != null) {
+                $this->specialValidator($request);
+                $arrayCards = [];
+                array_push($arrayCards, $request->specialCards1);
+                array_push($arrayCards, $request->specialCards2);
+                array_push($arrayCards, $request->specialCards3);
+                
+                $special_cards = $this->dataConverter($arrayCards);
+                $status = 2;
+            }
+
+            if ($request->singleCompare != null) {
+                $this->singleCompareValidator($request);
+                $one = $this->dataConverter($request->winRequire1);
+                $two = $this->dataConverter($request->winRequire2);
+                $three = $this->dataConverter($request->winRequire3);
+                $four = $this->dataConverter($request->winRequire4);
+                $five = $this->dataConverter($request->winRequire5);
+                $status = 1;
+            }
+           
+            if ($request->total != null) {
+                $this->totalValidator($request);
+                $operator = $request->operator;
+                $total = $request->total;
+                $status = 3;
+            }
+           
             $item = Item::create($request->all());
+            Itemrule::create([
+            'item_id'=>$item->id,
+            'special_cards'=>$special_cards,
+            'one'=>$one,
+            'two'=>$two,
+            'three'=>$three,
+            'four'=>$four,
+            'five'=>$five,
+            'operator'=>$operator,
+            'total'=>$total,
+            'status'=>$status
+            ]);
             $request->session()->flash('status', '新增成功！');
             Redis::set('isItemSetyet', false); //修改redis資料
-            
+
             return redirect('item');
         } catch (Exception $e) {
             throw $e;
         }
 
-        return $item;
+        return $this->index();
     }
-    public function getItemRule()
+    public function dataConverter($data)
+    {
+        $temp =1;
+        $result =0;
+       
+        for ($i = sizeof($data)-1 ; $i>=0 ; $i--) {
+            $result=$result+(int)$data[$i]*$temp;
+            $temp=$temp*10;
+        }
+        
+        return $result;
+    }
+
+    public function getItemRuleIdName()
     {
         $this->middleware('itemratemanage');
-        
-        return view('item.rule');
+        $restult = DB::table('itemrules')
+            ->join('items', 'items.id', '=', 'itemrules.item_id')
+            ->select('itemrules.id', 'items.itemname')
+            ->where('itemrules.status','=',1)
+            ->get();
+            
+        return $restult;
     }
 
     public function store()

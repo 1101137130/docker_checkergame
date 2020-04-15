@@ -18,7 +18,7 @@ Route::get('/', function () {
 $q=Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
-Route::get('itemrule', 'ItemController@getItemRule')->name('Item');
+Route::get('itemrule', 'ItemController@getItemRuleIdName')->name('Item');
 Route::resource('item', 'ItemController');
 Route::post('item/edit', 'ItemController@edit');
 Route::resource('order', 'OrderController');
