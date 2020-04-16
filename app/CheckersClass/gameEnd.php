@@ -4,7 +4,7 @@ namespace App\CheckersClass;
 
 use App\CheckersClass\updateOrder;
 use App\CheckersClass\resultCompare;
-
+use App\CheckersClass\createGameResultRecord;
 class gameEnd
 {
     private static $_instance  = null ;
@@ -17,13 +17,16 @@ class gameEnd
 
         return self::$_instance;
     }
-    public function end($request, $gameResult)
+    public function end($request, $gameResult, $orderid)
     {
+        $creategameresult =createGameResultRecord::getInstance();
+        $creategameresult->create($orderid, $gameResult);
+
         $i = 0;
         foreach ($request as $item) {
             $resultCompare = resultCompare::getInstance();
             $result = $resultCompare->compare($item, $gameResult);
-            $this->alterData($result, $item);
+            $this->alterData($result, $item, $orderid);
             array_push($request[$i], $result);
             $i++;
         }
@@ -31,17 +34,17 @@ class gameEnd
         return $request;
     }
 
-    public function alterData($result, $item)
+    public function alterData($result, $item, $orderid)
     {
         $updatorder = updateOrder::getInstance();
 
         if ($result) {
-            $array = $updatorder->update($item, 'win'); //更改訂單狀態 為贏
+            $array = $updatorder->update($orderid, $item, 'win'); //更改訂單狀態 為贏
             if ($array[0] == false) {
                 echo $array[1];
             }
         } else {
-            $array = $updatorder->update($item, 'lost'); //更改訂單狀態 為輸
+            $array = $updatorder->update($orderid, $item, 'lost'); //更改訂單狀態 為輸
             if ($array[0] == false) {
                 echo $array[1];
             }

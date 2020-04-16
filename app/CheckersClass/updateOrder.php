@@ -2,12 +2,11 @@
 
 namespace App\CheckersClass;
 
-
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use App\CheckersClass\convertStatus;
 use Illuminate\Support\Facades\Redis;
-use Illuminate\Support\Facades\DB;
+use App\Order;
 
 class updateOrder
 {
@@ -21,7 +20,7 @@ class updateOrder
 
         return self::$_instance;
     }
-    public function update($item, $status)
+    public function update($orderid, $item, $status)
     {
         $user = Auth::user();
         
@@ -32,15 +31,10 @@ class updateOrder
         $convertOrdersStatus = convertStatus::getInstance();
         $status = $convertOrdersStatus->convertOrdersStatus($status);
 
-        $order = DB::table('orders');
         try {
-            $order
-                ->where('item_id', $item[1])
-                ->where('user_id', $user->id)
-                ->where('bet_object', $item[4])
-                ->orderBy('created_at','desc')
-                ->update(['status' => $status]);
-
+            $order =Order::find($orderid);
+            $order->update(['status' => $status]);
+          
             return array(true, '');
         } catch (Exception $e) {
             $array = array(false, $e);
@@ -52,11 +46,9 @@ class updateOrder
     {
         $convertOrdersStatus = convertStatus::getInstance();
         $status = $convertOrdersStatus->convertOrdersStatus($status);
-        $order = DB::table('orders');
         try {
-            $order
-                ->where('id', $id)
-                ->update(['status' => $status]);
+            $order =Order::find($id);
+            $order->update(['status' => $status]);
 
             return array(true, '註銷成功');
         } catch (Exception $e) {

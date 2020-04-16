@@ -2,6 +2,7 @@
 namespace App\CheckersClass;
 
 use Illuminate\Support\Facades\DB;
+use App\Itemrule;
 
 class resultCompare
 {
@@ -25,6 +26,63 @@ class resultCompare
         if ($itemrule->status == 2) {
             return $this->specialCards((int)$item[4]-1, $result, $itemrule->special_cards);
         }
+        if ($itemrule->status == 3) {
+            return $this->totalCompare((int)$item[4]-1, $result, $itemrule);
+        }
+        if ($itemrule->status == 4) {
+            return $this->extendCompare((int)$item[4]-1, $result, $itemrule);
+        }
+    }
+    public function extendCompare($objectClient, $result, $itemrule)
+    {
+        $existRulesIDArray = explode(",", $itemrule->extend_exist_rule);
+        $itemrules = DB::table('itemrules')->whereIn('id', $existRulesIDArray)->get();
+        $i =0;
+        $countResult = 0;
+        foreach ($itemrules as $rule) {
+            $r = $this->singleCompare($objectClient, $result, $rule, $i, $i);
+            $i++;
+            if ($r) {
+                $countResult ++;
+            }
+        }
+        return $countResult == 3? true :false;
+    }
+    public function totalCompare($objectClient, $result, $itemrule)
+    {
+        // operator->0:= , 1:< , 2:<=, 3:> , 4:>=
+        $operator = (int)$itemrule->operator;
+        
+        $goalTotalArray = explode(",", $itemrule->total);
+        $countTotal = 0;
+        for ($i =0 ; $i<=2 ; $i++) {
+            $countTotal = $countTotal + $result[$i][$objectClient];
+        }
+        foreach ($goalTotalArray as $goalTotal) {
+            if ($operator == 0) {
+                $r = $countTotal == $goalTotal ? true : false;
+            }
+
+            if ($operator == 1) {
+                $r = $countTotal < $goalTotal ? true : false;
+            }
+
+            if ($operator == 2) {
+                $r = $countTotal <= $goalTotal ? true : false;
+            }
+
+            if ($operator == 3) {
+                $r = $countTotal > $goalTotal ? true : false;
+            }
+
+            if ($operator == 4) {
+                $r = $countTotal >= $goalTotal ? true : false;
+            }
+            if ($r) {
+                return true;
+            }
+        }
+        return false;
     }
     public function singleCompareFunction($clientResult, $data)
     {
@@ -39,12 +97,15 @@ class resultCompare
         }
         return false;
     }
-    public function singleCompare($objectClient, $result, $itemrule)
+    public function singleCompare($objectClient, $result, $itemrule, $start =0, $compareTime =2)
     {
         $objectOpponet = $objectClient == 1? 0 : 1;
         $resultCount = 0;
-        
-        for ($i = 0 ;$i <=2 ;$i++) {
+        $looptime = $compareTime - $start ;
+        if($looptime == 0){
+            $looptime =1;
+        }
+        for ($i = $start ;$i <= $compareTime ;$i++) {
             if ($result[$i][$objectOpponet] == 1) {
                 $r = $this->singleCompareFunction($result[$i][$objectClient], $itemrule->one);
                 $r == true ? $resultCount++ :'';
@@ -66,7 +127,8 @@ class resultCompare
                 $r == true ? $resultCount++ :'';
             }
         }
-        if ($resultCount >=2) {
+        
+        if ($resultCount >= $looptime) {
             return true;
         } else {
             return false;
@@ -74,7 +136,6 @@ class resultCompare
     }
     public function specialCards($objectClient, $result, $specialcards)
     {
-        
         $countCards=0;
         $countCards = $result[0][$objectClient]*100 + $result[1][$objectClient]*10 +$result[2][$objectClient];
         $r = $countCards == $specialcards ? true : false;

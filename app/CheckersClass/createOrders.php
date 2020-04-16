@@ -43,7 +43,7 @@ class createOrders
                 return $data;
             }
             try {
-                Order::create([
+                $order = Order::create([
                     'username' => $user->username,
                     'user_id' => $user->id,
                     'item_id' => $item[1],
@@ -53,7 +53,7 @@ class createOrders
                     'item_rate' => $item[2]
                 ]);
                 Redis::set('isOrderUsersSetyet', false);
-                $data = array(true, '');
+                $data = array(true, $order->id);
                 return $data;
             } catch (Exception $e) {
                 $error = array(false, $e);

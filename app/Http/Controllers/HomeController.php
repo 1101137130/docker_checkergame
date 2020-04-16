@@ -13,21 +13,11 @@ use App\CheckersClass\setItemname;
 
 class HomeController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
     public function __construct()
     {
         $this->middleware('auth');
     }
 
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
         $user = Auth::user();
@@ -58,6 +48,8 @@ class HomeController extends Controller
 
     public function data()
     {
+        //每次撈資料前先去檢查是否有修改過
+        //如果有就去抓最新的
         if (!Redis::get('isItemSetyet')) {
             $setitemname = setItemname::getInstance();
             $setitemname->setItemname();
@@ -80,23 +72,21 @@ class HomeController extends Controller
 
         $order = $request->order;
         
-        if ($order != "true") {
+        if ($order != "true") { //這是判定有沒有金額下注 如果沒有就只是跑一次遊戲給前臺
             foreach ($order as $item) {
                 $data = $createOrders->new($item);
-
                 if ($data[0] != true) {
                     $request->session()->flash('error', $data[1]);
 
                     return json_encode($data[1]);
+                } else {
+                    $orderid = $data[1];   //data[1]是新增成功後的orderID
                 }
             }
-
             $gameend = gameEnd::getInstance();
-
             $result = $gamestart->start();
 
-
-            array_push($result, $gameend->end($order, $result));
+            array_push($result, $gameend->end($order, $result, $orderid));
             $winamount = Redis::get($user->username . $user->id);
             $winamount != null ? array_push($result, $winamount) : array_push($result, 0);
             

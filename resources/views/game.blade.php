@@ -75,7 +75,6 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             success: function (data) {
-                console.log(data)
                 for (var i = 0; i <= data.length; i++) {
                     $('#tbody').append(
                         '<tr>' +
@@ -103,7 +102,7 @@
 
             },
             error: function (jqXHR) {
-                console.log('error')
+                console.log(jqXHR)
             }
         })
     }
@@ -160,7 +159,6 @@
                 order: ordersarray
             },
             success: function (data) {
-                console.log(data)
                 if (typeof data == typeof 'string') {
                     location.reload();
                 } else {
@@ -242,8 +240,7 @@
         var object = objectId[0] == 'banker' ? 1 : 2;
         var itemid = objectId[1];
         var itemNameAndRate = $('label[for=' + id + ']').text().split("：")
-        console.log($('label[for=' + id + ']').text())
-        console.log(itemNameAndRate)
+       
         itemName = itemNameAndRate[0];
         itemRate = itemNameAndRate[1];
         //金額不為0則新增一個map 並放入 外部map-order

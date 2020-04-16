@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateItemsTable extends Migration
+class CreateResultRecordsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,12 @@ class CreateItemsTable extends Migration
      */
     public function up()
     {
-        Schema::create('items', function (Blueprint $table) {
+        Schema::create('resultrecords', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('itemname', 15);
-            $table->decimal('rate', 10, 4)->nullable();
-            $table->tinyInteger('status')->default(1);
-            $table->Integer('limit_amount')->nullable();
+            $table->bigInteger('order_id')->unsigned();
+            $table->mediumInteger('banker');
+            $table->mediumInteger('player');
+            $table->mediumInteger('result');
             $table->Integer('created_at');
             $table->Integer('updated_at');
         });
@@ -31,6 +31,6 @@ class CreateItemsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('items');
+        Schema::dropIfExists('resultrecords');
     }
 }

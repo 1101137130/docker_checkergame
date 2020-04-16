@@ -167,31 +167,6 @@
 
     }
 
-    // function ajaxToEdit(itemnameid) {
-    //     itemid = '#' + itemnameid;
-    //     var itemval = $(itemid).val()
-    //     console.log(itemnameid)
-    //     console.log(itemval)
-    //     $.ajax({
-    //         type: "POST",
-    //         url: "{{url('editUser')}}",
-    //         dataType: "json",
-    //         data: {
-    //             id: userId,
-    //             item: itemnameid,
-    //             data: itemval
-
-    //         },
-    //         headers: {
-    //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-    //         },
-    //         success: location.reload(),
-    //         error: function (data) {
-    //             console.log(data)
-    //         }
-    //     })
-    // }
-
     function getData() {
 
         $.ajax({
@@ -207,7 +182,7 @@
                 $("#userid").val(data['id']);
             },
             error: function (jqXHR) {
-                console.log('error')
+                console.log(jqXHR)
             }
         })
     }

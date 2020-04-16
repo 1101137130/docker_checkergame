@@ -91,7 +91,6 @@
                     temp: datatemp
                 },
                 success: function (data) {
-                    console.log(data);
                     buildData(data);
 
                 },

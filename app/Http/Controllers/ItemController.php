@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\CheckersClass\createItemRule;
 
 class ItemController extends Controller
 {
@@ -21,7 +22,7 @@ class ItemController extends Controller
 
     public function index()
     {
-        $this->middleware('itemratemanage');
+        $this->middleware('itemRateManage');
 
         $items = Item::all();
 
@@ -32,11 +33,11 @@ class ItemController extends Controller
 
     public function destroy(Request $request)
     {
-        $this->middleware('itemratemanage');
+        $this->middleware('itemRateManage');
         try {
             $item = Item::find($request->id);
             $item->delete();
-            $itemrule = Itemrule::where('item_id', $request->id)->delete();
+            Itemrule::where('item_id', $request->id)->delete();
 
             $request->session()->flash('status', '刪除成功！');
             Redis::set('isItemSetyet', false);  //修改redis資料
@@ -47,14 +48,14 @@ class ItemController extends Controller
 
     public function show($id)
     {
-        $this->middleware('itemratemanage');
+        $this->middleware('itemRateManage');
         $item = Item::find($id);
         return redirect(['item' => $item]);
     }
 
     public function edit(Request $request)
     {
-        $this->middleware('itemratemanage');
+        $this->middleware('itemRateManage');
         try {
             foreach ($request->temp as $e) {
                 $item = Item::find($e[0]);
@@ -99,6 +100,14 @@ class ItemController extends Controller
             'winRequire5' => 'required',
         ]);
     }
+    public function extendCompareValidator($data)
+    {
+        $this->validate($data, [
+            'selectFirst' => 'required',
+            'selectSecond' => 'required',
+            'selectThird' => 'required',
+        ]);
+    }
     public function getItemName()
     {
         $data = Redis::get('Item');
@@ -108,11 +117,12 @@ class ItemController extends Controller
         for ($i = 0;$i<=count($data)-1;$i++) {
             array_push($array, array('id'=>$data[$i]['id'],'itemname'=>$data[$i]['itemname']));
         }
+
         return $array;
     }
     public function update(Request $request)
     {
-        $this->middleware('itemratemanage');
+        $this->middleware('itemRateManage');
 
         $item = Item::find($request->id);
         $changed = false;
@@ -142,90 +152,45 @@ class ItemController extends Controller
    
     public function create(Request $request)
     {
-        $this->middleware('itemratemanage');
+        $this->middleware('itemRateManage');
         $this->validator($request);
+        $status = (int)$request->status;
+        
+
+        if ($status == 1) {
+            $this->singleCompareValidator($request);
+        }
+        if ($status == 2) {
+            $this->specialValidator($request);
+        }
+        if ($status == 3) {
+            $this->totalValidator($request);
+        }
+        if ($status == 4) {
+            $this->extendCompareValidator($request);
+        }
 
         try {
-            $special_cards = null;
-            $one = null;
-            $two  = null;
-            $three  = null;
-            $four  = null;
-            $five  = null;
-            $operator = null;
-            $total = null;
-
-            if ($request->special != null) {
-                $this->specialValidator($request);
-                $arrayCards = [];
-                array_push($arrayCards, $request->specialCards1);
-                array_push($arrayCards, $request->specialCards2);
-                array_push($arrayCards, $request->specialCards3);
-                
-                $special_cards = $this->dataConverter($arrayCards);
-                $status = 2;
-            }
-
-            if ($request->singleCompare != null) {
-                $this->singleCompareValidator($request);
-                $one = $this->dataConverter($request->winRequire1);
-                $two = $this->dataConverter($request->winRequire2);
-                $three = $this->dataConverter($request->winRequire3);
-                $four = $this->dataConverter($request->winRequire4);
-                $five = $this->dataConverter($request->winRequire5);
-                $status = 1;
-            }
-           
-            if ($request->total != null) {
-                $this->totalValidator($request);
-                $operator = $request->operator;
-                $total = $request->total;
-                $status = 3;
-            }
-           
+            $createItemrule = createItemRule::getInstance();
             $item = Item::create($request->all());
-            Itemrule::create([
-            'item_id'=>$item->id,
-            'special_cards'=>$special_cards,
-            'one'=>$one,
-            'two'=>$two,
-            'three'=>$three,
-            'four'=>$four,
-            'five'=>$five,
-            'operator'=>$operator,
-            'total'=>$total,
-            'status'=>$status
-            ]);
+            $createItemrule->create($request, $item->id);
             $request->session()->flash('status', '新增成功！');
             Redis::set('isItemSetyet', false); //修改redis資料
 
             return redirect('item');
         } catch (Exception $e) {
-            throw $e;
+            return $e;
         }
+    }
 
-        return $this->index();
-    }
-    public function dataConverter($data)
-    {
-        $temp =1;
-        $result =0;
-       
-        for ($i = sizeof($data)-1 ; $i>=0 ; $i--) {
-            $result=$result+(int)$data[$i]*$temp;
-            $temp=$temp*10;
-        }
-        
-        return $result;
-    }
 
     public function getItemRuleIdName()
     {
-        $this->middleware('itemratemanage');
+        $this->middleware('itemRateManage');
         $restult = DB::table('itemrules')
             ->join('items', 'items.id', '=', 'itemrules.item_id')
             ->select('itemrules.id', 'items.itemname')
-            ->where('itemrules.status','=',1)
+            ->where('itemrules.status', '=', 1)
             ->get();
             
         return $restult;
@@ -233,7 +198,7 @@ class ItemController extends Controller
 
     public function store()
     {
-        $this->middleware('itemratemanage');
+        $this->middleware('itemRateManage');
         $items = Item::all();
         $restult = array();
         $i = 0;
