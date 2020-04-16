@@ -14,13 +14,20 @@
                 <strong>{{$errors->first('itemname')}}</strong></br>
             </span>
             @endif
-            品項：<input type="text" placeholder="請輸入品項" name="itemname">
+            品項：<input type="text" placeholder="請輸入品項" name="itemname"></br>
             @if ($errors->has('rate'))
             <span class="help-block">
                 <strong>{{$errors->first('rate')}}</strong></br>
             </span>
             @endif
-            賠率：<input type="number" name="rate" placeholder="請輸入賠率" step="0.1000" min="0.000" max="10000">
+            賠率：<input type="number" name="rate" placeholder="請輸入賠率" step="0.0005" min="0.000" max="10000">
+            @if ($errors->has('limit_amount'))
+            <span class="help-block">
+                <strong>{{$errors->first('limit_amount')}}</strong></br>
+            </span>
+            @endif
+            限制下注金額：<input type="number" name="limit_amount" placeholder="請輸入金額" step="0.5" min="0.000"
+                max="10000000000">
 
         </div>
         @if($errors->has('winRequire1')||$errors->has('winRequire2')||$errors->has('winRequire3')||$errors->has('winRequire4')||$errors->has('winRequire5'))
@@ -58,9 +65,28 @@
         <input type="radio" id="special" name="compare" value="special">
         <label for="special">特殊牌型</label>
         <div id="specialCards"></div>
+        @if ($errors->has('operator')||$errors->has('total'))
+        <span class="help-block">
+            <strong>{{$errors->first('operator')}}</strong></br>
+        </span>
+        <span class="help-block">
+            <strong>{{$errors->first('total')}}</strong></br>
+        </span>
+        @endif
         <input type="radio" id="total" name="compare" value="total">
         <label for="total">總數</label>
         <div id="totalCompare"></div>
+        @if ($errors->has('selectFirst')||$errors->has('selectSecond')||$errors->has('selectThird'))
+        <span class="help-block">
+            <strong>{{$errors->first('selectFirst')}}</strong></br>
+        </span>
+        <span class="help-block">
+            <strong>{{$errors->first('selectSecond')}}</strong></br>
+        </span>
+        <span class="help-block">
+            <strong>{{$errors->first('selectThird')}}</strong></br>
+        </span>
+        @endif
         <input type="radio" id="extend" name="compare" value="extend">
         <label for="extend">現有規則</label>
         <div id="extendCompare"></div>
@@ -84,12 +110,12 @@
     }
 
     function putItemRulesData(data) {
-        console.log(data)
         $.each(data, function(i, data) {
-            $('#selectFirst').append('<option value='+data.id+'>'+data.itemname+'</option>');
-            $('#selectSecond').append('<option value='+data.id+'>'+data.itemname+'</option>');
-            $('#selectThird').append('<option value='+data.id+'>'+data.itemname+'</option>');
+            $('#selectFirst').append('<option value=' + data.id + '>' + data.itemname + '</option>');
+            $('#selectSecond').append('<option value=' + data.id + '>' + data.itemname + '</option>');
+            $('#selectThird').append('<option value=' + data.id + '>' + data.itemname + '</option>');
         })
+
     }
 
     function getItemRulesData() {
@@ -225,38 +251,54 @@
 
             var itemid = data[i][0];
             var itemname = data[i][1];
-            var iterate = data[i][2];
+            var itemrate = data[i][2];
+            var itemlimit = data[i][3];
             var td1 = '<td id="tdnameid' + [i] + '"><div value=' + itemname + ' id=' + 'itemname' + itemid +
-                ' onclick="openLabel(' + 'itemname' + itemid + ',' + 'itemid' + itemid + ',' + i + ',' + itemid +
+                ' onclick="openLabel(' + 'itemname' + itemid + ',' + 'itemid' + itemid + ',' + 'limitamount' + itemid +
+                ',' + i + ',' + itemid +
                 ')">項目：' + itemname + '</div></td>';
-            var td2 = '<td id="tdidid' + [i] + '"><div value=' + iterate + ' id=' + 'itemid' + itemid +
-                ' onclick="openLabel(' + 'itemname' + itemid + ',' + 'itemid' + itemid + ',' + i + ',' + itemid +
-                ')">賠率：' + iterate + '</div></td>';
-            var td3 = '<td id="tdid' + [i] + '">';
-            var td4 = '<a role="btn" class="btn btn-danger" onclick="ajaxToDelete(' + itemid + ')">刪除</a></td>';
+            var td2 = '<td id="tdidid' + [i] + '"><div value=' + itemrate + ' id=' + 'itemid' + itemid +
+                ' onclick="openLabel(' + 'itemname' + itemid + ',' + 'itemid' + itemid + ',' + 'limitamount' + itemid +
+                ',' + i + ',' + itemid +
+                ')">賠率：' + itemrate + '</div></td>';
+            var td3 = '<td id="tdlimitid' + [i] + '"><div value=' + itemlimit + ' id=' + 'itemid' + itemid +
+                ' onclick="openLabel(' + 'itemname' + itemid + ',' + 'itemid' + itemid + ',' + 'limitamount' + itemid +
+                ',' + i + ',' + itemid +
+                ')">限制下注金額：' + itemlimit + '</div></</td>';
+            var td4 = '<td id="tdid' + [i] + '">' + '<a role="btn" class="btn btn-danger" onclick="ajaxToDelete(' +
+                itemid + ')">刪除</a></td>';
             var tr = $('<tr >').append(td1, td2, td3, td4);
             $('#table').append(tr);
         }
     }
     //-----
     //這是當需要修改時點按觸發的修改function目的將div改成input來輸入資料
-    function openLabel(itemnameid, itemidid, i, itemid) {
+    function openLabel(itemnameid, itemidid, limitid, i, itemid) {
 
         delRow(itemnameid)
         delRow(itemidid)
+        delRow(limitid)
         var tdnameid = '#tdnameid' + i;
         var tdidid = '#tdidid' + i;
+        var tdlimitid = '#tdlimitid' + i;
         var itemnamevalue = itemnameid.attributes[0].nodeValue;
         var ratevalue = itemidid.attributes[0].nodeValue;
+        var limitamountvalue = limitid.attributes[0].nodeValue;
         var inputnameid = itemnameid.attributes[1].nodeValue;
         var rateid = itemidid.attributes[1].nodeValue;
+        var limitamountid = limitid.attributes[1].nodeValue;
 
         $(tdnameid).append('項目：<input required="required" name="itemname" onchange="changeDatatemp(' + inputnameid +
-            ',' + rateid + ',' + itemid + ')" type="text" placeholder=' + itemnamevalue + ' value=' +
+            ',' + rateid + ',' + itemid + ',' + limitamountid + ')" type="text" placeholder=' + itemnamevalue + ' value=' +
             itemnamevalue + ' id=' + inputnameid + ' >');
+
         $(tdidid).append('賠率：<input required="required"  name="itemrate" onchange="changeDatatemp(' + inputnameid +
-            ',' + rateid + ',' + itemid + ')" type="number" step="0.0001" min="0.000" max="10000" placeholder=' +
+            ',' + rateid + ',' + itemid + ',' + limitamountid + ')" type="number" step="0.0001" min="0.000" max="10000" placeholder=' +
             ratevalue + ' value=' + ratevalue + ' id=' + rateid + '>');
+
+        $(limitid).append('限制下注金額：<input required="required"  name="itemrate" onchange="changeDatatemp(' + inputnameid +
+            ',' + rateid + ',' + itemid + ',' + limitamountid + ')" type="number" step="0.5000" min="0.000" max="10000" placeholder=' +
+            limitamountvalue + ' value=' + limitamountvalue + ' id=' + limitamountid + '>');
 
         store(i, itemid, inputnameid, rateid)
     }
@@ -267,13 +309,13 @@
     //全域變數陣列 目的是將修改的資料放進去
     var temp = new Array;
     //-----
-    //檢查該項是否被修改過 如果有備修改過 則將該項temp陣列變數存過得資料覆寫  
-    function checkDataAltered(id, namevalue, ratevalue) {
+    //檢查該項是否被修改過 如果有修改過 則將該項temp陣列變數的資料覆寫  
+    function checkDataAltered(id, namevalue, ratevalue,limitamountvalue) {
         for (var i = 0; i < count; i++) {
             if (temp[i][0] == id) {
                 temp.splice(i, 1)
                 temp[i] = new Array;
-                temp[i].push(id, namevalue, ratevalue)
+                temp[i].push(id, namevalue, ratevalue,limitamountvalue)
 
                 return false;
             }
@@ -283,13 +325,14 @@
     }
     //-----
     //當發生修改時觸發將修改的值放入temp變數中
-    function changeDatatemp(nameid, rateid, id) {
+    function changeDatatemp(nameid, rateid, id , limitamountid) {
         var namevalue = $(nameid).val();
         var ratevalue = $(rateid).val();
-        if (checkDataAltered(id, namevalue, ratevalue)) {
+        var limitamountvalue = $(limitamountid).val()
+        if (checkDataAltered(id, namevalue, ratevalue,limitamountvalue)) {
             temp[count] = new Array;
             //temp.push(count)
-            temp[count].push(id, namevalue, ratevalue)
+            temp[count].push(id, namevalue, ratevalue,limitamountvalue)
             count++
         }
     }
@@ -336,6 +379,16 @@
                 $('#totalCompare').html('');
                 extendAppend();
                 getItemRulesData();
+                $('#selectFirst').change(function() {
+                    $("input[name='selectFirst']").val($('#selectFirst').val());
+                })
+                $('#selectSecond').change(function() {
+                    $("input[name='selectSecond']").val($('#selectSecond').val());
+                })
+                $('#selectThird').change(function() {
+                    $("input[name='selectThird']").val($('#selectThird').val());
+                })
+
 
             }
         })
@@ -352,7 +405,7 @@
             '<option value="4">>=</option>' +
             '</select>' +
             '<input id="inputOpertor" name="operator" type="hidden">' +
-            '<input type="hidden" name="totalCompare" value="true">' +
+            '<input type="hidden" name="status" value="3">' +
             '<input type="text" style="width:240" placeholder="請輸入數字，若超過一個請用 , 分開" id="total" name="total">' +
             '<a role="button" class="btn btn-danger" onclick="clearTotal()">清空</a>' +
             '<input type="submit" class="btn btn-primary" value="確認">')
@@ -361,26 +414,34 @@
 
     function extendAppend() {
         $('#extendCompare').append(
-            '<table border="1">'+
-            '<tr>'+
-            '<td>第一局</td>'+
-            '<td>第二局</td>'+
-            '<td>第三局</td>'+
-            '</tr>'+
-            '<tr>'+
-            '<td>'+
-            '<select id="selectFirst">'+
-            '</select>'+
-            '</td>'+
-            '<td>'+
-            '<select id="selectSecond">'+
-            '</select>'+
-            '</td>'+
-            '<td>'+
-            '<select id="selectThird">'+
-            '</select>'+
-            '</td>'+
-            '</table>'
+            '<table border="1">' +
+            '<tr>' +
+            '<td>第一局</td>' +
+            '<td>第二局</td>' +
+            '<td>第三局</td>' +
+            '</tr>' +
+            '<tr>' +
+            '<td>' +
+            '<select id="selectFirst">' +
+            '<option></option>' +
+            '</select>' +
+            '</td>' +
+            '<td>' +
+            '<select id="selectSecond">' +
+            '<option></option>' +
+            '</select>' +
+            '</td>' +
+            '<td>' +
+            '<select id="selectThird">' +
+            '<option></option>' +
+            '</select>' +
+            '</td>' +
+            '</table>' +
+            '<input type="hidden" name="selectFirst">' +
+            '<input type="hidden" name="selectSecond">' +
+            '<input type="hidden" name="selectThird">' +
+            '<input type="hidden" name="status" value="4">' +
+            '<input type="submit" class="btn btn-primary" value="確認">'
 
         );
     }
@@ -420,7 +481,7 @@
             '</tr>' +
             '</table>');
         $('#specialCards').append(
-            '<input type="hidden" name="special" value="true">' +
+            '<input type="hidden" name="status" value="2">' +
             '<input type="submit" class="btn btn-primary" value="確認">')
         $("input[name='specialCards1']").change(function() {
             disabledRadio();
@@ -484,7 +545,7 @@
             '</tr>' +
             '</table>');
         $('#singleCompare').append(
-            '<input type="hidden" name="singleCompare" value="true">' +
+            '<input type="hidden" name="status" value="1">' +
             '<input type="submit" class="btn btn-primary" value="確認">')
 
     }

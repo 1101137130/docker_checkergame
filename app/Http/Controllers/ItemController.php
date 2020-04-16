@@ -59,7 +59,7 @@ class ItemController extends Controller
         try {
             foreach ($request->temp as $e) {
                 $item = Item::find($e[0]);
-                $item->update(['itemname' => $e[1], 'rate' => $e[2]]);
+                $item->update(['itemname' => $e[1], 'rate' => $e[2],'limit_amount'=>$e[3]]);
             }
             Redis::set('isItemSetyet', false);  //修改redis資料
             
@@ -115,7 +115,7 @@ class ItemController extends Controller
         $array = array();
 
         for ($i = 0;$i<=count($data)-1;$i++) {
-            array_push($array, array('id'=>$data[$i]['id'],'itemname'=>$data[$i]['itemname']));
+            array_push($array, array('id'=>$data[$i]['id'],'itemname'=>$data[$i]['itemname'],));
         }
 
         return $array;
@@ -203,7 +203,7 @@ class ItemController extends Controller
         $restult = array();
         $i = 0;
         foreach ($items as $item) {
-            $restult[$i] = array($item->id, $item->itemname, $item->rate);
+            $restult[$i] = array($item->id, $item->itemname, $item->rate,$item->limit_amount);
             $i++;
         }
 
