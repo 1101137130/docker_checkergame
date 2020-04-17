@@ -73,6 +73,8 @@ class HomeController extends Controller
         $order = $request->order;
         
         if ($order != "true") { //這是判定有沒有金額下注 如果沒有就只是跑一次遊戲給前臺
+            $result = $gamestart->start();
+            $gameend = gameEnd::getInstance();
             foreach ($order as $item) {
                 $data = $createOrders->new($item);
                 if ($data[0] != true) {
@@ -81,14 +83,13 @@ class HomeController extends Controller
                     return json_encode($data[1]);
                 } else {
                     $orderid = $data[1];   //data[1]是新增成功後的orderID
+                    array_push($result, $gameend->end($order, $result, $orderid));
+                    $winamount = Redis::get($user->username . $user->id);
+                    $winamount != null ? array_push($result, $winamount) : array_push($result, 0);
                 }
             }
-            $gameend = gameEnd::getInstance();
-            $result = $gamestart->start();
 
-            array_push($result, $gameend->end($order, $result, $orderid));
-            $winamount = Redis::get($user->username . $user->id);
-            $winamount != null ? array_push($result, $winamount) : array_push($result, 0);
+            
             
             return $result;
         } else {
