@@ -1,6 +1,7 @@
 @extends('layouts.app')
 @section('content')
 <div class="container">
+    <div id="log"></div>
     <table class="table table-hover">
         <tbody>
             <tr>
@@ -74,7 +75,7 @@
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
-            success: function (data) {
+            success: function(data) {
                 console.log(data)
                 for (var i = 0; i <= data.length; i++) {
                     $('#tbody').append(
@@ -83,17 +84,19 @@
                         '<label for="bankerS' + data[i][0] +
                         '">' + data[i][1] + '：' + data[i][2] +
                         '</label>' +
-                        '<input onchange=dataToMap(bankerS' + data[i][0] +
-                        ') id="bankerS' + data[i][0] +
-                        '"  type="number" style="width:180"  placeholder="金額限制：'+data[i][3]+'" min="0" max="'+data[i][3]+'">' +
+                        '<input onchange="dataToMap(bankerS' + data[i][0] +
+                        ')" id="bankerS' + data[i][0] +
+                        '"  type="number" style="width:180"  placeholder="金額限制：' + data[i][3] +
+                        '" min="0" max="' + data[i][3] + '">' +
                         '</td>' +
                         '<td style="text-align: center;">' +
                         '<label for="playerS' + data[i][0] +
                         '">' + data[i][1] + '：' + data[i][2] +
                         '</label>' +
-                        '<input onchange=dataToMap(playerS' + data[i][0] +
-                        ') id="playerS' + data[i][0] +
-                        '"  type="number"  style="width:180"  placeholder="金額限制：'+data[i][3]+'" min="0" max="'+data[i][3]+'">' +
+                        '<input onchange="dataToMap(playerS' + data[i][0] +
+                        ')" id="playerS' + data[i][0] +
+                        '"  type="number"  style="width:180"  placeholder="金額限制：' + data[i][3] +
+                        '" min="0" max="' + data[i][3] + '">' +
                         '</td>' +
                         '</tr>'
                     )
@@ -101,7 +104,7 @@
 
 
             },
-            error: function (jqXHR) {
+            error: function(jqXHR) {
                 console.log(jqXHR)
             }
         })
@@ -158,7 +161,7 @@
             data: {
                 order: ordersarray
             },
-            success: function (data) {
+            success: function(data) {
                 if (typeof data == typeof 'string') {
                     location.reload();
                 } else {
@@ -178,18 +181,23 @@
                     if (data[4] != null) {
                         for (var i = 0; i < data[4].length; i++) {
                             array[i] = new Array;
-                            array[i].push('\n' + '項目：' + toChinese(data[4][i][4]) + ' ' + data[4][i][0] +
-                                ' 結果：' + toWinLost(data[4][i][5]))
+                            array[i].push('項目：' + toChinese(data[4][i][4]) + ' ' + data[4][i][0] +
+                                ' 結果：' + toWinLost(data[4][i][5]) + '</br>')
                         }
 
-                        alert(array)
+                        logAppend(array)
                     }
                 }
             },
-            error: function (jqXHR) {
+            error: function(jqXHR) {
                 console.log(jqXHR)
             }
         })
+    }
+
+    function logAppend(data) {
+        $('#log').html('')
+        data.forEach(element => $('#log').append('<p>' + element + '</p>'));
     }
 
     function toWinLost($object) {
@@ -233,26 +241,25 @@
     }
 
     function dataToMap(id) {
-        amount = $(id).val();
-        if(amount>id.max){
-            $(id).val(id.max);
-            amount = id.max ;
+        var max = parseInt(id.max, 10)
+        if (id.value > max) {
+            id.value = max
         }
         var objectId = id.id.split("S");
         var object = objectId[0] == 'banker' ? 1 : 2;
         var itemid = objectId[1];
         var itemNameAndRate = $('label[for=' + id.id + ']').text().split("：")
-       
+
         itemName = itemNameAndRate[0];
         itemRate = itemNameAndRate[1];
         //金額不為0則新增一個map 並放入 外部map-order
         //金額為0則判斷外部map有無此id 有則做刪除
-        if (amount != 0) {
+        if (id.value != 0) {
             const ord = new Map();
             ord.set('itemname', itemName)
             ord.set('itemid', itemid)
             ord.set('rate', itemRate)
-            ord.set('amount', amount)
+            ord.set('amount', id.value)
             ord.set('object', object)
             order.set(id.id, ord)
         } else {
@@ -271,5 +278,4 @@
             $(id).attr('title', '預估可贏 ：' + amount * arry[2]);
         }
     }
-
 </script>
