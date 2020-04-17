@@ -4,7 +4,6 @@ namespace App\CheckersClass;
 
 use App\CheckersClass\updateOrder;
 use App\CheckersClass\resultCompare;
-use App\CheckersClass\createGameResultRecord;
 class gameEnd
 {
     private static $_instance  = null ;
@@ -19,9 +18,6 @@ class gameEnd
     }
     public function end($request, $gameResult, $orderid)
     {
-        $creategameresult =createGameResultRecord::getInstance();
-        $creategameresult->create($orderid, $gameResult);
-
         $i = 0;
         foreach ($request as $item) {
             $resultCompare = resultCompare::getInstance();

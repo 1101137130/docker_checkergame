@@ -57,11 +57,12 @@ class updateOrder
             return $array;
         }
     }
+
     private function redisUpdate($user, $item)
     {
         $usert = $user->username . (string) $user->id;
         $redisUser = Redis::get($usert);
-            
+        
         if ($redisUser == null) {
             Redis::set($usert, $item[2] * $item[3]); //item[2]=賠率 item[3]=金額
         } else {

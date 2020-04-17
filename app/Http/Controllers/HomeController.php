@@ -3,13 +3,13 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Item;
 use App\CheckersClass\gameStart;
 use App\CheckersClass\gameEnd;
 use App\CheckersClass\createOrders;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redis;
 use App\CheckersClass\setItemname;
+use App\CheckersClass\createGameResultRecord;
 
 class HomeController extends Controller
 {
@@ -63,7 +63,7 @@ class HomeController extends Controller
 
         return $data;
     }
-
+    
     public function clientorder(Request $request)
     {
         $user = Auth::user();
@@ -75,8 +75,12 @@ class HomeController extends Controller
         if ($order != "true") { //這是判定有沒有金額下注 如果沒有就只是跑一次遊戲給前臺
             $result = $gamestart->start();
             $gameend = gameEnd::getInstance();
+            $creategameresult =createGameResultRecord::getInstance();
+            $resultID=$creategameresult->create($result);
+            $resultID=$resultID->id;
+            
             foreach ($order as $item) {
-                $data = $createOrders->new($item);
+                $data = $createOrders->new($item,$resultID);
                 if ($data[0] != true) {
                     $request->session()->flash('error', $data[1]);
 
@@ -89,8 +93,6 @@ class HomeController extends Controller
                 }
             }
 
-            
-            
             return $result;
         } else {
             $result = $gamestart->start();

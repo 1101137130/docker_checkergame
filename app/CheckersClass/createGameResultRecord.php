@@ -17,7 +17,7 @@ class createGameResultRecord
 
         return self::$_instance;
     }
-    public function create($orderID, $result)
+    public function create($result)
     {
         $dataConverter = createItemRule::getInstance();
         $banker = [];
@@ -33,11 +33,12 @@ class createGameResultRecord
         $gameResult = $dataConverter->dataConverter($gameResult);
         try {
             $record = Resultrecord::create([
-            'order_id'=>$orderID,
             'banker'=>$banker,
             'player'=>$player,
             'result'=>$gameResult
         ]);
+
+            return $record;
         } catch (Exception $e) {
             throw $e;
         }

@@ -39,7 +39,6 @@
     var datatemp = 0;
     var itemIdName;
     userid = null;
-
     function start() {
         getItemName();
         getUserAuthority();

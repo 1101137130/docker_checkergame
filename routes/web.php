@@ -43,3 +43,4 @@ Route::post('getRaterecordDataByItem', 'RaterecordController@getDataByItem');
 Route::post('getRaterecordDataByDate', 'RaterecordController@getDataByDate');
 Route::get('Raterecord', 'RaterecordController@index')->name('Raterecord');
 Route::get('getOrderUserName', 'OrderController@getUserName');
+Route::get('takeMoney', 'AmountController@takeMoney');

@@ -18,6 +18,7 @@ class CreateOrdersTable extends Migration
             $table->string('username', 20);
             $table->bigInteger('user_id')->unsigned();
             $table->bigInteger('item_id')->unsigned();
+            $table->bigInteger('result_id')->unsigned();
             $table->tinyInteger('status')->default(1)->nullable();
             $table->tinyInteger('bet_object')->nullable();
             $table->decimal('amount', 18, 4);

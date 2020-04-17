@@ -21,7 +21,7 @@ class createOrders
 
         return self::$_instance;
     }
-    public function new($item) //order處理
+    public function new($item, $resultID) //order處理
     {
         $checkandUpadate = checkUpdateUserAmount::getInstance();
         //item[0]-> itemname; item[1]->itemid
@@ -49,8 +49,9 @@ class createOrders
                     'item_id' => $item[1],
                     'amount' => $item[3],
                     'bet_object' => $item[4],
-                    'status' => $newOrdersStatus, 
-                    'item_rate' => $item[2]
+                    'status' => $newOrdersStatus,
+                    'item_rate' => $item[2],
+                    'result_id' => $resultID
                 ]);
                 Redis::set('isOrderUsersSetyet', false);
                 $data = array(true, $order->id);
@@ -62,7 +63,6 @@ class createOrders
             }
         } else {
             return $data;
-            ;
         }
     }
 }

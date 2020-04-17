@@ -2,6 +2,7 @@
 
 namespace App\CheckersClass;
 
+
 class gameStart
 {
     private static $_instance  = null ;
@@ -16,6 +17,7 @@ class gameStart
     }
     public function start()
     {
+       
         $banker = array(1, 2, 3, 4, 5);
         $player = array(1, 2, 3, 4, 5);
         shuffle($banker);
@@ -30,6 +32,7 @@ class gameStart
         $finalresult = $this->getResult($result);
         
         array_push($result, $finalresult); //將結果一起併入回傳陣列
+
         return $result;
     }
 
@@ -87,6 +90,4 @@ class gameStart
             return 3;
         }
     }
-    
-
 }

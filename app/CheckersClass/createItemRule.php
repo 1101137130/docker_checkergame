@@ -22,7 +22,9 @@ class createItemRule
     public function create(Request $request, $itemid)
     {
         $status = (int)$request->status;
-        $special_cards = null;
+        $special_one = null;
+        $special_two = null;
+        $special_three = null;
         $one = null;
         $two  = null;
         $three  = null;
@@ -33,12 +35,9 @@ class createItemRule
         $extend_exist_rule = null;
      
         if ($status == 2) {
-            $arrayCards = [];
-            array_push($arrayCards, $request->specialCards1);
-            array_push($arrayCards, $request->specialCards2);
-            array_push($arrayCards, $request->specialCards3);
-                
-            $special_cards = $this->dataConverter($arrayCards);
+            $special_one = $this->dataConverter($request->specialCards1);
+            $special_two = $this->dataConverter($request->specialCards2);
+            $special_three = $this->dataConverter($request->specialCards3);
         }
 
         if ($status == 1) {
@@ -61,7 +60,9 @@ class createItemRule
         }
         Itemrule::create([
             'item_id'=>$itemid,
-            'special_cards'=>$special_cards,
+            'special_one'=>$special_one,
+            'special_two'=>$special_two,
+            'special_three'=>$special_three,
             'extend_exist_rule'=>$extend_exist_rule,
             'one'=>$one,
             'two'=>$two,

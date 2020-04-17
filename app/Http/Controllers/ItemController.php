@@ -57,7 +57,9 @@ class ItemController extends Controller
     {
         $this->middleware('itemRateManage');
         try {
+            $user = Auth::user();
             foreach ($request->temp as $e) {
+                Raterecord::create(['user_id' => $user->id,'item_id'=>$e[0], 'rate' =>$e[2]]);
                 $item = Item::find($e[0]);
                 $item->update(['itemname' => $e[1], 'rate' => $e[2],'limit_amount'=>$e[3]]);
             }
@@ -139,7 +141,7 @@ class ItemController extends Controller
                 Redis::set('isItemSetyet', false);  //修改redis資料
                 $changed = true;
             }
-            if($item->limit_amount != $request->limit_amount){
+            if ($item->limit_amount != $request->limit_amount) {
                 $item->update(['limit_amount' => $request->limit_amount]);
                 Redis::set('isItemSetyet', false);  //修改redis資料
             }
@@ -159,19 +161,23 @@ class ItemController extends Controller
         $this->middleware('itemRateManage');
         $this->validator($request);
         $status = (int)$request->status;
-        
+        if ($request->limit_amount == null) {
+            $request->limit_amount = 10000000;
+        }
 
-        if ($status == 1) {
+        switch ($status) {
+            case 1:
             $this->singleCompareValidator($request);
-        }
-        if ($status == 2) {
+                break;
+            case 2:
             $this->specialValidator($request);
-        }
-        if ($status == 3) {
+                break;
+            case 3:
             $this->totalValidator($request);
-        }
-        if ($status == 4) {
+                break;
+            case 4:
             $this->extendCompareValidator($request);
+                break;
         }
 
         try {

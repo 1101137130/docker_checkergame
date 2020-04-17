@@ -21,7 +21,9 @@ class CreateItemrulesTable extends Migration
             $table->mediumInteger('three')->nullable();
             $table->mediumInteger('four')->nullable();
             $table->mediumInteger('five')->nullable();
-            $table->mediumInteger('special_cards')->nullable();
+            $table->mediumInteger('special_one')->nullable();
+            $table->mediumInteger('special_two')->nullable();
+            $table->mediumInteger('special_three')->nullable();
             $table->string('extend_exist_rule')->nullable();
             $table->string('total')->nullable();
             $table->tinyInteger('operator')->nullable();

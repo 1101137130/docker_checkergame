@@ -15,7 +15,6 @@ class CreateResultRecordsTable extends Migration
     {
         Schema::create('resultrecords', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->bigInteger('order_id')->unsigned();
             $table->mediumInteger('banker');
             $table->mediumInteger('player');
             $table->mediumInteger('result');

@@ -18,7 +18,7 @@ class CreateItemsTable extends Migration
             $table->string('itemname', 15);
             $table->decimal('rate', 10, 4)->nullable();
             $table->tinyInteger('status')->default(1);
-            $table->Integer('limit_amount')->nullable();
+            $table->Integer('limit_amount')->default(100000000);
             $table->Integer('created_at');
             $table->Integer('updated_at');
         });

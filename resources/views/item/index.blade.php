@@ -27,7 +27,7 @@
             </span>
             @endif
             限制下注金額：<input type="number" name="limit_amount" placeholder="請輸入金額" step="0.5" min="0.000"
-                max="10000000000">
+                max="10000000">
 
         </div>
         @if($errors->has('winRequire1')||$errors->has('winRequire2')||$errors->has('winRequire3')||$errors->has('winRequire4')||$errors->has('winRequire5'))
@@ -298,7 +298,7 @@
             ratevalue + ' value=' + ratevalue + ' id=' + rateid + '>');
 
         $(tdlimitid).append('限制下注金額：<input required="required"  name="limit_amount" onchange="changeDatatemp(' + inputnameid +
-            ',' + rateid + ',' + itemid + ',' + limitamountid + ')" type="number" step="0.5000" min="0.000" max="10000" placeholder=' +
+            ',' + rateid + ',' + itemid + ',' + limitamountid + ')" type="number" step="0.5000" min="0.000" max="10000000000" placeholder=' +
             limitamountvalue + ' value=' + limitamountvalue + ' id=' + limitamountid + '>');
 
         store(i, itemid, inputnameid, rateid,limitamountid)
@@ -312,6 +312,7 @@
     //-----
     //檢查該項是否被修改過 如果有修改過 則將該項temp陣列變數的資料覆寫  
     function checkDataAltered(id, namevalue, ratevalue,limitamountvalue) {
+        limitamountvalue == null ? 10000000000: limitamountvalue;
         for (var i = 0; i < count; i++) {
             if (temp[i][0] == id) {
                 temp.splice(i, 1)
@@ -459,25 +460,25 @@
             '<tr>' +
             '<td style="text-align: center;">我方獲勝所需</td>' +
             '<td style="text-align: center;">' +
-            '<label><input type="radio" name="specialCards1" value="1">1</label>' +
-            '<label><input type="radio" name="specialCards1" value="2">2</label>' +
-            '<label><input type="radio" name="specialCards1" value="3">3</label>' +
-            '<label><input type="radio" name="specialCards1" value="4">4</label>' +
-            '<label><input type="radio" name="specialCards1" value="5">5</label>' +
+            '<label><input type="checkbox" name="specialCards1[]" value="1">1</label>' +
+            '<label><input type="checkbox" name="specialCards1[]" value="2">2</label>' +
+            '<label><input type="checkbox" name="specialCards1[]" value="3">3</label>' +
+            '<label><input type="checkbox" name="specialCards1[]" value="4">4</label>' +
+            '<label><input type="checkbox" name="specialCards1[]" value="5">5</label>' +
             '</td>' +
             '<td style="text-align: center;">' +
-            '<label><input type="radio" name="specialCards2" value="1">1</label>' +
-            '<label><input type="radio" name="specialCards2" value="2">2</label>' +
-            '<label><input type="radio" name="specialCards2" value="3">3</label>' +
-            '<label><input type="radio" name="specialCards2" value="4">4</label>' +
-            '<label><input type="radio" name="specialCards2" value="5">5</label>' +
+            '<label><input type="checkbox" name="specialCards2[]" value="1">1</label>' +
+            '<label><input type="checkbox" name="specialCards2[]" value="2">2</label>' +
+            '<label><input type="checkbox" name="specialCards2[]" value="3">3</label>' +
+            '<label><input type="checkbox" name="specialCards2[]" value="4">4</label>' +
+            '<label><input type="checkbox" name="specialCards2[]" value="5">5</label>' +
             '</td>' +
             '<td style="text-align: center;">' +
-            '<label><input type="radio" name="specialCards3" value="1">1</label>' +
-            '<label><input type="radio" name="specialCards3" value="2">2</label>' +
-            '<label><input type="radio" name="specialCards3" value="3">3</label>' +
-            '<label><input type="radio" name="specialCards3" value="4">4</label>' +
-            '<label><input type="radio" name="specialCards3" value="5">5</label>' +
+            '<label><input type="checkbox" name="specialCards3[]" value="1">1</label>' +
+            '<label><input type="checkbox" name="specialCards3[]" value="2">2</label>' +
+            '<label><input type="checkbox" name="specialCards3[]" value="3">3</label>' +
+            '<label><input type="checkbox" name="specialCards3[]" value="4">4</label>' +
+            '<label><input type="checkbox" name="specialCards3[]" value="5">5</label>' +
             '</td>' +
             '</tr>' +
             '</table>');

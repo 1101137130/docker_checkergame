@@ -13,7 +13,7 @@ class RegisterManager extends Controller
 {
     public function __construct()
     {
-        $this->middleware('ManagerCreator');
+        $this->middleware('auth');
     }
 
 
@@ -38,32 +38,22 @@ class RegisterManager extends Controller
     }
     public function editUser(Request $request)
     {
+        
         $this->validatUser($request->all())->validate();
-        $user = User::find($request->id)->first();
+        $user = User::find($request->id);
+        
         if ($request->username == null) {
-            try {
-                $user->update(['email' => $request->email]);
-                return redirect('home');
-            } catch (Exception $e) {
-                return $e->getMessage();
-            }
+            $request->username = $user->username;
         }
         if ($request->email == null) {
-            try {
-                $user->update(['username' => $request->username]);
-                return redirect('home');
-            } catch (Exception $e) {
-                return $e->getMessage();
-            }
-        } else {
-            try {
-                $user->update(['username' => $request->username,'email' => $request->email]);
-                $request->session()->flash('status', '修改成功！');
-
-                return redirect('home');
-            } catch (Exception $error) {
-                return $error->getMessage();
-            }
+            $request->email = $user->email;
+        }
+        try {
+            $user->update($request->all());
+            
+            return redirect('home');
+        } catch (Exception $e) {
+            return $e;
         }
     }
     public function getUser()
@@ -72,8 +62,8 @@ class RegisterManager extends Controller
     }
     public function createManager(Request $data)
     {
+        $this->middleware('ManagerCreator');
         $this->validator($data->all())->validate();
-
         try {
             User::create([
                 'username' => $data['username'],

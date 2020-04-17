@@ -6,10 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Order extends Model
 {
-    private static $_instance  = null ;
    
     protected $fillable = [
-        'username', 'amount', 'user_id', 'item_id', 'bet_object', 'status', 'item_rate'
+        'username', 'amount', 'user_id', 'item_id', 'bet_object', 'status', 'item_rate','result_id'
     ];
 
     //把時間格式進行轉換
