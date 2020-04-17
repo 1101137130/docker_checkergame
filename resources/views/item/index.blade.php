@@ -200,11 +200,11 @@
     }
     //------
     //這是提供單筆資料修改的ajax
-    function ajaxToEdit(id, itemnameid, inputrateid) {
+    function ajaxToEdit(id, itemnameid, inputrateid, inputlimitamountid) {
 
-        var itemname = $(itemnameid).val()
+        var itemname = $(itemnameid).val();
         var itemrate = $(inputrateid).val();
-
+        var limiamount =$(inputlimitamountid).val();
         $.ajax({
             type: "PUT",
             url: "{{url('item/{id}')}}",
@@ -212,7 +212,8 @@
             data: {
                 id: id,
                 itemname: itemname,
-                rate: itemrate
+                rate: itemrate,
+                limit_amount :limiamount
             },
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -261,7 +262,7 @@
                 ' onclick="openLabel(' + 'itemname' + itemid + ',' + 'itemid' + itemid + ',' + 'limitamount' + itemid +
                 ',' + i + ',' + itemid +
                 ')">賠率：' + itemrate + '</div></td>';
-            var td3 = '<td id="tdlimitid' + [i] + '"><div value=' + itemlimit + ' id=' + 'itemid' + itemid +
+            var td3 = '<td id="tdlimitid' + [i] + '"><div value=' + itemlimit + ' id=' + 'limitamount' + itemid +
                 ' onclick="openLabel(' + 'itemname' + itemid + ',' + 'itemid' + itemid + ',' + 'limitamount' + itemid +
                 ',' + i + ',' + itemid +
                 ')">限制下注金額：' + itemlimit + '</div></</td>';
@@ -296,11 +297,11 @@
             ',' + rateid + ',' + itemid + ',' + limitamountid + ')" type="number" step="0.0001" min="0.000" max="10000" placeholder=' +
             ratevalue + ' value=' + ratevalue + ' id=' + rateid + '>');
 
-        $(limitid).append('限制下注金額：<input required="required"  name="itemrate" onchange="changeDatatemp(' + inputnameid +
+        $(tdlimitid).append('限制下注金額：<input required="required"  name="limit_amount" onchange="changeDatatemp(' + inputnameid +
             ',' + rateid + ',' + itemid + ',' + limitamountid + ')" type="number" step="0.5000" min="0.000" max="10000" placeholder=' +
             limitamountvalue + ' value=' + limitamountvalue + ' id=' + limitamountid + '>');
 
-        store(i, itemid, inputnameid, rateid)
+        store(i, itemid, inputnameid, rateid,limitamountid)
     }
     //-----
     //全域變數 count 目的是為了算使用者修改了幾項
@@ -338,10 +339,10 @@
     }
     //-----
     //製作一個單向修改的儲存按鈕
-    function store(i, itemid, inputnameid, rateid) {
+    function store(i, itemid, inputnameid, rateid,limitamountid) {
         var tdid = '#tdid' + i;
         $(tdid).append('<a role="btn" class="btn btn-primary" onclick="ajaxToEdit(' + itemid + ',' + inputnameid + ',' +
-            rateid + ')">儲存</a>');
+            rateid + ','+limitamountid+')">儲存</a>');
         $(storeButton).show();
     }
     //-----

@@ -139,6 +139,10 @@ class ItemController extends Controller
                 Redis::set('isItemSetyet', false);  //修改redis資料
                 $changed = true;
             }
+            if($item->limit_amount != $request->limit_amount){
+                $item->update(['limit_amount' => $request->limit_amount]);
+                Redis::set('isItemSetyet', false);  //修改redis資料
+            }
 
             if ($changed) {
                 $request->session()->flash('status', '修改成功！');

@@ -58,7 +58,7 @@ class HomeController extends Controller
         $array = json_decode($data, true);
         $data = array();
         for ($i = 0; $i < sizeof($array); $i++) {
-            array_push($data, array($array[$i]['id'], $array[$i]['itemname'], $array[$i]['rate']));
+            array_push($data, array($array[$i]['id'], $array[$i]['itemname'], $array[$i]['rate'],$array[$i]['limit_amount']));
         }
 
         return $data;

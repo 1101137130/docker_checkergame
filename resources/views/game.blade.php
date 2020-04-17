@@ -75,6 +75,7 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             success: function (data) {
+                console.log(data)
                 for (var i = 0; i <= data.length; i++) {
                     $('#tbody').append(
                         '<tr>' +
@@ -82,20 +83,19 @@
                         '<label for="bankerS' + data[i][0] +
                         '">' + data[i][1] + '：' + data[i][2] +
                         '</label>' +
-                        '<input onchange=dataToMap("bankerS' + data[i][0] +
-                        '") id="bankerS' + data[i][0] +
-                        '"  type="number"  placeholder="請輸入金額" min="0">' +
+                        '<input onchange=dataToMap(bankerS' + data[i][0] +
+                        ') id="bankerS' + data[i][0] +
+                        '"  type="number" style="width:180"  placeholder="金額限制：'+data[i][3]+'" min="0" max="'+data[i][3]+'">' +
                         '</td>' +
                         '<td style="text-align: center;">' +
                         '<label for="playerS' + data[i][0] +
                         '">' + data[i][1] + '：' + data[i][2] +
                         '</label>' +
-                        '<input onchange=dataToMap("playerS' + data[i][0] +
-                        '") id="playerS' + data[i][0] +
-                        '"  type="number"  placeholder="請輸入金額" min="0">' +
+                        '<input onchange=dataToMap(playerS' + data[i][0] +
+                        ') id="playerS' + data[i][0] +
+                        '"  type="number"  style="width:180"  placeholder="金額限制：'+data[i][3]+'" min="0" max="'+data[i][3]+'">' +
                         '</td>' +
                         '</tr>'
-
                     )
                 }
 
@@ -233,13 +233,15 @@
     }
 
     function dataToMap(id) {
-        iid = '#' + id;
-        amount = $(iid).val();
-
-        var objectId = id.split("S");
+        amount = $(id).val();
+        if(amount>id.max){
+            $(id).val(id.max);
+            amount = id.max ;
+        }
+        var objectId = id.id.split("S");
         var object = objectId[0] == 'banker' ? 1 : 2;
         var itemid = objectId[1];
-        var itemNameAndRate = $('label[for=' + id + ']').text().split("：")
+        var itemNameAndRate = $('label[for=' + id.id + ']').text().split("：")
        
         itemName = itemNameAndRate[0];
         itemRate = itemNameAndRate[1];
@@ -252,7 +254,7 @@
             ord.set('rate', itemRate)
             ord.set('amount', amount)
             ord.set('object', object)
-            order.set(id, ord)
+            order.set(id.id, ord)
         } else {
             if (order.has(id)) {
                 order.delete(id)
