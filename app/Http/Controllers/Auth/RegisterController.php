@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Auth;
 
 use App\User;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
-
 class RegisterController extends Controller
 {
     /*
@@ -64,6 +64,7 @@ class RegisterController extends Controller
             'status' => 1
         ]);
         if($user->id == 1){
+            Cache::store("redis")->flush();
             $user->update([
                 'view_orders' => 1,
                 'manager_editor' => 1,

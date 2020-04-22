@@ -15,25 +15,46 @@ class convertStatus
     }
     public function convertOrdersStatus($status)
     {
-        if ($status == 'win') {
-            self::$_instance  = null;
-            return 2;
+        switch ($status) {
+            case 'win':
+            
+                return 2;
+            case 'lost':
+            
+                return 3;
+            case 'cancel':
+            
+                return 4;
+            case 'discard':
+            
+                return 5;
+            case 'new':
+                
+                return 1;
         }
-        if ($status == 'lost') {
-            self::$_instance  = null;
-            return 3;
+    }
+    public function convertAmountStatus($status)
+    {
+                switch ($status) {
+            case 'win':
+            
+                return 2;
+            case 'lost':
+            
+                return 3;
+            case 'store':
+            
+                return 4;
+            case 'withdraw':
+            
+                return 5;
+            case 'error_restore':
+                
+                return 6;
+            case 'play':
+                
+                return 1;
         }
-        if ($status =='cancel') {
-            self::$_instance  = null;
-            return 4;
-        }
-        if ($status =='discard') {
-            self::$_instance  = null;
-            return 5;
-        }
-        if ($status =='new') {
-            self::$_instance  = null;
-            return 1;
-        }
+
     }
 }

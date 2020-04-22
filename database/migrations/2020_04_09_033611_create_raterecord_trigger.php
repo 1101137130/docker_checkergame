@@ -13,9 +13,9 @@ class CreateRaterecordTrigger extends Migration
     {
          DB::unprepared('
         
-        CREATE TRIGGER raterecord_trigger AFTER INSERT ON laravel.raterecords FOR EACH ROW
+        CREATE TRIGGER raterecord_trigger AFTER INSERT ON laravel_test.raterecords FOR EACH ROW
             BEGIN
-                UPDATE  laravel.items 
+                UPDATE  laravel_test.items 
                 SET updated_at =  NEW.updated_at, rate = NEW.rate
                 WHERE id = NEW.item_id;
             END

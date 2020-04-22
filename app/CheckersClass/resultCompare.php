@@ -1,6 +1,7 @@
 <?php
 namespace App\CheckersClass;
 
+use App\Itemrule;
 use Illuminate\Support\Facades\DB;
 
 class resultCompare
@@ -38,10 +39,10 @@ class resultCompare
     public function extendCompare($objectClient, $result, $itemrule)
     {
         $existRulesIDArray = explode(",", $itemrule->extend_exist_rule);
-        $itemrules = DB::table('itemrules')->whereIn('id', $existRulesIDArray)->get();
         $i =0;
         $countResult = 0;
-        foreach ($itemrules as $rule) {
+        foreach ($existRulesIDArray as $existRule) {
+            $rule = Itemrule::getInstanceByid($existRule);
             $r = $this->singleCompare($objectClient, $result, $rule, $i, $i);
             $i++;
             if ($r) {
@@ -80,7 +81,6 @@ class resultCompare
             }
             return $r;
         }
-        return false;
     }
     public function singleCompareFunction($clientResult, $data)
     {

@@ -4,6 +4,7 @@ namespace App\CheckersClass;
 
 use App\CheckersClass\updateOrder;
 use App\CheckersClass\resultCompare;
+
 class gameEnd
 {
     private static $_instance  = null ;
@@ -16,18 +17,14 @@ class gameEnd
 
         return self::$_instance;
     }
-    public function end($request, $gameResult, $orderid)
+    public function end($item, $gameResult, $orderid)
     {
-        $i = 0;
-        foreach ($request as $item) {
-            $resultCompare = resultCompare::getInstance();
-            $result = $resultCompare->compare($item, $gameResult);
-            $this->alterData($result, $item, $orderid);
-            array_push($request[$i], $result);
-            $i++;
-        }
+        $resultCompare = resultCompare::getInstance();
+        $result = $resultCompare->compare($item, $gameResult);
+        $this->alterData($result, $item, $orderid);
+        array_push($item, $result);
         
-        return $request;
+        return $item;
     }
 
     public function alterData($result, $item, $orderid)

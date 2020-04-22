@@ -76,7 +76,6 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             success: function(data) {
-                console.log(data)
                 for (var i = 0; i <= data.length; i++) {
                     $('#tbody').append(
                         '<tr>' +
@@ -147,6 +146,7 @@
             }
             i++
         }
+        console.log(ordersarray)
         return ordersarray
     }
 
@@ -162,7 +162,9 @@
                 order: ordersarray
             },
             success: function(data) {
+
                 if (typeof data == typeof 'string') {
+                    alert(data)
                     location.reload();
                 } else {
                     $('#ob1one').html(data[0][0]);
@@ -178,15 +180,16 @@
                     $('#winamount').html(data[5]);
                     getAmount();
                     var array = new Array;
-                    if (data[4] != null) {
-                        for (var i = 0; i < data[4].length; i++) {
+                    for (i = 4; i < data.length - 1; i++) {
+                        if (data[i] != null) {
                             array[i] = new Array;
-                            array[i].push('項目：' + toChinese(data[4][i][4]) + ' ' + data[4][i][0] +
-                                ' 結果：' + toWinLost(data[4][i][5]) + '</br>')
-                        }
+                            array[i].push('項目：' + data[i][0] +
+                                ' 結果：' + toWinLost(data[i][5]) + '</br>')
 
-                        logAppend(array)
+                            logAppend(array)
+                        }
                     }
+
                 }
             },
             error: function(jqXHR) {

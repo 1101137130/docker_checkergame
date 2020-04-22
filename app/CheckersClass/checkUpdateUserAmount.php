@@ -18,9 +18,9 @@ class checkUpdateUserAmount
 
         return self::$_instance;
     }
-    public function check($user, $amount)
+    public function check($userID, $amount)
     {
-        $amountmodel = Amount::where('user_id', $user->id)->first();
+        $amountmodel = Amount::where('user_id', $userID)->first();
 
         if ($amountmodel == null) {
             $error = '找不到您的金額紀錄';
@@ -33,15 +33,16 @@ class checkUpdateUserAmount
 
             return  $data;
         } else {
-            return $this->update($user, $amount);
+            $data = array(true, '');
+
+            return  $data;
         }
     }
 
-    public function update($user, $amount)
+    public function update($userID, $amount, $status)
     {
-        $amount = $amount * -1;
         try {
-            Amountrecord::create(['user_id' => $user->id, 'amount' => $amount, 'status' => 1]);
+            Amountrecord::create(['user_id' => $userID, 'amount' => $amount, 'status' => $status]);
             $data = array(true, '');
 
             return  $data;
@@ -51,54 +52,25 @@ class checkUpdateUserAmount
             return  $data;
         }
     }
-    public function undo($user, $amount)
+    public function create($userID, $request)
     {
-        try {
-            Amountrecord::create(['user_id' => $user->id, 'amount' => $amount, 'status' => 6]); //status'6'後續錯誤已扣款加回
-        } catch (Exception $error) {
-            $data = array(false, $error);
-
-            throw  $data;
-        }
-    }
-    public function create($user, $request)
-    {
-
         //判斷是否初次儲值
-        $clientamount = Amount::where('user_id', $user->id)->first();
+        $clientamount = Amount::where('user_id', $userID)->first();
+        $convertStatus = convertStatus::getInstance();
+        $storeAmountStatus = $convertStatus->convertAmountStatus('store');
 
         if ($clientamount != null) {        //如果不是則建立新的金額紀錄
-            try {
-                AmountRecord::create([
-                    'user_id' => $user->id,
-                    'amount' => $request->amount,
-                    'status' => 4           //status:4代表以儲值方式加錢
-                ]);
+            $result = $this->update($userID, $request->amount, $storeAmountStatus);
 
-                $request->session()->flash('status', '儲值成功！');
-
-                return redirect('game');
-            } catch (Exception $e) {
-                throw $e;
-
-                return view('amount.store');
-            }
+            return $result;
         } else {                            //如果是 則建立新的amount 並預設金額為0 然後在新增金額紀錄
             try {
-                AmountRecord::create([
-                    'user_id' => $user->id,
-                    'amount' => 0,
-                    'status' => 4           //status:4代表以儲值方式加錢
-                ]);
-                //建立新的金額紀錄
-                Amount::create(['user_id' => $user->id, 'amount' => $request->amount]);
-                $request->session()->flash('status', '儲值成功！');
-
-                return redirect('game');
+                Amount::create(['user_id' => $userID, 'amount' => 0]);
+                $result = $this->update($userID, $request->amount, $storeAmountStatus);
+                
+                return $result;
             } catch (Exception $e) {
                 throw $e;
-
-                return view('amount.store');
             }
         }
     }

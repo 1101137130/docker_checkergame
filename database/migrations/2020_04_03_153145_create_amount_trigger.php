@@ -14,9 +14,9 @@ class CreateAmountTrigger extends Migration
     {
         DB::unprepared('
         
-        CREATE TRIGGER amount_trigger AFTER INSERT ON laravel.amountrecords FOR EACH ROW
+        CREATE TRIGGER amount_trigger AFTER INSERT ON laravel_test.amountrecords FOR EACH ROW
             BEGIN
-                UPDATE  laravel.amounts 
+                UPDATE  laravel_test.amounts 
                 SET amount = amount + NEW.amount
                 WHERE user_id = NEW.user_id;
             END

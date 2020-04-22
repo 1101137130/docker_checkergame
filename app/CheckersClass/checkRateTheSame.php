@@ -16,13 +16,14 @@ class checkRateTheSame
 
         return self::$_instance;
     }
-    public static function check($id, $rate)
+    public function check($id, $rate)
     {
         $itemrate=Item::find($id);
+
         if ($itemrate->rate == $rate) {
-            return true;
+            return array(true,'');
         } else {
-            return false;
+            return array(false,'賠率已變動請重新下單！');
         }
     }
 }

@@ -30,7 +30,6 @@ Route::post('/amount', 'AmountController@store')->name('amount');
 Route::get('/getAmount', 'AmountController@getAmount')->name('amount');
 Route::post('/orderdelete', 'OrderController@deleteorder')->name('order');
 Route::get('/orders', 'OrderController@all')->name('order');
-Route::get('/getOrder', 'OrderController@getOrder')->name('order');
 Route::get('/registerManager', 'Auth\RegisterManager@showRegistrationForm')->name('user');
 Route::post('/managerRegister', 'Auth\RegisterManager@createManager')->name('user');
 Route::get('/getuser', 'Auth\RegisterManager@getUser')->name('user');

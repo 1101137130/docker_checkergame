@@ -17,7 +17,6 @@ class gameStart
     }
     public function start()
     {
-       
         $banker = array(1, 2, 3, 4, 5);
         $player = array(1, 2, 3, 4, 5);
         shuffle($banker);

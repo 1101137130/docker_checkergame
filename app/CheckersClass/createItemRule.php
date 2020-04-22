@@ -3,8 +3,8 @@
 namespace App\CheckersClass;
 
 use Illuminate\Http\Request;
-use App\Item;
 use App\Itemrule;
+use Exception;
 
 class createItemRule
 {
@@ -33,32 +33,29 @@ class createItemRule
         $operator = null;
         $total = null;
         $extend_exist_rule = null;
-     
-        if ($status == 2) {
-            $special_one = $this->dataConverter($request->specialCards1);
-            $special_two = $this->dataConverter($request->specialCards2);
-            $special_three = $this->dataConverter($request->specialCards3);
-        }
-
-        if ($status == 1) {
+        switch ($status) {
+            case 1:
             $one = $this->dataConverter($request->winRequire1);
             $two = $this->dataConverter($request->winRequire2);
             $three = $this->dataConverter($request->winRequire3);
             $four = $this->dataConverter($request->winRequire4);
             $five = $this->dataConverter($request->winRequire5);
+                break;
+            case 2:
+            $special_one = $this->dataConverter($request->specialCards1);
+            $special_two = $this->dataConverter($request->specialCards2);
+            $special_three = $this->dataConverter($request->specialCards3);
+                break;
+            case 3:
+                $operator = $request->operator;
+                $total = $request->total;
+                break;
+            case 4:
+            $extend_exist_rule = $request->selectFirst.','.$request->selectSecond.','.$request->selectThird ;
+                break;
         }
-           
-        if ($status == 3) {
-            $operator = $request->operator;
-            $total = $request->total;
-        }
-        if ($status == 4) {
-            $selectFirst = $request->selectFirst;
-            $selectSecond = $request->selectSecond;
-            $selectThird = $request->selectThird;
-            $extend_exist_rule = $selectFirst.','.$selectSecond.','.$selectThird ;
-        }
-        Itemrule::create([
+        try {
+            Itemrule::create([
             'item_id'=>$itemid,
             'special_one'=>$special_one,
             'special_two'=>$special_two,
@@ -73,13 +70,16 @@ class createItemRule
             'total'=>$total,
             'status'=>$status
             ]);
+        } catch (Exception $e) {
+            throw $e;
+        }
     }
     public function dataConverter($data)
     {
         $temp =1;
         $result =0;
-       
-        for ($i = sizeof($data)-1 ; $i>=0 ; $i--) {
+        $t = sizeof($data)-1;
+        for ($i = $t ; $i>=0 ; $i--) {
             $result=$result+(int)$data[$i]*$temp;
             $temp=$temp*10;
         }

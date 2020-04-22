@@ -4,6 +4,8 @@ namespace App\CheckersClass;
 
 use App\Itemrule;
 use Exception;
+use Illuminate\Support\Facades\DB;
+
 class getItemRule
 {
     private static $_instance  = null ;
@@ -25,5 +27,15 @@ class getItemRule
         } catch (Exception $errors) {
             throw $errors->getMessage();
         }
+    }
+    public function getItemRuleIdName()
+    {
+        $restult = DB::table('itemrules')
+            ->join('items', 'items.id', '=', 'itemrules.item_id')
+            ->select('itemrules.id', 'items.itemname')
+            ->where('itemrules.status', '=', 1)
+            ->get();
+            
+        return $restult;
     }
 }
