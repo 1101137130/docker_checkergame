@@ -26,7 +26,9 @@ class getItemData
         $data = array();
         $t = sizeof($array);
         for ($i = 0; $i < $t; $i++) {
-            array_push($data, array($array[$i]['id'], $array[$i]['itemname'], $array[$i]['rate'],$array[$i]['limit_amount']));
+            if ($array[$i]['status']==1) {
+                array_push($data, array($array[$i]['id'], $array[$i]['itemname'], $array[$i]['rate'],$array[$i]['limit_amount']));
+            }
         }
 
         return $data;

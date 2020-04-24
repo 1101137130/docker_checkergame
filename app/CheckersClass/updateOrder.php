@@ -29,11 +29,11 @@ class updateOrder
         }
 
         $convertOrdersStatus = convertStatus::getInstance();
-        $status = $convertOrdersStatus->convertOrdersStatus($status);
+        $setStatus = $convertOrdersStatus->convertOrdersStatus($status);
 
         try {
             $order =Order::find($orderid);
-            $order->update(['status' => $status]);
+            $order->update(['status' => $setStatus]);
           
             return array(true, '');
         } catch (Exception $e) {

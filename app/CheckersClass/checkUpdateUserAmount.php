@@ -58,8 +58,9 @@ class checkUpdateUserAmount
         $clientamount = Amount::where('user_id', $userID)->first();
         $convertStatus = convertStatus::getInstance();
         $storeAmountStatus = $convertStatus->convertAmountStatus('store');
-
-        if ($clientamount != null) {        //如果不是則建立新的金額紀錄
+        
+         //如果不是則建立新的金額紀錄
+        if ($clientamount != null) {       
             $result = $this->update($userID, $request->amount, $storeAmountStatus);
 
             return $result;

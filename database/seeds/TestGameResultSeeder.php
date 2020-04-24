@@ -1,16 +1,11 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use App\CheckersClass\gameStart;
-use App\CheckersClass\createGameResultRecord;
-
+use App\Resultrecord;
 class TestGameResultSeeder extends Seeder
 {
     public function run()
     {
-        $gamestart =new gameStart();
-        $result = $gamestart->start();
-        $creategameresult =new createGameResultRecord();
-        $creategameresult->create($result);
+        Resultrecord::create(['banker'=>543, 'player'=>513, 'result'=>313]);
     }
 }

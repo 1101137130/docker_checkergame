@@ -38,7 +38,9 @@
     window.onload = start
     var datatemp = 0;
     var itemIdName;
+    var itemname;
     userid = null;
+
     function start() {
         getItemName();
         getUserAuthority();
@@ -66,34 +68,25 @@
     }
 
     function getUserAuthority() {
-        $.ajax({
-            type: "GET",
-            url: "{{url('getuser')}}",
-            dataType: "json",
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            success: function(data) {
-                if (data.view_orders == 1) {
-                    userauth = 1;
-                    $('#useriddiv').append(
-                        '<label for="userid">下單者</label>' +
-                        '<select id="userid">' +
-                        '<option value=""></option>' +
-                        '</select>')
-                } else {
-                    userid = data.id;
-                    userauth = 0;
-                }
-                getUserName();
-
-            },
-            error: function(jqXHR) {
-                console.log(jqXHR)
+        var type = "GET";
+        var url = "{{url('getuser')}}";
+        ajax(type, url, function(output) {
+            if (output.view_orders == 1) {
+                userauth = 1;
+                $('#useriddiv').append(
+                    '<label for="userid">下單者</label>' +
+                    '<select id="userid">' +
+                    '<option value=""></option>' +
+                    '</select>')
+            } else {
+                userid = output.id;
+                userauth = 0;
             }
-        })
+            getUserName();
+        });
     }
 
+ 
     function getStartEndDateValue(data) {
         data = '#date_timepicker_' + data;
         datavalue = $(data).val()
@@ -125,29 +118,19 @@
             userid = getUserItemValue('userid');
             table(1)
         }
-
-        $.ajax({
-            type: "GET",
-            url: "{{url('getOrdersData')}}",
-            dataType: "json",
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            data: {
-                startdate: startdate,
-                enddate: enddate,
-                temp: datatemp,
-                userid: userid,
-                itemid: itemid,
-                status: status,
-                betobject: betobject
-            },
-            success: function(data) {
-                buildData(data, userauth)
-            },
-            error: function(jqXHR) {
-                console.log(jqXHR)
-            }
+        var type = "GET";
+        var url = "{{url('getOrdersData')}}";
+        var data = {
+            startdate: startdate,
+            enddate: enddate,
+            temp: datatemp,
+            userid: userid,
+            itemid: itemid,
+            status: status,
+            betobject: betobject
+        };
+        ajaxWithData(type, url, data, function(data) {
+            buildData(data, userauth)
         })
     }
 
@@ -249,7 +232,7 @@
             }
             body += '<td style="text-align: center;">' + data.bet_object +
                 "</td>";
-            body += '<td style="text-align: center;">' + putitemname(data.item_id) +
+            body += '<td style="text-align: center;">' + data.itemname +
                 "</td>";
             body += '<td id="status' + data.id + '" style="text-align: center;">' + data.status +
                 "</td>";
@@ -367,67 +350,32 @@
         table(false);
         datatemp = datatemp - 1;
         getOrders();
-
     }
 
     function nextDatafunction() {
         table(false);
         datatemp++;
         getOrders()
-
     }
-    var itemname;
-
-
     function getItemName() {
-        $.ajax({
-            type: "GET",
-            url: "{{url('getItemname')}}",
-            dataType: "json",
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
+        var type = "GET";
+        var url = "{{url('getItemname')}}";
+        ajax(type, url, function(data) {
+            itemIdName = data;
+            $.each(data, function(i, data) {
+                itemnNameAppend(data.id, data.itemname)
+            })
 
-            success: function(data) {
-                itemIdName = data;
-                $.each(data, function(i, data) {
-                    itemnNameAppend(data.id, data.itemname)
-                })
-
-            },
-            error: function(jqXHR) {
-                console.log(jqXHR)
-            }
         })
     }
 
-    function putitemname(id) {
-        for (var i = 0; i <= itemIdName.length; i++) {
-            if (itemIdName[i].id == id) {
-                return itemIdName[i].itemname;
-            }
-        }
-
-    }
-
     function getUserName() {
-        $.ajax({
-            type: "GET",
-            url: "{{url('getOrderUserName')}}",
-            dataType: "json",
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-
-            success: function(data) {
-                $.each(data, function(i, data) {
-                    userNameAppend(data.user_id, data.username)
-                })
-
-            },
-            error: function(jqXHR) {
-                console.log(jqXHR)
-            }
+        var type = "GET";
+        var url = "{{url('getOrderUserName')}}";
+        ajax(type, url, function(data) {
+            $.each(data, function(i, data) {
+                userNameAppend(data.user_id, data.username)
+            })
         })
     }
 
@@ -440,28 +388,20 @@
     }
 
     function cancel(id) {
-        $.ajax({
-            type: "POST",
-            url: "{{url('orderdelete')}}",
-            dataType: "json",
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            data: {
-                id: id,
-                status: 'cancel'
-            },
-            success: function(data) {
-                var orderid = '#order' + id
-                var statusid = '#status' + id
+        var type = "POST";
+        var url = "{{url('orderdelete')}}";
+        var data = {
+            id: id,
+            status: 'cancel'
+        };
+        ajaxWithData(type, url, data, function(data) {
+            var orderid = '#order' + id
+            var statusid = '#status' + id
 
-                $(orderid).css("background-color", "#FFB5B5")
-                $(statusid).html("註銷")
-            },
-            error: function(jqXHR) {
-                console.log(jqXHR)
-            }
+            $(orderid).css("background-color", "#FFB5B5")
+            $(statusid).html("註銷")
         })
+        
     }
 </script>
 @endsection

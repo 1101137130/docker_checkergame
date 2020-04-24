@@ -26,8 +26,7 @@
                 <strong>{{$errors->first('limit_amount')}}</strong></br>
             </span>
             @endif
-            限制下注金額：<input type="number" name="limit_amount" placeholder="請輸入金額" step="0.5" min="0.000"
-                max="10000000">
+            限制下注金額：<input type="number" name="limit_amount" placeholder="請輸入金額" step="0.5" min="0.000" max="10000000">
 
         </div>
         @if($errors->has('winRequire1')||$errors->has('winRequire2')||$errors->has('winRequire3')||$errors->has('winRequire4')||$errors->has('winRequire5'))
@@ -115,23 +114,13 @@
             $('#selectSecond').append('<option value=' + data.id + '>' + data.itemname + '</option>');
             $('#selectThird').append('<option value=' + data.id + '>' + data.itemname + '</option>');
         })
-
     }
 
     function getItemRulesData() {
-        $.ajax({
-            type: "GET",
-            url: "{{url('itemrule')}}",
-            dataType: "json",
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            success: function(data) {
-                putItemRulesData(data);
-            },
-            error: function(jqXHR) {
-                console.log('error')
-            }
+        var type = "GET";
+        var url = "{{url('itemrule')}}";
+        ajax(type, url, function(data) {
+            putItemRulesData(data);
         })
     }
 
@@ -148,7 +137,6 @@
         if (c2 == c3) {
             $("input[name='specialCards3']").prop("checked", false);
         }
-
     }
 
     function setInputOperator() {
@@ -163,97 +151,67 @@
     }
     //這是從第一次從前端去跟後端要資料的function
     function getItemsData() {
-
-        $.ajax({
-            type: "POST",
-            url: "{{url('item')}}",
-            dataType: "json",
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            success: function(data) {
-                add_row(data);
-            },
-            error: function(jqXHR) {
-                console.log('error')
-            }
+        var type = "POST";
+        var url = "{{url('item')}}";
+        ajax(type, url, function(data) {
+            add_row(data);
         })
     }
     //-----
-    // 這是為了可以實現多筆資料一次修改的ajax
+    // 這是為了可以實現多筆資料一次修改
     function allEdit() {
-        $.ajax({
-            type: "POST",
-            url: "{{url('item/edit')}}",
-            dataType: "json",
-            data: {
-                temp: temp
-            },
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            success: location.reload(),
-            error: function(jqXHR) {
-                console.log('error')
-            }
-        })
+        var type = "POST";
+        var url = "{{url('item/edit')}}";
+        var data = {
+            temp: temp
+        };
+        ajaxWithData(type, url, data)
+        location.reload();
     }
     //------
-    //這是提供單筆資料修改的ajax
+    //這是提供單筆資料修改
     function ajaxToEdit(id, itemnameid, inputrateid, inputlimitamountid) {
 
         var itemname = $(itemnameid).val();
         var itemrate = $(inputrateid).val();
-        var limiamount =$(inputlimitamountid).val();
-        $.ajax({
-            type: "PUT",
-            url: "{{url('item/{id}')}}",
-            dataType: "json",
-            data: {
-                id: id,
-                itemname: itemname,
-                rate: itemrate,
-                limit_amount :limiamount
-            },
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            success: location.reload(),
-            error: function(jqXHR) {
-                console.log(jqXHR)
-            }
-        })
+        var limiamount = $(inputlimitamountid).val();
+        var type = "PUT";
+        var url = "{{url('item/{id}')}}";
+        var data = {
+            id: id,
+            itemname: itemname,
+            rate: itemrate,
+            limit_amount: limiamount
+        };
+        ajaxWithData(type, url, data)
+        location.reload();
     }
     //-----
     //這是刪除的ajax
     function ajaxToDelete(id) {
-
-        $.ajax({
-            type: "DELETE",
-            url: "{{url('item/{id}')}}",
-            dataType: "json",
-            data: {
-                id: id,
-            },
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            success: location.reload(),
-            error: function(jqXHR) {
-                console.log(jqXHR)
-            }
-        })
-
+        var type = "DELETE";
+        var url = "{{url('item/{id}')}}";
+        var data = {
+            id: id
+        };
+        ajaxWithData(type, url, data)
+        location.reload();
     }
     //-----
     //這是開始時向後端要資料需要建立的td
     function add_row(data) {
         for (var i = 0; i < data.length; i++) {
-
+            console.log(data);
             var itemid = data[i][0];
             var itemname = data[i][1];
             var itemrate = data[i][2];
             var itemlimit = data[i][3];
+            if (data[i][4] == '1') {
+                itemstatus = '可用';
+            }
+            if (data[i][4] == '2') {
+                itemstatus = '不可用';
+            }
             var td1 = '<td id="tdnameid' + [i] + '"><div value=' + itemname + ' id=' + 'itemname' + itemid +
                 ' onclick="openLabel(' + 'itemname' + itemid + ',' + 'itemid' + itemid + ',' + 'limitamount' + itemid +
                 ',' + i + ',' + itemid +
@@ -265,7 +223,8 @@
             var td3 = '<td id="tdlimitid' + [i] + '"><div value=' + itemlimit + ' id=' + 'limitamount' + itemid +
                 ' onclick="openLabel(' + 'itemname' + itemid + ',' + 'itemid' + itemid + ',' + 'limitamount' + itemid +
                 ',' + i + ',' + itemid +
-                ')">限制下注金額：' + itemlimit + '</div></</td>';
+                ')">限制下注金額：' + itemlimit + '</div></</td>' +
+                '<td>狀態：' + itemstatus + '</td>';
             var td4 = '<td id="tdid' + [i] + '">' + '<a role="btn" class="btn btn-danger" onclick="ajaxToDelete(' +
                 itemid + ')">刪除</a></td>';
             var tr = $('<tr >').append(td1, td2, td3, td4);
@@ -290,18 +249,22 @@
         var limitamountid = limitid.attributes[1].nodeValue;
 
         $(tdnameid).append('項目：<input required="required" name="itemname" onchange="changeDatatemp(' + inputnameid +
-            ',' + rateid + ',' + itemid + ',' + limitamountid + ')" type="text" placeholder=' + itemnamevalue + ' value=' +
+            ',' + rateid + ',' + itemid + ',' + limitamountid + ')" type="text" placeholder=' + itemnamevalue +
+            ' value=' +
             itemnamevalue + ' id=' + inputnameid + ' >');
 
         $(tdidid).append('賠率：<input required="required"  name="itemrate" onchange="changeDatatemp(' + inputnameid +
-            ',' + rateid + ',' + itemid + ',' + limitamountid + ')" type="number" step="0.0001" min="0.000" max="10000" placeholder=' +
+            ',' + rateid + ',' + itemid + ',' + limitamountid +
+            ')" type="number" step="0.0001" min="0.000" max="10000" placeholder=' +
             ratevalue + ' value=' + ratevalue + ' id=' + rateid + '>');
 
-        $(tdlimitid).append('限制下注金額：<input required="required"  name="limit_amount" onchange="changeDatatemp(' + inputnameid +
-            ',' + rateid + ',' + itemid + ',' + limitamountid + ')" type="number" step="0.5000" min="0.000" max="10000000000" placeholder=' +
+        $(tdlimitid).append('限制下注金額：<input required="required"  name="limit_amount" onchange="changeDatatemp(' +
+            inputnameid +
+            ',' + rateid + ',' + itemid + ',' + limitamountid +
+            ')" type="number" step="0.5000" min="0.000" max="10000000000" placeholder=' +
             limitamountvalue + ' value=' + limitamountvalue + ' id=' + limitamountid + '>');
 
-        store(i, itemid, inputnameid, rateid,limitamountid)
+        store(i, itemid, inputnameid, rateid, limitamountid)
     }
     //-----
     //全域變數 count 目的是為了算使用者修改了幾項
@@ -311,13 +274,13 @@
     var temp = new Array;
     //-----
     //檢查該項是否被修改過 如果有修改過 則將該項temp陣列變數的資料覆寫  
-    function checkDataAltered(id, namevalue, ratevalue,limitamountvalue) {
-        limitamountvalue == null ? 10000000000: limitamountvalue;
+    function checkDataAltered(id, namevalue, ratevalue, limitamountvalue) {
+        limitamountvalue == null ? 10000000000 : limitamountvalue;
         for (var i = 0; i < count; i++) {
             if (temp[i][0] == id) {
                 temp.splice(i, 1)
                 temp[i] = new Array;
-                temp[i].push(id, namevalue, ratevalue,limitamountvalue)
+                temp[i].push(id, namevalue, ratevalue, limitamountvalue)
 
                 return false;
             }
@@ -327,23 +290,23 @@
     }
     //-----
     //當發生修改時觸發將修改的值放入temp變數中
-    function changeDatatemp(nameid, rateid, id , limitamountid) {
+    function changeDatatemp(nameid, rateid, id, limitamountid) {
         var namevalue = $(nameid).val();
         var ratevalue = $(rateid).val();
         var limitamountvalue = $(limitamountid).val()
-        if (checkDataAltered(id, namevalue, ratevalue,limitamountvalue)) {
+        if (checkDataAltered(id, namevalue, ratevalue, limitamountvalue)) {
             temp[count] = new Array;
             //temp.push(count)
-            temp[count].push(id, namevalue, ratevalue,limitamountvalue)
+            temp[count].push(id, namevalue, ratevalue, limitamountvalue)
             count++
         }
     }
     //-----
     //製作一個單向修改的儲存按鈕
-    function store(i, itemid, inputnameid, rateid,limitamountid) {
+    function store(i, itemid, inputnameid, rateid, limitamountid) {
         var tdid = '#tdid' + i;
         $(tdid).append('<a role="btn" class="btn btn-primary" onclick="ajaxToEdit(' + itemid + ',' + inputnameid + ',' +
-            rateid + ','+limitamountid+')">儲存</a>');
+            rateid + ',' + limitamountid + ')">儲存</a>');
         $(storeButton).show();
     }
     //-----

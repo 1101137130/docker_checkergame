@@ -51,7 +51,7 @@ class HomeController extends Controller
     
     public function clientorder(Request $request)
     {
-        $order = $request->order;
+        $order = $request->all();
         $createOrders = createOrders::getInstance();
 
         return $createOrders->init($order);

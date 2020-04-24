@@ -27,17 +27,9 @@
 @endsection
 <script> 
 function takeMoney(){
-    $.ajax({
-            type: "GET",
-            url: "{{url('takeMoney')}}",
-            dataType: "json",
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            success: location.reload(),
-            error: function(jqXHR) {
-                console.log('error')
-            }
-        })
+    var type = "GET";
+    var url = "{{url('takeMoney')}}";
+    ajax(type, url);
+    location.reload();
 }
 </script>

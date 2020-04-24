@@ -25,14 +25,15 @@ class createOrders
     {
         $gamestart =  gameStart::getInstance();
         $result = $gamestart->start();
-        if ($order != "true") { //這是判定有沒有金額下注 如果沒有就只是跑一次遊戲給前臺
+       
+        if ($order['order'] != "true") { //這是判定有沒有金額下注 如果沒有就只是跑一次遊戲給前臺
             $user = Auth::user();
             $gameend = gameEnd::getInstance();
             $creategameresult =createGameResultRecord::getInstance();
             $resultID=$creategameresult->create($result);
             $resultID=$resultID->id;
 
-            foreach ($order as $item) {
+            foreach ($order['order'] as $item) {
                 $data = $this->process($user, $item, $resultID);
                 if ($data[0]) {
                     array_push($result, $gameend->end($item, $result, $data[1]));
@@ -53,7 +54,7 @@ class createOrders
         $checkandUpadate = checkUpdateUserAmount::getInstance();
         $convertStatus = convertStatus::getInstance();
         $checkRateTheSame = checkRateTheSame::getInstance();
-
+        
         $check = $checkandUpadate->check($user->id, $item[3]);
         if ($check[0]) {
             $playAmountStatus = $convertStatus->convertAmountStatus('play');

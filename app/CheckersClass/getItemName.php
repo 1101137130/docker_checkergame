@@ -16,6 +16,10 @@ class getItemName
 
     public function getData()
     {
+        if(!Redis::get('isItemSetyet')){
+            $setItem = redisGetSet::getInstance();
+            $setItem->setItemname();
+        }
         $data = Redis::get('Item');
         $data = json_decode($data, true);
         $array = array();
@@ -23,7 +27,7 @@ class getItemName
         for ($i = 0 ; $i<=$t ; $i++) {
             array_push($array, array('id'=>$data[$i]['id'],'itemname'=>$data[$i]['itemname'],));
         }
-        return $array;
 
+        return $array;
     }
 }

@@ -3,7 +3,10 @@
 use Illuminate\Database\Seeder;
 use App\Item;
 use App\Itemrule;
+use App\Raterecord;
+
 use App\CheckersClass\redisGetSet;
+
 class TestItemSeeder extends Seeder
 {
     public static function run()
@@ -13,6 +16,7 @@ class TestItemSeeder extends Seeder
             'rate' => 2,
             'limit_amount' => 10000
         ]);
+        Raterecord::create(['user_id'=>1,'item_id'=>$item->id,'rate'=>$item->rate]);
         Itemrule::create([
             'item_id'=>$item->id,
             'special_one'=>null,
@@ -28,11 +32,13 @@ class TestItemSeeder extends Seeder
             'total'=>null,
             'status'=>1
             ]);
+
         $item =Item::create([
             'itemname' => '輸',
             'rate' => 2,
             'limit_amount' => 10000
         ]);
+        Raterecord::create(['user_id'=>1,'item_id'=>$item->id,'rate'=>$item->rate]);
         Itemrule::create([
             'item_id'=>$item->id,
             'special_one'=>null,
@@ -54,6 +60,7 @@ class TestItemSeeder extends Seeder
             'rate' => 3,
             'limit_amount' => 10000
         ]);
+        Raterecord::create(['user_id'=>1,'item_id'=>$item->id,'rate'=>$item->rate]);
         Itemrule::create([
             'item_id'=>$item->id,
             'special_one'=>null,
@@ -74,6 +81,7 @@ class TestItemSeeder extends Seeder
             'rate' => 4,
             'limit_amount' => 10000
         ]);
+        Raterecord::create(['user_id'=>1,'item_id'=>$item->id,'rate'=>$item->rate]);
         Itemrule::create([
             'item_id'=>$item->id,
             'special_one'=>null,
@@ -95,6 +103,7 @@ class TestItemSeeder extends Seeder
             'rate' => 3,
             'limit_amount' => 10000
         ]);
+        Raterecord::create(['user_id'=>1,'item_id'=>$item->id,'rate'=>$item->rate]);
         Itemrule::create([
             'item_id'=>$item->id,
             'special_one'=>null,
@@ -115,6 +124,7 @@ class TestItemSeeder extends Seeder
             'rate' => 5,
             'limit_amount' => 10000
         ]);
+        Raterecord::create(['user_id'=>1,'item_id'=>$item->id,'rate'=>$item->rate]);
         Itemrule::create([
             'item_id'=>$item->id,
             'special_one'=>1,
@@ -135,6 +145,7 @@ class TestItemSeeder extends Seeder
             'rate' => 5,
             'limit_amount' => 10000
         ]);
+        Raterecord::create(['user_id'=>1,'item_id'=>$item->id,'rate'=>$item->rate]);
         Itemrule::create([
             'item_id'=>$item->id,
             'special_one'=>null,
@@ -150,7 +161,7 @@ class TestItemSeeder extends Seeder
             'total'=>null,
             'status'=>4
             ]);
-            $setItemname =redisGetSet::getInstance();
-            $setItemname->setItemname();
+        $setItemname =redisGetSet::getInstance();
+        $setItemname->setItemname();
     }
 }

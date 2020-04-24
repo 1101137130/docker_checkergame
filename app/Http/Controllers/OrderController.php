@@ -35,7 +35,7 @@ class OrderController extends Controller
     public function getData(Request $request)
     {
         $selectOrders = selectOrders::getInstance();
-        $orders = $selectOrders->ordersSelector($request);
+        $orders = $selectOrders->ordersSelector($request->all());
         
         return $orders;
     }

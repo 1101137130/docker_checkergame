@@ -26,7 +26,7 @@ class CheckUpdateUserAmountTest extends TestCase
     {
         return
         [
-            [1,10000000,array(false,'您的存款不足')],
+            [1,1000000000000,array(false,'您的存款不足')],
             [2,1000000,array(false,'找不到您的金額紀錄')],
             [1, 1000, array(true,'')]
         ];

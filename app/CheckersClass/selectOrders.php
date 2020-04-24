@@ -17,18 +17,22 @@ class selectOrders
     public function ordersSelector($data)
     {
         $temp =0;
-        $userid= $data->userid == ''? null :$data->userid;
-        $itemid= $data->itemid == ''? null :$data->itemid;
-        $startdate= $data->startdate == 'NaN'? 0 :$data->startdate;
-        $enddate= $data->enddate == 'NaN'? time() :$data->enddate;
-        $status= $data->status == ''? null :$data->status;
-        $betobject = $data->betobject =='' ? null : $data->betobject;
+        $userid= $data['userid'];
+        $itemid= $data['itemid'];
+        $startdate= $data['startdate'] == 'NaN'? 0 :$data['startdate'];
+        $enddate= $data['enddate'] == 'NaN'? time() :$data['enddate'];
+        $status= $data['status'];
+        $betobject = $data['betobject'];
 
-        $data->temp == 0 ? $temp = 0 : $temp = $data->temp*100;
+        $data['temp'] == 0 ? $temp = 0 : $temp = $data['temp']*100;
 
-        $orders=DB::table('orders')->get()
-         ->where('created_at', '<=', $enddate)
-         ->where('created_at', '>=', $startdate);
+        $orders=DB::table('orders')
+        ->join('users', 'users.id', '=', 'orders.user_id')
+        ->join('items', 'items.id', '=', 'orders.item_id')
+        ->select('orders.user_id', 'orders.item_id', 'orders.id', 'users.username', 'bet_object', 'items.itemname', 'orders.status', 'orders.amount', 'orders.item_rate', 'orders.created_at')
+        ->get()
+        ->where('created_at', '<=', $enddate)
+        ->where('created_at', '>=', $startdate);
         if ($userid != null) {
             $orders = $orders->where('user_id', $userid);
         }
@@ -41,8 +45,9 @@ class selectOrders
         if ($betobject != null) {
             $orders = $orders->where('bet_object', $betobject);
         }
-        $data=$orders->slice($temp)->take(100);
+        $result = $orders
+        ->slice($temp)->take(100);
 
-        return json_decode($data, true);
+        return json_decode($result, true);
     }
 }

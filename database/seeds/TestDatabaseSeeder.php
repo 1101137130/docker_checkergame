@@ -12,7 +12,6 @@ class TestDatabaseSeeder extends Seeder
      */
     public function run()
     {
-
         $this->call(TestUserSeeder::class);
         $this->call(TestItemSeeder::class);
         $this->call(TestUserAmountSeeder::class);

@@ -1,7 +1,6 @@
 @extends('layouts.app')
 @section('content')
 <div class="container">
-    <button class="btn btn-primary" onclick="getData('all')">取所有值</button>
     <label for="getDataByUser">依據使用者</label>
     <select id="getDataByUser"></select>
     <label for="getDataByItem">依據品項</label>
@@ -11,15 +10,47 @@
         <input type="text" id="date_timepicker_start" name="date_timepicker_start">
         <label for="date_timepicker_end">結束日期</label>
         <input type="text" id="date_timepicker_end" name="date_timepicker_end">
-        <button class="btn btn-primary" onclick="getData('date')">範圍搜索</button>
+        <button class="btn btn-primary" onclick="getData()">範圍搜索</button>
     </div>
 
     <div id="tablelocation"></div>
 </div>
 <link href="{{ asset('css/jquery.css') }}" rel="stylesheet">
 <script>
+    window.onload = start
     var datatemp = 0;
     var datalenth = 0;
+
+    function start() {
+        getUsers();
+        getItems();
+    }
+
+    function getUsers() {
+        var type = "GET";
+        var url = "{{url('getRaterecordUsers')}}";
+        ajax(type, url, function(data) {
+            $('#getDataByUser').append('<option value=""></option>');
+            $.each(data, function(i, data) {
+                $('#getDataByUser').append('<option value="' + data.user_id + '">' + data.username +
+                    '</option>'
+                )
+            })
+        })
+    }
+
+    function getItems() {
+        var type = "GET";
+        var url = "{{url('getRaterecordItems')}}";
+        ajax(type, url, function(data) {
+            $('#getDataByItem').append('<option value=""></option>');
+            $.each(data, function(i, data) {
+                $('#getDataByItem').append('<option value="' + data.item_id + '">' + data.itemname +
+                    '</option>'
+                )
+            })
+        })
+    }
 
     function dateFormater(date) {
         var dd = date.getDate();
@@ -42,64 +73,32 @@
     function getStartEndDateValue(data) {
         data = '#date_timepicker_' + data;
         datavalue = $(data).val()
-
+        datavalue = new Date(datavalue);
         if (datavalue == '') {
-            now = new Date();
-            datavalue = dateFormater(now)
+            return '';
         }
-
-        return datavalue;
+        return datavalue.getTime() / 1000
     }
 
-    function getData(condition) {
+    function getData() {
         table(false);
 
-        if (condition == 'date') {
-            startdate = getStartEndDateValue('start');
-            enddate = getStartEndDateValue('end');
-            $.ajax({
-                type: "POST",
-                url: "{{url('getRaterecordDataByDate')}}",
-                dataType: "json",
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                data: {
-                    startdate: startdate,
-                    enddate: enddate
-                },
-                success: function (data) {
-                    buildData(data)
-
-                },
-                error: function (jqXHR) {
-                    console.log(jqXHR)
-                }
-            })
-
-        }
-
-        if (condition == 'all') {
-            $.ajax({
-                type: "GET",
-                url: "{{url('getRaterecordDataAll')}}",
-                dataType: "json",
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                data: {
-                    temp: datatemp
-                },
-                success: function (data) {
-                    buildData(data);
-
-                },
-                error: function (jqXHR) {
-                    console.log(jqXHR)
-                }
-            })
-
-        }
+        startdate = getStartEndDateValue('start');
+        enddate = getStartEndDateValue('end');
+        userid = $('#getDataByUser').val();
+        itemid = $('#getDataByItem').val();
+        var type = "POST";
+        var url = "{{url('getRaterecordData')}}";
+        var data = {
+            startdate: startdate,
+            enddate: enddate,
+            userid: userid,
+            itemid: itemid,
+            temp: datatemp
+        };
+        ajaxWithData(type, url, data, function(data) {
+            buildData(data)
+        })
     }
 
     function table(command) {
@@ -136,7 +135,7 @@
     function buildData(data) {
 
         table(true);
-        $.each(data, function (i, data) {
+        $.each(data, function(i, data) {
 
             data.created_at = timeconvert(data.created_at);
 
@@ -157,17 +156,17 @@
         });
         $('#DataTalbe').DataTable({
             destroy: true,
-            initComplete: function () {
+            initComplete: function() {
                 var api = this.api();
 
-                api.columns().indexes().flatten().each(function (i) {
+                api.columns().indexes().flatten().each(function(i) {
                     if (i > 0 && i < 4) {
                         var column = api.column(i);
                         var select = $(
                                 '<select><option value=""></option></select>'
                             )
                             .appendTo($(column.footer()).empty())
-                            .on('change', function () {
+                            .on('change', function() {
                                 var val = $.fn.dataTable.util
                                     .escapeRegex(
                                         $(this).val()
@@ -181,7 +180,7 @@
                             });
 
                         column.data().unique().sort().each(
-                            function (d,
+                            function(d,
                                 j) {
 
                                 select.append(
@@ -194,7 +193,7 @@
                 });
             }
         });
-        $('#DataTalbe').on('page.dt', function () {
+        $('#DataTalbe').on('page.dt', function() {
             var info = $(this).DataTable().page.info();
             if (info.end == info.recordsTotal) {
                 buildButton('next');
@@ -215,31 +214,6 @@
         }
     }
 
-    function getdata() {
-        $.ajax({
-            type: "POST",
-            url: "{{url('tempData')}}",
-            dataType: "json",
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            data: {
-                temp: datatemp
-            },
-            success: function (data) {
-
-                buildData(data);
-                if (datatemp != 0) {
-                    buildButton('last')
-                }
-
-            },
-            error: function (jqXHR) {
-                console.log(jqXHR)
-            }
-        })
-    }
-
     function lastDatafunction() {
         datatemp = datatemp - 1;
         getdata();
@@ -251,10 +225,10 @@
 
     }
     var itemname;
-    jQuery(function () {
+    jQuery(function() {
         jQuery('#date_timepicker_start').datetimepicker({
             format: 'Y-m-d H:m',
-            onShow: function (ct) {
+            onShow: function(ct) {
                 this.setOptions({
                     maxDate: jQuery('#date_timepicker_end').val() ? jQuery(
                         '#date_timepicker_end').val() : Date.now()
@@ -263,7 +237,7 @@
         });
         jQuery('#date_timepicker_end').datetimepicker({
             format: 'Y/m/d H:m',
-            onShow: function (ct) {
+            onShow: function(ct) {
                 this.setOptions({
                     minDate: jQuery('#date_timepicker_start').val() ? jQuery(
                         '#date_timepicker_start').val() : false
@@ -271,6 +245,5 @@
             }
         });
     });
-
 </script>
 @endsection

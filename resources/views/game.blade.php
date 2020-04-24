@@ -68,43 +68,32 @@
     window.onload = show;
 
     function show() {
-        $.ajax({
-            type: "POST",
-            url: "{{url('show')}}",
-            dataType: "json",
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            success: function(data) {
-                for (var i = 0; i <= data.length; i++) {
-                    $('#tbody').append(
-                        '<tr>' +
-                        '<td style="text-align: center;">' +
-                        '<label for="bankerS' + data[i][0] +
-                        '">' + data[i][1] + '：' + data[i][2] +
-                        '</label>' +
-                        '<input onchange="dataToMap(bankerS' + data[i][0] +
-                        ')" id="bankerS' + data[i][0] +
-                        '"  type="number" style="width:180"  placeholder="金額限制：' + data[i][3] +
-                        '" min="0" max="' + data[i][3] + '">' +
-                        '</td>' +
-                        '<td style="text-align: center;">' +
-                        '<label for="playerS' + data[i][0] +
-                        '">' + data[i][1] + '：' + data[i][2] +
-                        '</label>' +
-                        '<input onchange="dataToMap(playerS' + data[i][0] +
-                        ')" id="playerS' + data[i][0] +
-                        '"  type="number"  style="width:180"  placeholder="金額限制：' + data[i][3] +
-                        '" min="0" max="' + data[i][3] + '">' +
-                        '</td>' +
-                        '</tr>'
-                    )
-                }
-
-
-            },
-            error: function(jqXHR) {
-                console.log(jqXHR)
+        var type = "POST";
+        var url = "{{url('show')}}";
+        ajax(type, url, function(data) {
+            for (var i = 0; i <= data.length; i++) {
+                $('#tbody').append(
+                    '<tr>' +
+                    '<td style="text-align: center;">' +
+                    '<label for="bankerS' + data[i][0] +
+                    '">' + data[i][1] + '：' + data[i][2] +
+                    '</label>' +
+                    '<input onchange="dataToMap(bankerS' + data[i][0] +
+                    ')" id="bankerS' + data[i][0] +
+                    '"  type="number" style="width:180"  placeholder="金額限制：' + data[i][3] +
+                    '" min="0" max="' + data[i][3] + '">' +
+                    '</td>' +
+                    '<td style="text-align: center;">' +
+                    '<label for="playerS' + data[i][0] +
+                    '">' + data[i][1] + '：' + data[i][2] +
+                    '</label>' +
+                    '<input onchange="dataToMap(playerS' + data[i][0] +
+                    ')" id="playerS' + data[i][0] +
+                    '"  type="number"  style="width:180"  placeholder="金額限制：' + data[i][3] +
+                    '" min="0" max="' + data[i][3] + '">' +
+                    '</td>' +
+                    '</tr>'
+                )
             }
         })
     }
@@ -146,54 +135,42 @@
             }
             i++
         }
-        console.log(ordersarray)
         return ordersarray
     }
 
     function ajaxBack(ordersarray) {
-        $.ajax({
-            type: "POST",
-            url: "{{url('game')}}",
-            dataType: "json",
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            data: {
-                order: ordersarray
-            },
-            success: function(data) {
-
-                if (typeof data == typeof 'string') {
-                    alert(data)
-                    location.reload();
-                } else {
-                    $('#ob1one').html(data[0][0]);
-                    $('#ob1two').html(data[1][0]);
-                    $('#ob1three').html(data[2][0]);
-                    $('#ob2one').html(data[0][1]);
-                    $('#ob2two').html(data[1][1]);
-                    $('#ob2three').html(data[2][1]);
-                    $('#win1').html(data[0][2]);
-                    $('#win2').html(data[1][2]);
-                    $('#win3').html(data[2][2]);
-                    $('#finalresult').html(toChinese(data[3]));
-                    $('#winamount').html(data[5]);
-                    getAmount();
-                    var array = new Array;
-                    for (i = 4; i < data.length - 1; i++) {
-                        if (data[i] != null) {
-                            array[i] = new Array;
-                            array[i].push('項目：' + data[i][0] +
-                                ' 結果：' + toWinLost(data[i][5]) + '</br>')
-
-                            logAppend(array)
-                        }
+        var type = "POST";
+        var url = "{{url('game')}}";
+        var data = {
+            order: ordersarray
+        };
+        ajaxWithData(type, url, data, function(data) {
+            if (typeof data == typeof 'string') {
+                alert(data)
+                location.reload();
+            } else {
+                $('#ob1one').html(data[0][0]);
+                $('#ob1two').html(data[1][0]);
+                $('#ob1three').html(data[2][0]);
+                $('#ob2one').html(data[0][1]);
+                $('#ob2two').html(data[1][1]);
+                $('#ob2three').html(data[2][1]);
+                $('#win1').html(data[0][2]);
+                $('#win2').html(data[1][2]);
+                $('#win3').html(data[2][2]);
+                $('#finalresult').html(toChinese(data[3]));
+                $('#winamount').html(data[5]);
+                getAmount();
+                var array = new Array;
+                for (i = 4; i < data.length - 1; i++) {
+                    if (data[i] != null) {
+                        array[i] = new Array;
+                        array[i].push('項目：' + data[i][0] +
+                            ' 結果：' + toWinLost(data[i][5]) + '</br>')
+                        logAppend(array)
                     }
-
                 }
-            },
-            error: function(jqXHR) {
-                console.log(jqXHR)
+
             }
         })
     }
@@ -237,8 +214,8 @@
             }
         } else {
 
-            $testrun = 'true'
-            ajaxBack($testrun);
+            var testrun = 'true'
+            ajaxBack(testrun);
 
         }
     }

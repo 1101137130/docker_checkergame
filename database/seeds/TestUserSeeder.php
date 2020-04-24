@@ -12,13 +12,17 @@ class TestUserSeeder extends Seeder
      */
     public function run()
     {
-        factory(App\User::class, 2)->create();
-        $user=User::find(1);
-        $user->update([
-                'view_orders' => 1,
-                'manager_editor' => 1,
-                'manage_rate' => 1,
-                'deposit_able' => 1,
-                'order_amount_arrangement' => 1]);
+        $user = User::create([
+            'username' =>'root',
+            'email' => 'root@hhh.com',
+            'password' => bcrypt('123456'),
+            'status' => 1,
+            'view_orders' => 1,
+            'manager_editor' => 1,
+            'manage_rate' => 1,
+            'deposit_able' => 1,
+            'order_amount_arrangement' => 1
+        ]);
+
     }
 }

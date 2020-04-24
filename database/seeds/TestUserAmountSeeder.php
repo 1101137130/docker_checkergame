@@ -14,6 +14,6 @@ class TestUserAmountSeeder extends Seeder
     public function run()
     {
             Amount::create(['user_id' => 1, 'amount' => 0]);
-            AmountRecord::create(['user_id'=>1,'status'=>4,'amount'=>100000]);
+            AmountRecord::create(['user_id'=>1,'status'=>4,'amount'=>100000000]);
     }
 }

@@ -17,6 +17,8 @@ class DatabaseSeeder extends Seeder
         $this->call(TestItemSeeder::class);
         $this->call(TestUserAmountSeeder::class);
         $this->call(TestGameResultSeeder::class);
+        $this->call(TestOrdersSeeder::class);
+
     }
     //請修改env database = laravel 再使用下面run
     // public function run()

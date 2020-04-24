@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\CheckersClass\redisGetSet;
+use App\CheckersClass\selectOrders;
 use App\CheckersClass\selectRaterecords;
 use Illuminate\Http\Request;
 
@@ -11,30 +13,24 @@ class RaterecordController extends Controller
     {
         $this->middleware('auth');
     }
-    public function getDataByUser(Request $user)
+    public function getUsers()
     {
         $re = selectRaterecords::getInstance();
-        return $re->dataSelect('user', $user->id, $user->temp);
+
+        return $re->getUsers();
     }
-    public function getDataByItem(Request $item)
+    public function getItems()
     {
         $re = selectRaterecords::getInstance();
-        return $re->dataSelect('item', $item->id, $item->temp);
+
+        return $re->getItems();
     }
-    public function getDataAll(Request $temp)
-    {
-        if ($temp->temp == 0) {
-            $temp->temp == null;
-        }
-        $re = selectRaterecords::getInstance();
-        return $re->dataSelect(null, null, $temp->temp);
-    }
-    public function getDataByDate(Request $date)
+
+    public function getData(Request $data)
     {
         $re = selectRaterecords::getInstance();
-        $data= $re->dataSelect(null, null, null, $date);
-    
-        return $data;
+
+        return $re->dataSelect($data->all());
     }
     public function index()
     {

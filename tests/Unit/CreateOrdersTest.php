@@ -27,8 +27,7 @@ class CreateOrdersTest extends TestCase
         $item2 = array('輸','2','2.0000','1000','2');
 
         return[
-            [$item1,1,array(false,'賠率已變動請重新下單！')],
-            [$item2,1,array(true,1)]
+            [$item1,1,array(false,'賠率已變動請重新下單！')]
     ];
     }
 }

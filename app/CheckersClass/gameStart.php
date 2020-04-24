@@ -72,6 +72,7 @@ class gameStart
     {
         $bankercount = 0;
         $playercount = 0;
+
         for ($i = 0; $i <= 2; $i++) {
             if ($result[$i][2] == 1) {
                 $bankercount++;

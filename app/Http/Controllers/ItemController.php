@@ -4,13 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Item;
-use App\Itemrule;
-use App\Raterecord;
+use App\Order;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
-use Illuminate\Support\Facades\Auth;
-use App\CheckersClass\createItemRule;
 use App\CheckersClass\getItemName;
 use App\CheckersClass\getItemRule;
 use App\CheckersClass\updateItems;
@@ -36,16 +33,10 @@ class ItemController extends Controller
     public function destroy(Request $request)
     {
         $this->middleware('itemRateManage');
-        try {
-            $item = Item::find($request->id);
-            $item->delete();
-            Itemrule::where('item_id', $request->id)->delete();
-
-            $request->session()->flash('status', '刪除成功！');
-            Redis::set('isItemSetyet', false);  //修改redis資料
-        } catch (Exception $e) {
-            throw $e;
-        }
+        $delete = updateItems::getInstance();
+        $r = $delete->delete($request->all());
+        
+        return $r;
     }
 
     public function show($id)
@@ -96,8 +87,8 @@ class ItemController extends Controller
     public function store()
     {
         $this->middleware('itemRateManage');
-        $store = updateItems::getInstance();
+        $show = updateItems::getInstance();
 
-        return $store->store();
+        return $show->store();
     }
 }

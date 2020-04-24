@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Redis;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ItemController;
+use App\Order;
+use Illuminate\Support\Facades\Session;
 
 class updateItems extends ItemController
 {
@@ -98,11 +100,12 @@ class updateItems extends ItemController
             $this->extendCompareValidator($request);
                 break;
         }
-
+        $user = Auth::user();
         try {
             $createItemrule = createItemRule::getInstance();
             $item = Item::create($request->all());
             $createItemrule->create($request, $item->id);
+            Raterecord::create(['user_id'=>$user->id,'item_id'=>$item->id,'rate'=>$item->rate]);
             $request->session()->flash('status', '新增成功！');
             Redis::set('isItemSetyet', false); //修改redis資料
 
@@ -127,13 +130,32 @@ class updateItems extends ItemController
             throw  $e;
         }
     }
+    public function delete($request)
+    {
+        try {
+            $order = Order::where('item_id', $request['id'])->first();
+            $item = Item::find($request['id']);
+            if ($order == null) {
+                $item->delete();
+
+                return Session::flash('status', '刪除成功！');
+            } else {
+                $item->update(['status'=>2]);
+                
+                return Session::flash('status', '無法刪除 因為注單有此資料');
+            }
+            Redis::set('isItemSetyet', false);  //修改redis資料
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
     public function store()
     {
         $items = Item::all();
         $restult = array();
         $i = 0;
         foreach ($items as $item) {
-            $restult[$i] = array($item->id, $item->itemname, $item->rate,$item->limit_amount);
+            $restult[$i] = array($item->id, $item->itemname, $item->rate,$item->limit_amount, $item->status);
             $i++;
         }
 

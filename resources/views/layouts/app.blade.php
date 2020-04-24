@@ -120,26 +120,16 @@
 
     <script>
         //window.onload = getAmount;
-        $(function () {
+        $(function() {
             getAmount()
         });
 
         function getAmount() {
-            $.ajax({
-                type: "GET",
-                url: "{{url('getAmount')}}",
-                dataType: "json",
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                success: function (data) {
-                    $('#amount').html(parseFloat(data[0]))
-                    $('#winamount').html(parseFloat(data[1]))
-
-                },
-                error: function (jqXHR) {
-                    console.log(jqXHR)
-                }
+            var type = "GET";
+            var url = "{{url('getAmount')}}";
+            ajax(type, url, function(data) {
+                $('#amount').html(parseFloat(data[0]))
+                $('#winamount').html(parseFloat(data[1]))
             })
         }
 
@@ -177,6 +167,40 @@
 
         }
 
+        function ajaxWithData(type, url, data, handleData) {
+            $.ajax({
+                type: type,
+                url: url,
+                dataType: "json",
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: data,
+                success: function(data) {
+                    handleData(data);
+                },
+                error: function(jqXHR) {
+                    console.log(jqXHR)
+                }
+            })
+        }
+
+        function ajax(type, url, handleData) {
+            $.ajax({
+                type: type,
+                url: url,
+                dataType: "json",
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(data) {
+                    handleData(data);
+                },
+                error: function(jqXHR) {
+                    console.log(jqXHR)
+                }
+            })
+        }
     </script>
 
 </body>

@@ -61,6 +61,7 @@ class resultCompare
         for ($i =0 ; $i<=2 ; $i++) {
             $countTotal = $countTotal + $result[$i][$objectClient];
         }
+        //這裡使用foreach是因為 項目有可能不只一個獲勝條件
         foreach ($goalTotalArray as $goalTotal) {
             switch ($operator) {
                 case 0:
@@ -82,6 +83,8 @@ class resultCompare
             return $r;
         }
     }
+     //這個function是在判斷和比較 下注者如果是3 然而 他下注的項目獲勝的結果可能有 1 or 2 or 3 這時候資料庫存的是int 123  
+     //so 必須要把他拆開並比較 以下就是在做這件事
     public function singleCompareFunction($clientResult, $data)
     {
         for ($i = 1000 ; $i >= 1 ; $i=$i/10) {
