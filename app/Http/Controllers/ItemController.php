@@ -34,9 +34,7 @@ class ItemController extends Controller
     {
         $this->middleware('itemRateManage');
         $delete = updateItems::getInstance();
-        $r = $delete->delete($request->all());
-        
-        return $r;
+        $delete->delete($request->all());
     }
 
     public function show($id)
@@ -75,7 +73,12 @@ class ItemController extends Controller
         return $create->create($request);
     }
 
-
+    public function active(Request $request)
+    {
+        $this->middleware('itemRateManage');
+        $active = updateItems::getInstance();
+        $active->active($request->id);
+    }
     public function getItemRuleIdName()
     {
         $this->middleware('itemRateManage');

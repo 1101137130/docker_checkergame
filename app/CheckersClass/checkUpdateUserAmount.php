@@ -18,7 +18,7 @@ class checkUpdateUserAmount
 
         return self::$_instance;
     }
-    public function check($userID, $amount)
+    public function checkAmount($userID, $amount)
     {
         $amountmodel = Amount::where('user_id', $userID)->first();
 

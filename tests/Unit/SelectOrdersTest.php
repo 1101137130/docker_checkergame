@@ -21,7 +21,7 @@ class SelectOrdersTest extends TestCase
         $data = array( "startdate"=> "NaN", "enddate"=> "NaN","temp"=> "0", "userid"=> null ,"itemid"=> null ,"status"=> null ,"betobject"=> null);
         $shouldBe = 14;
         $datawin = array( "startdate"=> "NaN", "enddate"=> "NaN","temp"=> "0", "userid"=> null ,"itemid"=> null ,"status"=> 2 ,"betobject"=> null);
-        $shouldBeWin = 6;
+        $shouldBeWin = 7;
         $datawinBanker = array( "startdate"=> "NaN", "enddate"=> "NaN","temp"=> "0", "userid"=> null ,"itemid"=> null ,"status"=> 2 ,"betobject"=> 1);
         $shouldBeWinBanker = 2;
         $datawinBankeritem = array( "startdate"=> "NaN", "enddate"=> "NaN","temp"=> "0", "userid"=> null ,"itemid"=> 1 ,"status"=> 2 ,"betobject"=> 1);

@@ -201,16 +201,19 @@
     //這是開始時向後端要資料需要建立的td
     function add_row(data) {
         for (var i = 0; i < data.length; i++) {
-            console.log(data);
             var itemid = data[i][0];
             var itemname = data[i][1];
             var itemrate = data[i][2];
             var itemlimit = data[i][3];
             if (data[i][4] == '1') {
                 itemstatus = '可用';
+                var td5 = '';
             }
             if (data[i][4] == '2') {
                 itemstatus = '不可用';
+                var td5 = '<td id="tdidd' + [i] + '">' +
+                    '<a role="btn" class="btn btn-primary" onclick="ajaxToReactive(' +
+                    itemid + ')">重新啟用</a></td>';
             }
             var td1 = '<td id="tdnameid' + [i] + '"><div value=' + itemname + ' id=' + 'itemname' + itemid +
                 ' onclick="openLabel(' + 'itemname' + itemid + ',' + 'itemid' + itemid + ',' + 'limitamount' + itemid +
@@ -227,11 +230,20 @@
                 '<td>狀態：' + itemstatus + '</td>';
             var td4 = '<td id="tdid' + [i] + '">' + '<a role="btn" class="btn btn-danger" onclick="ajaxToDelete(' +
                 itemid + ')">刪除</a></td>';
-            var tr = $('<tr >').append(td1, td2, td3, td4);
+            var tr = $('<tr >').append(td1, td2, td3, td4, td5);
             $('#table').append(tr);
         }
     }
     //-----
+    function ajaxToReactive(id) {
+        var type = "POST";
+        var url = "{{url('ItemReactive')}}";
+        var data = {
+            id: id
+        };
+        ajaxWithData(type, url, data);
+        location.reload();
+    }
     //這是當需要修改時點按觸發的修改function目的將div改成input來輸入資料
     function openLabel(itemnameid, itemidid, limitid, i, itemid) {
 

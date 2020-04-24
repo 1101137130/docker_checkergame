@@ -80,6 +80,17 @@ class updateItems extends ItemController
             throw $e;
         }
     }
+    public function active($id)
+    {
+        try {
+            $item = Item::find($id);
+            $item->update(['status'=>1]);
+                
+            Redis::set('isItemSetyet', false);  //修改redis資料
+        } catch (Exception $e) {
+            throw $e;
+        }
+    }
     public function create($request)
     {
         $this->validator($request);

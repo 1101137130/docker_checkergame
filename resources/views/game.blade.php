@@ -165,7 +165,7 @@
                 for (i = 4; i < data.length - 1; i++) {
                     if (data[i] != null) {
                         array[i] = new Array;
-                        array[i].push('項目：' + data[i][0] +
+                        array[i].push('項目：' + data[i][0] +' '+toChinese(data[i][4])+
                             ' 結果：' + toWinLost(data[i][5]) + '</br>')
                         logAppend(array)
                     }

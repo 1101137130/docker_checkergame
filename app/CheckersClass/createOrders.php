@@ -55,12 +55,13 @@ class createOrders
         $convertStatus = convertStatus::getInstance();
         $checkRateTheSame = checkRateTheSame::getInstance();
         
-        $check = $checkandUpadate->check($user->id, $item[3]);
-        if ($check[0]) {
+        $checkAmount = $checkandUpadate->checkAmount($user->id, $item[3]);
+        if ($checkAmount[0]) {
             $playAmountStatus = $convertStatus->convertAmountStatus('play');
-            $checkrate = $checkRateTheSame->check($item[1], $item[2]);
 
-            if ($checkrate[0]) {
+            $checkRate = $checkRateTheSame->check($item[1], $item[2]);
+
+            if ($checkRate[0]) {
                 $amount = $item[3] * -1;
                 $update = $checkandUpadate->update($user->id, $amount, $playAmountStatus);
 
@@ -78,10 +79,10 @@ class createOrders
                     return $update;
                 }
             } else {
-                return $checkrate;
+                return $checkRate;
             }
         } else {
-            return $check;
+            return $checkAmount;
         }
     }
     public function new($user, $item, $resultID, $convertStatus) //order處理
@@ -92,7 +93,7 @@ class createOrders
         //item[3] -> amount
         //item[4]-> ocject 1:莊家 2:閒家
         $userID = $user->id;
-        $newOrdersStatus=$convertStatus->convertOrdersStatus('new');
+        $newOrdersStatus = $convertStatus->convertOrdersStatus('new');
         try {
             $order = Order::create([
                     'username' => $user->username,
@@ -112,8 +113,8 @@ class createOrders
             $undoAmountStatus = $convertStatus->convertAmountStatus('error_restore');
             $checkandUpadate = checkUpdateUserAmount::getInstance();
             $checkandUpadate->update($userID, $item[3], $undoAmountStatus);
-            throw $e;
-            return array(false, $e);
+
+            return array(false, $e->getMessage());
         }
     }
 }
