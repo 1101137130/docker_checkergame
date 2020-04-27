@@ -145,34 +145,39 @@
             order: ordersarray
         };
         ajaxWithData(type, url, data, function(data) {
-            if (typeof data == typeof 'string') {
-                alert(data)
-                location.reload();
-            } else {
-                $('#ob1one').html(data[0][0]);
-                $('#ob1two').html(data[1][0]);
-                $('#ob1three').html(data[2][0]);
-                $('#ob2one').html(data[0][1]);
-                $('#ob2two').html(data[1][1]);
-                $('#ob2three').html(data[2][1]);
-                $('#win1').html(data[0][2]);
-                $('#win2').html(data[1][2]);
-                $('#win3').html(data[2][2]);
-                $('#finalresult').html(toChinese(data[3]));
-                $('#winamount').html(data[5]);
-                getAmount();
-                var array = new Array;
-                for (i = 4; i < data.length - 1; i++) {
-                    if (data[i] != null) {
-                        array[i] = new Array;
-                        array[i].push('項目：' + data[i][0] +' '+toChinese(data[i][4])+
-                            ' 結果：' + toWinLost(data[i][5]) + '</br>')
-                        logAppend(array)
-                    }
-                }
-
+            if (data[0] === false) {
+                alert(data[1]);
             }
+            if (data[0] === true) {
+                data.shift();
+                output(data);
+            }
+
         })
+    }
+
+    function output(data) {
+        $('#ob1one').html(data[0][0]);
+        $('#ob1two').html(data[1][0]);
+        $('#ob1three').html(data[2][0]);
+        $('#ob2one').html(data[0][1]);
+        $('#ob2two').html(data[1][1]);
+        $('#ob2three').html(data[2][1]);
+        $('#win1').html(data[0][2]);
+        $('#win2').html(data[1][2]);
+        $('#win3').html(data[2][2]);
+        $('#finalresult').html(toChinese(data[3]));
+        $('#winamount').html(data[5]);
+        getAmount();
+        var array = new Array;
+        for (i = 4; i < data.length - 1; i++) {
+            if (data[i] != null) {
+                array[i] = new Array;
+                array[i].push('項目：' + data[i][0] + ' ' + toChinese(data[i][4]) +
+                    ' 結果：' + toWinLost(data[i][5]) + '</br>')
+                logAppend(array)
+            }
+        }
     }
 
     function logAppend(data) {

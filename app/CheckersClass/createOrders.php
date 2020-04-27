@@ -38,24 +38,27 @@ class createOrders
                 if ($data[0]) {
                     array_push($result, $gameend->end($item, $result, $data[1]));
                 } else {
-                    return $data[1];
+                    return $data;
                 }
             }
             $winamount = Redis::get($user->username . $user->id);
             $winamount != null ? array_push($result, $winamount) : array_push($result, 0);
+            array_unshift($result,true);
 
             return $result;
         } else {
+            array_unshift($result,true);
+
             return $result;
         }
     }
     public function process($user, $item, $resultID)
     {
-        $checkandUpadate = checkUpdateUserAmount::getInstance();
+        $UserAmount = checkUpdateUserAmount::getInstance();
         $convertStatus = convertStatus::getInstance();
         $checkRateTheSame = checkRateTheSame::getInstance();
         
-        $checkAmount = $checkandUpadate->checkAmount($user->id, $item[3]);
+        $checkAmount = $UserAmount->checkAmount($user->id, $item[3]);
         if ($checkAmount[0]) {
             $playAmountStatus = $convertStatus->convertAmountStatus('play');
 
@@ -63,9 +66,9 @@ class createOrders
 
             if ($checkRate[0]) {
                 $amount = $item[3] * -1;
-                $update = $checkandUpadate->update($user->id, $amount, $playAmountStatus);
+                $checkUpdate = $UserAmount->update($user->id, $amount, $playAmountStatus);
 
-                if ($update[0]) {
+                if ($checkUpdate[0]) {
                     $data = $this->new($user, $item, $resultID, $convertStatus);
 
                     if ($data[0]) {
@@ -76,7 +79,7 @@ class createOrders
                         return $data;
                     }
                 } else {
-                    return $update;
+                    return $checkUpdate;
                 }
             } else {
                 return $checkRate;
@@ -85,6 +88,7 @@ class createOrders
             return $checkAmount;
         }
     }
+    //這段程式碼成功後會return 一個array  [0]代表成功於否 [1]若成功則回傳新增後的order->id
     public function new($user, $item, $resultID, $convertStatus) //order處理
     {
         //item[0]-> itemname

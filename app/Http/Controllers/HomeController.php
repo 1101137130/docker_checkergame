@@ -53,7 +53,8 @@ class HomeController extends Controller
     {
         $order = $request->all();
         $createOrders = createOrders::getInstance();
-
-        return $createOrders->init($order);
+        $r = $createOrders->init($order);
+       
+        return $r;
     }
 }

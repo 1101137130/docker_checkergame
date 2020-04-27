@@ -18,7 +18,7 @@ class CheckUpdateUserAmountTest extends TestCase
     public function testCheck($userID, $amount, $shouldBe)
     {
         $tester = new checkUpdateUserAmount();
-        $checker = $tester->check($userID, $amount);
+        $checker = $tester->checkAmount($userID, $amount);
         $this->assertEquals($shouldBe, $checker);
     }
     
