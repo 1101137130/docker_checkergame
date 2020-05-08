@@ -6,6 +6,7 @@ use App\CheckersClass\updateOrder;
 use App\CheckersClass\redisGetSet;
 use App\CheckersClass\selectOrders;
 use Illuminate\Http\Request;
+use App\CheckersClass\getItemName;
 
 class OrderController extends Controller
 {
@@ -38,5 +39,11 @@ class OrderController extends Controller
         $orders = $selectOrders->ordersSelector($request->all());
         
         return $orders;
+    }
+    public function getItemName()
+    {
+        $getItemName = getItemName::getInstance();
+        
+        return $getItemName->getData();
     }
 }

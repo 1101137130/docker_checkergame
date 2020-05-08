@@ -8,6 +8,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\checkersValidator;
 
 class RegisterManager extends Controller
 {
@@ -24,17 +25,20 @@ class RegisterManager extends Controller
 
     protected function validator(array $data)
     {
+        $checkersValidator = new checkersValidator();
         return Validator::make($data, [
             'username' => 'required|string|max:20|unique:users',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|confirmed',
-        ]);
+        ],$checkersValidator->messages());
     }
     protected function validatUser(array $data)
     {
+        $checkersValidator = new checkersValidator();
         return Validator::make($data, [
             'username' => 'string|max:20|unique:users',
-            'email' => 'string|email|max:255|unique:users']);
+            'email' => 'string|email|max:255|unique:users',
+        ],$checkersValidator->messages());
     }
     public function editUser(Request $request)
     {

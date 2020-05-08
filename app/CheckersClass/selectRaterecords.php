@@ -1,7 +1,6 @@
 <?php
 namespace App\CheckersClass;
 
-use App\Raterecord;
 use Illuminate\Support\Facades\DB;
 
 class selectRaterecords
@@ -20,8 +19,8 @@ class selectRaterecords
         $temp =0;
         $userid= $data['userid'];
         $itemid= $data['itemid'];
-        $startdate= $data['startdate'] == 'NaN'? 0 :$data['startdate'];
-        $enddate= $data['enddate'] == 'NaN'? time() :$data['enddate'];
+        $startdate= $data['startdate'] == 'NaN' ? 0 :$data['startdate'];
+        $enddate= $data['enddate'] == 'NaN' ? time() :$data['enddate'];
         $data['temp'] == 0 ? $temp = 0 : $temp = $data['temp']*100;
 
         $record= DB::table('raterecords')

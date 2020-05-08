@@ -35,7 +35,7 @@ Route::post('/managerRegister', 'Auth\RegisterManager@createManager')->name('use
 Route::get('/getuser', 'Auth\RegisterManager@getUser')->name('user');
 Route::post('/editUser', 'Auth\RegisterManager@editUser')->name('user');
 Route::get('/getOrdersData', 'OrderController@getData')->name('order');
-Route::get('getItemname', 'ItemController@getItemName');
+Route::get('getItemname', 'OrderController@getItemName');
 Route::post('getRaterecordData', 'RaterecordController@getData');
 Route::get('getRaterecordItems', 'RaterecordController@getItems');
 Route::get('getRaterecordUsers', 'RaterecordController@getUsers');

@@ -76,17 +76,18 @@
                                                      document.getElementById('logout-form').submit();">
                                         Logout
                                     </a>
-                                    <a herf="{{ url('amount') }}" onclick="event.preventDefault();
+                                    <a href="{{ url('amount') }}" onclick="event.preventDefault();
                                                      document.getElementById('amount-form').submit();">
                                         Store
                                     </a>
                                     <form id="amount-form" action="{{ url('amount') }}" method="GET"
                                         style="display: none;">
-
+                                        <input type="submit" id="Store">
                                     </form>
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST"
                                         style="display: none;">
                                         {{ csrf_field() }}
+                                        <input type="submit" id="Logout">
                                     </form>
                                 </li>
                             </ul>
@@ -184,7 +185,9 @@
                 }
             })
         }
-
+        function getCsrfToken(){
+            return $('meta[name="csrf-token"]').attr('content');
+        }
         function ajax(type, url, handleData) {
             $.ajax({
                 type: type,

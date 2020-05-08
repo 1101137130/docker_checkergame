@@ -1,0 +1,16 @@
+default:
+    extensions:
+        Laracasts\Behat:
+            #env_path: .env.behat
+        Behat\MinkExtension:
+            base_url: "http://nginx"
+            sessions:
+                selenium:
+                    selenium2:
+                        wd_host: "http://selenium-hub:4444/wd/hub"
+                        capabilities: { "browserName": "firefox", "name": "Behat Test" }
+                Laracasts:
+                    laravel: ~
+    suites:
+        functional:
+            contexts: [ FeatureContext ]

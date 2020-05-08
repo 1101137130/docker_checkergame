@@ -78,10 +78,10 @@
                     <div class="links">
                         <a href="{{url('show')}}">Play</a>
                         @if ($manage_rate == true)
-                        <a href="{{ url('/item') }}">ItemManage</a>
+                        <a id="itemManage" href="{{ url('/item') }}">ItemManage</a>
                         @endif
                         @if ($manager_editor == true)
-                        <a href="{{ url('registerManager') }}">Create a Manager User</a>
+                        <a id="createManager" href="{{ url('registerManager') }}">Create a Manager User</a>
                         @endif
 
                     </div>

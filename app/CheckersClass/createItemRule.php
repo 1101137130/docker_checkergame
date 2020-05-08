@@ -21,7 +21,7 @@ class createItemRule
 
     public function create(Request $request, $itemid)
     {
-        $status = (int)$request->status;
+        $status = (int)$request->typeStatus;
         $special_one = null;
         $special_two = null;
         $special_three = null;

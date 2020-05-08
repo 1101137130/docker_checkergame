@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ItemController;
 use App\Order;
 use Illuminate\Support\Facades\Session;
-
+use App\Http\Requests\checkersValidator;
 class updateItems extends ItemController
 {
     private static $_instance  = null ;
@@ -24,11 +24,12 @@ class updateItems extends ItemController
     }
     public function validator($data)
     {
+        $checkersValidator = new checkersValidator();
         $this->validate($data, [
             'itemname' => 'required|max:15|unique:items',
             'rate' => 'required',
             'limit_amount' => 'required|max:1000000',
-        ]);
+        ],$checkersValidator->messages());
     }
     public function specialValidator($data)
     {
@@ -95,9 +96,9 @@ class updateItems extends ItemController
     {
         $this->validator($request);
 
-        $status = (int)$request->status;
+        $typeStatus = (int)$request->typeStatus;
 
-        switch ($status) {
+        switch ($typeStatus) {
             case 1:
             $this->singleCompareValidator($request);
                 break;
@@ -111,6 +112,7 @@ class updateItems extends ItemController
             $this->extendCompareValidator($request);
                 break;
         }
+
         $user = Auth::user();
         try {
             $createItemrule = createItemRule::getInstance();

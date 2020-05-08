@@ -55,7 +55,7 @@
             </tbody>
         </table>
         <div style="text-align: center;">
-            <a role="btn" class="btn btn-primary" onclick="action()"> 下單/開始</a>
+            <a role="btn" class="btn btn-primary" id="action" onclick="action()"> 下單/開始</a>
             <a class="btn btn-danger" href="{{url('show')}}" role="btn">清空</a>
         </div>
     </form>
@@ -65,7 +65,11 @@
 
 
 <script>
-    window.onload = show;
+    window.onload = start;
+
+    function start() {
+        show();
+    }
 
     function show() {
         var type = "POST";
@@ -146,7 +150,13 @@
         };
         ajaxWithData(type, url, data, function(data) {
             if (data[0] === false) {
-                alert(data[1]);
+                var yes = confirm(data[1])
+                if (yes) {
+                    location.reload();
+                } else {
+                    location.reload();
+                }
+
             }
             if (data[0] === true) {
                 data.shift();

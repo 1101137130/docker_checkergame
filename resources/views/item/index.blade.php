@@ -382,7 +382,7 @@
             '<option value="4">>=</option>' +
             '</select>' +
             '<input id="inputOpertor" name="operator" type="hidden">' +
-            '<input type="hidden" name="status" value="3">' +
+            '<input type="hidden" name="typeStatus" value="3">' +
             '<input type="text" style="width:240" placeholder="請輸入數字，若超過一個請用 , 分開" id="total" name="total">' +
             '<a role="button" class="btn btn-danger" onclick="clearTotal()">清空</a>' +
             '<input type="submit" class="btn btn-primary" value="確認">')
@@ -417,7 +417,7 @@
             '<input type="hidden" name="selectFirst">' +
             '<input type="hidden" name="selectSecond">' +
             '<input type="hidden" name="selectThird">' +
-            '<input type="hidden" name="status" value="4">' +
+            '<input type="hidden" name="typeStatus" value="4">' +
             '<input type="submit" class="btn btn-primary" value="確認">'
 
         );
@@ -435,30 +435,30 @@
             '<tr>' +
             '<td style="text-align: center;">我方獲勝所需</td>' +
             '<td style="text-align: center;">' +
-            '<label><input type="checkbox" name="specialCards1[]" value="1">1</label>' +
-            '<label><input type="checkbox" name="specialCards1[]" value="2">2</label>' +
-            '<label><input type="checkbox" name="specialCards1[]" value="3">3</label>' +
-            '<label><input type="checkbox" name="specialCards1[]" value="4">4</label>' +
-            '<label><input type="checkbox" name="specialCards1[]" value="5">5</label>' +
+            '<label><input id ="specialCards11" type="checkbox" name="specialCards1[]" value="1">1</label>' +
+            '<label><input id ="specialCards12" type="checkbox" name="specialCards1[]" value="2">2</label>' +
+            '<label><input id ="specialCards13" type="checkbox" name="specialCards1[]" value="3">3</label>' +
+            '<label><input id ="specialCards14" type="checkbox" name="specialCards1[]" value="4">4</label>' +
+            '<label><input id ="specialCards15" type="checkbox" name="specialCards1[]" value="5">5</label>' +
             '</td>' +
             '<td style="text-align: center;">' +
-            '<label><input type="checkbox" name="specialCards2[]" value="1">1</label>' +
-            '<label><input type="checkbox" name="specialCards2[]" value="2">2</label>' +
-            '<label><input type="checkbox" name="specialCards2[]" value="3">3</label>' +
-            '<label><input type="checkbox" name="specialCards2[]" value="4">4</label>' +
-            '<label><input type="checkbox" name="specialCards2[]" value="5">5</label>' +
+            '<label><input id ="specialCards21" type="checkbox" name="specialCards2[]" value="1">1</label>' +
+            '<label><input id ="specialCards22" type="checkbox" name="specialCards2[]" value="2">2</label>' +
+            '<label><input id ="specialCards23" type="checkbox" name="specialCards2[]" value="3">3</label>' +
+            '<label><input id ="specialCards24" type="checkbox" name="specialCards2[]" value="4">4</label>' +
+            '<label><input id ="specialCards25" type="checkbox" name="specialCards2[]" value="5">5</label>' +
             '</td>' +
             '<td style="text-align: center;">' +
-            '<label><input type="checkbox" name="specialCards3[]" value="1">1</label>' +
-            '<label><input type="checkbox" name="specialCards3[]" value="2">2</label>' +
-            '<label><input type="checkbox" name="specialCards3[]" value="3">3</label>' +
-            '<label><input type="checkbox" name="specialCards3[]" value="4">4</label>' +
-            '<label><input type="checkbox" name="specialCards3[]" value="5">5</label>' +
+            '<label><input id ="specialCards31" type="checkbox" name="specialCards3[]" value="1">1</label>' +
+            '<label><input id ="specialCards32" type="checkbox" name="specialCards3[]" value="2">2</label>' +
+            '<label><input id ="specialCards33" type="checkbox" name="specialCards3[]" value="3">3</label>' +
+            '<label><input id ="specialCards34" type="checkbox" name="specialCards3[]" value="4">4</label>' +
+            '<label><input id ="specialCards35" type="checkbox" name="specialCards3[]" value="5">5</label>' +
             '</td>' +
             '</tr>' +
             '</table>');
         $('#specialCards').append(
-            '<input type="hidden" name="status" value="2">' +
+            '<input type="hidden" name="typeStatus" value="2">' +
             '<input type="submit" class="btn btn-primary" value="確認">')
         $("input[name='specialCards1']").change(function() {
             disabledRadio();
@@ -522,7 +522,7 @@
             '</tr>' +
             '</table>');
         $('#singleCompare').append(
-            '<input type="hidden" name="status" value="1">' +
+            '<input type="hidden" name="typeStatus" value="1">' +
             '<input type="submit" class="btn btn-primary" value="確認">')
 
     }

@@ -88,7 +88,7 @@
             </div>
             
             <div class="links">
-                <a href="{{url('show')}}">Play</a>
+                <a href="{{url('show')}}" id="Play">Play</a>
                 <a href="">Rules</a>
                 <a href="">Help</a>
             </div>

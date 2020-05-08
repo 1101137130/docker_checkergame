@@ -1,0 +1,33 @@
+version: '2'
+services:
+  chrome:
+    image: selenium/node-chrome:3.141.59-20200409
+    volumes:
+      - /dev/shm:/dev/shm
+    depends_on:
+      - hub
+    environment:
+      HUB_HOST: hub
+
+  firefox:
+    image: selenium/node-firefox:3.141.59-20200409
+    volumes:
+      - /dev/shm:/dev/shm
+    depends_on:
+      - hub
+    environment:
+      HUB_HOST: hub
+
+  opera:
+    image: selenium/node-opera:3.141.59-20200409
+    volumes:
+      - /dev/shm:/dev/shm
+    depends_on:
+      - hub
+    environment:
+      HUB_HOST: hub
+
+  hub:
+    image: selenium/hub:3.141.59-20200409
+    ports:
+      - "4443:4444"
