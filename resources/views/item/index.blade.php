@@ -72,8 +72,8 @@
             <strong>{{$errors->first('total')}}</strong></br>
         </span>
         @endif
-        <input type="radio" id="total" name="compare" value="total">
-        <label for="total">總數</label>
+        <input type="radio" id="totalRadio" name="compare" value="total">
+        <label for="totalRadio">總數</label>
         <div id="totalCompare"></div>
         @if ($errors->has('selectFirst')||$errors->has('selectSecond')||$errors->has('selectThird'))
         <span class="help-block">
@@ -146,7 +146,7 @@
     }
 
     function clearTotal() {
-        $('#total').val('');
+        $('#totalRadio').val('');
         $('#operator').val('');
     }
     //這是從第一次從前端去跟後端要資料的function
@@ -165,8 +165,9 @@
         var data = {
             temp: temp
         };
-        ajaxWithData(type, url, data)
-        location.reload();
+        ajaxWithData(type, url, data, function(back) {
+            backDataAppend(back)
+        });
     }
     //------
     //這是提供單筆資料修改
@@ -183,8 +184,9 @@
             rate: itemrate,
             limit_amount: limiamount
         };
-        ajaxWithData(type, url, data)
-        location.reload();
+        ajaxWithData(type, url, data, function(back) {
+            backDataAppend(back)
+        });
     }
     //-----
     //這是刪除的ajax
@@ -194,8 +196,9 @@
         var data = {
             id: id
         };
-        ajaxWithData(type, url, data)
-        location.reload();
+        ajaxWithData(type, url, data, function(back) {
+            backDataAppend(back);
+        });
     }
     //-----
     //這是開始時向後端要資料需要建立的td
@@ -207,12 +210,15 @@
             var itemlimit = data[i][3];
             if (data[i][4] == '1') {
                 itemstatus = '可用';
+                var td4 = '<td id="tdid' + [i] + '">' + '<button class="btn btn-danger" id="delete'+itemid+'" onclick="ajaxToDelete(' +
+                itemid + ')">刪除</button></td>';
                 var td5 = '';
             }
             if (data[i][4] == '2') {
+                var td4 = '';
                 itemstatus = '不可用';
                 var td5 = '<td id="tdidd' + [i] + '">' +
-                    '<a role="btn" class="btn btn-primary" onclick="ajaxToReactive(' +
+                    '<a role="btn" class="btn btn-primary" id="reActive'+itemid+'" onclick="ajaxToReactive(' +
                     itemid + ')">重新啟用</a></td>';
             }
             var td1 = '<td id="tdnameid' + [i] + '"><div value=' + itemname + ' id=' + 'itemname' + itemid +
@@ -228,21 +234,41 @@
                 ',' + i + ',' + itemid +
                 ')">限制下注金額：' + itemlimit + '</div></</td>' +
                 '<td>狀態：' + itemstatus + '</td>';
-            var td4 = '<td id="tdid' + [i] + '">' + '<a role="btn" class="btn btn-danger" onclick="ajaxToDelete(' +
-                itemid + ')">刪除</a></td>';
             var tr = $('<tr >').append(td1, td2, td3, td4, td5);
             $('#table').append(tr);
         }
     }
     //-----
+    function backDataAppend(back) {
+        $("#table").html('');
+        getItemsData();
+        if (back[0] === false) {
+            $("#alert-danger-status").remove();
+            $("#ajaxCallsBack").append('<div id ="alert-danger-status" class="alert alert-danger">' +
+                '<strong>' + back[1] + '' +
+                '</div>'
+            );
+            $("#alert-danger-status").delay(3000).hide(0);
+        }
+        if (back[0] === true) {
+            $("#alert-success-status").remove()
+            $("#ajaxCallsBack").append('<div id ="alert-success-status" class="alert alert-success">' +
+                '<strong>' + back[1] + '' +
+                '</div>'
+            )
+            $("#alert-success-status").delay(3000).hide(0);
+        }
+    }
+
     function ajaxToReactive(id) {
         var type = "POST";
         var url = "{{url('ItemReactive')}}";
         var data = {
             id: id
         };
-        ajaxWithData(type, url, data);
-        location.reload();
+        ajaxWithData(type, url, data, function(back) {
+            backDataAppend(back)
+        });
     }
     //這是當需要修改時點按觸發的修改function目的將div改成input來輸入資料
     function openLabel(itemnameid, itemidid, limitid, i, itemid) {
@@ -327,7 +353,6 @@
         $(obj).remove();
     }
     //-----
-
     function compareChange() {
         $('[name=compare]').change(function() {
             var checked = $('[name=compare]:checked')
@@ -365,8 +390,6 @@
                 $('#selectThird').change(function() {
                     $("input[name='selectThird']").val($('#selectThird').val());
                 })
-
-
             }
         })
     }
@@ -383,10 +406,9 @@
             '</select>' +
             '<input id="inputOpertor" name="operator" type="hidden">' +
             '<input type="hidden" name="typeStatus" value="3">' +
-            '<input type="text" style="width:240" placeholder="請輸入數字，若超過一個請用 , 分開" id="total" name="total">' +
+            '<input type="text" style="width:240" placeholder="請輸入數字，若超過一個請用 , 分開" name="total">' +
             '<a role="button" class="btn btn-danger" onclick="clearTotal()">清空</a>' +
             '<input type="submit" class="btn btn-primary" value="確認">')
-
     }
 
     function extendAppend() {
@@ -419,42 +441,20 @@
             '<input type="hidden" name="selectThird">' +
             '<input type="hidden" name="typeStatus" value="4">' +
             '<input type="submit" class="btn btn-primary" value="確認">'
-
         );
     }
+    var tdAlignCenter = '<td style="text-align: center;">';
 
     function specialAppend() {
         $('#specialCards').append(
             '<table border="1">' +
             '<tr>' +
-            '<td style="text-align: center;">局數</td>' +
-            '<td style="text-align: center;">1</td>' +
-            '<td style="text-align: center;">2</td>' +
-            '<td style="text-align: center;">3</td>' +
+            tdAlignCenter + '局數</td>' +
+            labelAppend(null, 3) +
             '</tr>' +
             '<tr>' +
-            '<td style="text-align: center;">我方獲勝所需</td>' +
-            '<td style="text-align: center;">' +
-            '<label><input id ="specialCards11" type="checkbox" name="specialCards1[]" value="1">1</label>' +
-            '<label><input id ="specialCards12" type="checkbox" name="specialCards1[]" value="2">2</label>' +
-            '<label><input id ="specialCards13" type="checkbox" name="specialCards1[]" value="3">3</label>' +
-            '<label><input id ="specialCards14" type="checkbox" name="specialCards1[]" value="4">4</label>' +
-            '<label><input id ="specialCards15" type="checkbox" name="specialCards1[]" value="5">5</label>' +
-            '</td>' +
-            '<td style="text-align: center;">' +
-            '<label><input id ="specialCards21" type="checkbox" name="specialCards2[]" value="1">1</label>' +
-            '<label><input id ="specialCards22" type="checkbox" name="specialCards2[]" value="2">2</label>' +
-            '<label><input id ="specialCards23" type="checkbox" name="specialCards2[]" value="3">3</label>' +
-            '<label><input id ="specialCards24" type="checkbox" name="specialCards2[]" value="4">4</label>' +
-            '<label><input id ="specialCards25" type="checkbox" name="specialCards2[]" value="5">5</label>' +
-            '</td>' +
-            '<td style="text-align: center;">' +
-            '<label><input id ="specialCards31" type="checkbox" name="specialCards3[]" value="1">1</label>' +
-            '<label><input id ="specialCards32" type="checkbox" name="specialCards3[]" value="2">2</label>' +
-            '<label><input id ="specialCards33" type="checkbox" name="specialCards3[]" value="3">3</label>' +
-            '<label><input id ="specialCards34" type="checkbox" name="specialCards3[]" value="4">4</label>' +
-            '<label><input id ="specialCards35" type="checkbox" name="specialCards3[]" value="5">5</label>' +
-            '</td>' +
+            tdAlignCenter + '我方獲勝所需</td>' +
+            appendLoop('specialCards', 3) +
             '</tr>' +
             '</table>');
         $('#specialCards').append(
@@ -470,60 +470,54 @@
             disabledRadio();
         })
     }
+    //建立所需label 給item規則
+    function labelAppend(inputName, i) {
+        var result = '';
+        if (inputName == null) {
+            for (j = 1; j <= i; j++) {
+                result += tdAlignCenter;
+                result += j + '</td>';
+            }
+        } else {
+            result += labelinside(result, inputName, i)
+        }
+        return result;
+    }
+
+    function labelinside(result, name, i) {
+        result += tdAlignCenter;
+        for (j = 1; j <= 5; j++) {
+            inputName = name + i;
+            id = inputName + j;
+            result += '<label><input id="' + id + '" type="checkbox" name="' + inputName + '[]" value="' + j + '">' +
+                j + '</label>'
+        }
+        return result + '</td>';
+    }
+
+    function appendLoop(arg1, arg2) {
+        var result = '';
+        for (i = 1; i <= arg2; i++) {
+            result += labelAppend(arg1, i)
+        }
+        return result;
+    }
 
     function singleAppend() {
+        var id = 'id = "winRequire';
         $('#singleCompare').append(
             '<table border="1">' +
             '<tr>' +
-            '<td style="text-align: center;">對方結果</td>' +
-            '<td style="text-align: center;">1</td>' +
-            '<td style="text-align: center;">2</td>' +
-            '<td style="text-align: center;">3</td>' +
-            '<td style="text-align: center;">4</td>' +
-            '<td style="text-align: center;">5</td>' +
+            tdAlignCenter + '對方結果</td>' +
+            labelAppend(null, 5) +
             '</tr>' +
             '<tr>' +
-            '<td style="text-align: center;">我方獲勝所需</td>' +
-            '<td style="text-align: center;">' +
-            '<label><input type="checkbox" name="winRequire1[]" value="1">1</label>' +
-            '<label><input type="checkbox" name="winRequire1[]" value="2">2</label>' +
-            '<label><input type="checkbox" name="winRequire1[]" value="3">3</label>' +
-            '<label><input type="checkbox" name="winRequire1[]" value="4">4</label>' +
-            '<label><input type="checkbox" name="winRequire1[]" value="5">5</label>' +
-            '</td>' +
-            '<td style="text-align: center;">' +
-            '<label><input type="checkbox" name="winRequire2[]" value="1">1</label>' +
-            '<label><input type="checkbox" name="winRequire2[]" value="2">2</label>' +
-            '<label><input type="checkbox" name="winRequire2[]" value="3">3</label>' +
-            '<label><input type="checkbox" name="winRequire2[]" value="4">4</label>' +
-            '<label><input type="checkbox" name="winRequire2[]" value="5">5</label>' +
-            '</td>' +
-            '<td style="text-align: center;">' +
-            '<label><input type="checkbox" name="winRequire3[]" value="1">1</label>' +
-            '<label><input type="checkbox" name="winRequire3[]" value="2">2</label>' +
-            '<label><input type="checkbox" name="winRequire3[]" value="3">3</label>' +
-            '<label><input type="checkbox" name="winRequire3[]" value="4">4</label>' +
-            '<label><input type="checkbox" name="winRequire3[]" value="5">5</label>' +
-            '</td>' +
-            '<td style="text-align: center;">' +
-            '<label><input type="checkbox" name="winRequire4[]" value="1">1</label>' +
-            '<label><input type="checkbox" name="winRequire4[]" value="2">2</label>' +
-            '<label><input type="checkbox" name="winRequire4[]" value="3">3</label>' +
-            '<label><input type="checkbox" name="winRequire4[]" value="4">4</label>' +
-            '<label><input type="checkbox" name="winRequire4[]" value="5">5</label>' +
-            '</td>' +
-            '<td style="text-align: center;">' +
-            '<label><input type="checkbox" name="winRequire5[]" value="1">1</label>' +
-            '<label><input type="checkbox" name="winRequire5[]" value="2">2</label>' +
-            '<label><input type="checkbox" name="winRequire5[]" value="3">3</label>' +
-            '<label><input type="checkbox" name="winRequire5[]" value="4">4</label>' +
-            '<label><input type="checkbox" name="winRequire5[]" value="5">5</label>' +
-            '</td>' +
+            tdAlignCenter + '我方獲勝所需</td>' +
+            appendLoop('winRequire', 5) +
             '</tr>' +
             '</table>');
         $('#singleCompare').append(
             '<input type="hidden" name="typeStatus" value="1">' +
             '<input type="submit" class="btn btn-primary" value="確認">')
-
     }
 </script>

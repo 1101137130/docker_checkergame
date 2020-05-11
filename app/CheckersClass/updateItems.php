@@ -10,6 +10,7 @@ use App\Http\Controllers\ItemController;
 use App\Order;
 use Illuminate\Support\Facades\Session;
 use App\Http\Requests\checkersValidator;
+
 class updateItems extends ItemController
 {
     private static $_instance  = null ;
@@ -29,7 +30,7 @@ class updateItems extends ItemController
             'itemname' => 'required|max:15|unique:items',
             'rate' => 'required',
             'limit_amount' => 'required|max:1000000',
-        ],$checkersValidator->messages());
+        ], $checkersValidator->messages());
     }
     public function specialValidator($data)
     {
@@ -77,8 +78,11 @@ class updateItems extends ItemController
             }
             $item->update($request->all());
             Redis::set('isItemSetyet', false);  //修改redis資料
+            $array = array(true,'修改成功！');
+
+            return $array;
         } catch (Exception $e) {
-            throw $e;
+            return array(false,$e->getMessage());
         }
     }
     public function active($id)
@@ -88,8 +92,11 @@ class updateItems extends ItemController
             $item->update(['status'=>1]);
                 
             Redis::set('isItemSetyet', false);  //修改redis資料
+            $array = array(true,'修改成功！');
+
+            return $array;
         } catch (Exception $e) {
-            throw $e;
+            return array(false,$e->getMessage());
         }
     }
     public function create($request)
@@ -124,7 +131,7 @@ class updateItems extends ItemController
 
             return redirect('item');
         } catch (Exception $e) {
-            return $e;
+            return array(false, $e->getMessage());
         }
     }
     public function edit($request)
@@ -138,9 +145,9 @@ class updateItems extends ItemController
             }
             Redis::set('isItemSetyet', false);  //修改redis資料
             
-            return null;
+            return array(true,'修改完成！');
         } catch (Exception $e) {
-            throw  $e;
+            return array(false,$e->getMessage());
         }
     }
     public function delete($request)
@@ -150,16 +157,19 @@ class updateItems extends ItemController
             $item = Item::find($request['id']);
             if ($order == null) {
                 $item->delete();
+                Redis::set('isItemSetyet', false); //修改redis資料
+                $array = array(true,'刪除成功！');
 
-                return Session::flash('status', '刪除成功！');
+                return $array;
             } else {
                 $item->update(['status'=>2]);
-                
-                return Session::flash('status', '無法刪除 因為注單有此資料');
+                Redis::set('isItemSetyet', false); //修改redis資料
+                $array = array(true,'無法刪除，因為注單有此資料，將此項目改為未開啟');
+
+                return $array;
             }
-            Redis::set('isItemSetyet', false);  //修改redis資料
         } catch (Exception $e) {
-            throw $e;
+            return array(false,$e->getMessage());
         }
     }
     public function store()

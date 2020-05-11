@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "53f4d8cd68d9169b8e57e7a786aff7af",
+    "content-hash": "02b521302e9d276c7b5d6033df60d458",
     "packages": [
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -2992,6 +2992,54 @@
                 "test"
             ],
             "time": "2015-05-11T14:41:42+00:00"
+        },
+        {
+            "name": "ingenerator/behat-tableassert",
+            "version": "v1.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ingenerator/behat-tableassert.git",
+                "reference": "9c0b254fc798f75151200c58662c31f6d6a05184"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ingenerator/behat-tableassert/zipball/9c0b254fc798f75151200c58662c31f6d6a05184",
+                "reference": "9c0b254fc798f75151200c58662c31f6d6a05184",
+                "shasum": ""
+            },
+            "require": {
+                "behat/gherkin": ">=2.0.0 <5.0.0",
+                "ext-dom": "*",
+                "ext-libxml": "*",
+                "ext-simplexml": "*",
+                "php": "^7.2"
+            },
+            "require-dev": {
+                "behat/mink": "^1.7",
+                "phpunit/phpunit": "^7.0"
+            },
+            "suggest": {
+                "behat/mink": "For parsing tables from a browser response"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Ingenerator\\BehatTableAssert\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Andrew Coulton",
+                    "email": "andrew@ingenerator.com"
+                }
+            ],
+            "description": "Assertions for all sorts of tabular data in behat",
+            "homepage": "https://github.com/ingenerator/behat-tableassert",
+            "time": "2019-04-03T14:26:15+00:00"
         },
         {
             "name": "instaclick/php-webdriver",

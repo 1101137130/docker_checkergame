@@ -17,7 +17,6 @@ class ItemController extends Controller
 
     public function index()
     {
-
         $items = Item::all();
 
         return view('item.index', [
@@ -28,7 +27,8 @@ class ItemController extends Controller
     public function destroy(Request $request)
     {
         $delete = updateItems::getInstance();
-        $delete->delete($request->all());
+        
+        return $delete->delete($request->all());
     }
 
     public function show($id)
@@ -48,7 +48,8 @@ class ItemController extends Controller
     public function update(Request $request)
     {
         $update = updateItems::getInstance();
-        $update->update($request);
+        
+        return $update->update($request);
     }
    
     public function create(Request $request)
@@ -61,7 +62,7 @@ class ItemController extends Controller
     public function active(Request $request)
     {
         $active = updateItems::getInstance();
-        $active->active($request->id);
+        return $active->active($request->id);
     }
     public function getItemRuleIdName()
     {

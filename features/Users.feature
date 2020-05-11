@@ -43,10 +43,7 @@ Scenario: register
 
 Scenario: logout
     Given I am on "/home"
-    And wait for JS
-    And I click dropdown
-    And I should see "Logout"
-    Then I follow "Logout"
+    Then I press "Logout"
     Then I should be on "/"
 
 Scenario: Login fail. Wrong password

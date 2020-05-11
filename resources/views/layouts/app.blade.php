@@ -97,6 +97,7 @@
                 </div>
             </div>
         </nav>
+        
         @if (session('status'))
         <div class="alert alert-success">
             <strong>{{ session('status') }}
@@ -107,9 +108,9 @@
             <strong>{{ session('error') }}
         </div>
         @endif
+        <div id="ajaxCallsBack"></div>
         @yield('content')
     </div>
-
     <!-- Scripts -->
 
     <script src="{{ asset('js/app.js') }}"></script>

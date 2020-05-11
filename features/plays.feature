@@ -1,6 +1,5 @@
 Feature: 測試 新增帳戶 儲值 下注 流程
 
-@Laracasts
 Scenario: 測試沒有登入不能進入遊戲
     Given I am on "/"
     And I follow "Play"
@@ -8,7 +7,6 @@ Scenario: 測試沒有登入不能進入遊戲
     And I am on "/home"
     Then I should be on "/login"
 
-@Laracasts
 Scenario: 測試新增帳號並儲值金額1000 應該要有1000 顯示在上方 
     Given I am on "/register"
     When I fill in "User" for "username"
@@ -25,6 +23,7 @@ Scenario: 測試新增帳號並儲值金額1000 應該要有1000 顯示在上方
     Then I should see "儲值成功"
     And I should see "您的金額還有："
     And I should see "1000"
+    Then I press "Logout"
 
 @javascript
 Scenario: 測試下單會出現alert訊息 並且按下取消 會回到/show頁面
@@ -82,4 +81,3 @@ Scenario: 測試金額不足時下單 應顯示存款不足
 
 Scenario: 該測試結束 將資料清除
     And I rollback all testing data
-
