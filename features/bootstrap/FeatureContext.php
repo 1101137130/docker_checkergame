@@ -175,7 +175,7 @@ class FeatureContext extends MinkContext implements Context
      */
     public function iClickOnForEdit($arg1)
     {
-        $click = $this->getSession()->getPage()->find('css','[onclick*="openLabel('+$arg1+',"]');
+        $click = $this->getSession()->getPage()->find('css','[id="'.$arg1.'"]');
         $click->click();
 
     }

@@ -91,7 +91,7 @@
         <div id="extendCompare"></div>
 
     </form>
-    <p id="storeButton" hidden><a type=role class="btn btn-primary" onclick="allEdit()">儲存</a></p>
+    <p id="storeButton" hidden><button id="allEditBtn" class="btn btn-primary" onclick="allEdit()">儲存</button></p>
 </div>
 @endsection
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js">
@@ -166,7 +166,7 @@
             temp: temp
         };
         ajaxWithData(type, url, data, function(back) {
-            backDataAppend(back)
+            backDataAppend(back);
         });
     }
     //------
@@ -210,27 +210,28 @@
             var itemlimit = data[i][3];
             if (data[i][4] == '1') {
                 itemstatus = '可用';
-                var td4 = '<td id="tdid' + [i] + '">' + '<button class="btn btn-danger" id="delete'+itemid+'" onclick="ajaxToDelete(' +
-                itemid + ')">刪除</button></td>';
+                var td4 = '<td id="tdid' + [i] + '">' + '<button class="btn btn-danger" id="delete' + itemid +
+                    '" onclick="ajaxToDelete(' +
+                    itemid + ')">刪除</button></td>';
                 var td5 = '';
             }
             if (data[i][4] == '2') {
                 var td4 = '';
                 itemstatus = '不可用';
                 var td5 = '<td id="tdidd' + [i] + '">' +
-                    '<a role="btn" class="btn btn-primary" id="reActive'+itemid+'" onclick="ajaxToReactive(' +
-                    itemid + ')">重新啟用</a></td>';
+                    '<button class="btn btn-primary" id="reActive' + itemid + '" onclick="ajaxToReactive(' +
+                    itemid + ')">重新啟用</button></td>';
             }
             var td1 = '<td id="tdnameid' + [i] + '"><div value=' + itemname + ' id=' + 'itemname' + itemid +
-                ' onclick="openLabel(' + 'itemname' + itemid + ',' + 'itemid' + itemid + ',' + 'limitamount' + itemid +
+                ' onclick="openLabel(' + 'itemname' + itemid + ',' + 'rateid' + itemid + ',' + 'limitamount' + itemid +
                 ',' + i + ',' + itemid +
                 ')">項目：' + itemname + '</div></td>';
-            var td2 = '<td id="tdidid' + [i] + '"><div value=' + itemrate + ' id=' + 'itemid' + itemid +
-                ' onclick="openLabel(' + 'itemname' + itemid + ',' + 'itemid' + itemid + ',' + 'limitamount' + itemid +
+            var td2 = '<td id="tdidid' + [i] + '"><div value=' + itemrate + ' id=' + 'rateid' + itemid +
+                ' onclick="openLabel(' + 'itemname' + itemid + ',' + 'rateid' + itemid + ',' + 'limitamount' + itemid +
                 ',' + i + ',' + itemid +
                 ')">賠率：' + itemrate + '</div></td>';
             var td3 = '<td id="tdlimitid' + [i] + '"><div value=' + itemlimit + ' id=' + 'limitamount' + itemid +
-                ' onclick="openLabel(' + 'itemname' + itemid + ',' + 'itemid' + itemid + ',' + 'limitamount' + itemid +
+                ' onclick="openLabel(' + 'itemname' + itemid + ',' + 'rateid' + itemid + ',' + 'limitamount' + itemid +
                 ',' + i + ',' + itemid +
                 ')">限制下注金額：' + itemlimit + '</div></</td>' +
                 '<td>狀態：' + itemstatus + '</td>';
@@ -267,7 +268,9 @@
             id: id
         };
         ajaxWithData(type, url, data, function(back) {
-            backDataAppend(back)
+            backDataAppend(back);
+            temp = new Array;
+            count = 0;
         });
     }
     //這是當需要修改時點按觸發的修改function目的將div改成input來輸入資料
@@ -286,17 +289,17 @@
         var rateid = itemidid.attributes[1].nodeValue;
         var limitamountid = limitid.attributes[1].nodeValue;
 
-        $(tdnameid).append('項目：<input required="required" name="itemname" onchange="changeDatatemp(' + inputnameid +
+        $(tdnameid).append('項目：<input required="required" onchange="changeDatatemp(' + inputnameid +
             ',' + rateid + ',' + itemid + ',' + limitamountid + ')" type="text" placeholder=' + itemnamevalue +
             ' value=' +
             itemnamevalue + ' id=' + inputnameid + ' >');
 
-        $(tdidid).append('賠率：<input required="required"  name="itemrate" onchange="changeDatatemp(' + inputnameid +
+        $(tdidid).append('賠率：<input required="required" onchange="changeDatatemp(' + inputnameid +
             ',' + rateid + ',' + itemid + ',' + limitamountid +
             ')" type="number" step="0.0001" min="0.000" max="10000" placeholder=' +
             ratevalue + ' value=' + ratevalue + ' id=' + rateid + '>');
 
-        $(tdlimitid).append('限制下注金額：<input required="required"  name="limit_amount" onchange="changeDatatemp(' +
+        $(tdlimitid).append('限制下注金額：<input required="required" onchange="changeDatatemp(' +
             inputnameid +
             ',' + rateid + ',' + itemid + ',' + limitamountid +
             ')" type="number" step="0.5000" min="0.000" max="10000000000" placeholder=' +
@@ -312,18 +315,18 @@
     var temp = new Array;
     //-----
     //檢查該項是否被修改過 如果有修改過 則將該項temp陣列變數的資料覆寫  
-    function checkDataAltered(id, namevalue, ratevalue, limitamountvalue) {
-        limitamountvalue == null ? 10000000000 : limitamountvalue;
-        for (var i = 0; i < count; i++) {
-            if (temp[i][0] == id) {
-                temp.splice(i, 1)
-                temp[i] = new Array;
-                temp[i].push(id, namevalue, ratevalue, limitamountvalue)
+    function checkDataAltered(id, data) {
 
-                return false;
+        if (temp.length != 0) {
+            for (var i = 0; i < temp.length; i++) {
+
+                if (temp[i][0] == id) {
+                    temp[i] = new Array;
+                    temp[i] = data;
+                    return false;
+                }
             }
         }
-
         return true;
     }
     //-----
@@ -331,11 +334,11 @@
     function changeDatatemp(nameid, rateid, id, limitamountid) {
         var namevalue = $(nameid).val();
         var ratevalue = $(rateid).val();
-        var limitamountvalue = $(limitamountid).val()
-        if (checkDataAltered(id, namevalue, ratevalue, limitamountvalue)) {
+        var limitamountvalue = $(limitamountid).val() == null ? 10000000000 : $(limitamountid).val();
+        var data = [id, namevalue, ratevalue, limitamountvalue]
+        if (checkDataAltered(id, data)) {
             temp[count] = new Array;
-            //temp.push(count)
-            temp[count].push(id, namevalue, ratevalue, limitamountvalue)
+            temp[count] = data;
             count++
         }
     }
@@ -343,8 +346,9 @@
     //製作一個單向修改的儲存按鈕
     function store(i, itemid, inputnameid, rateid, limitamountid) {
         var tdid = '#tdid' + i;
-        $(tdid).append('<a role="btn" class="btn btn-primary" onclick="ajaxToEdit(' + itemid + ',' + inputnameid + ',' +
-            rateid + ',' + limitamountid + ')">儲存</a>');
+        $(tdid).append('<button id="store' + itemid + '" class="btn btn-primary" onclick="ajaxToEdit(' +
+            itemid + ',' + inputnameid + ',' +
+            rateid + ',' + limitamountid + ')">儲存</button>');
         $(storeButton).show();
     }
     //-----
