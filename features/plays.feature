@@ -77,7 +77,8 @@ Scenario: 測試金額不足時下單 應顯示存款不足
     And I click on "action"
     Then I should see "項目：閒家輸 | 賠率為：2.0000 | 金額：1000," in popup
     Then I confirm the popup
-    Then I should see "您的存款不足" in popup
+    Then wait for JS
+    Then I should see "您的存款不足"
 
 Scenario: 該測試結束 將資料清除
     And I rollback all testing data

@@ -4,9 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\CheckersClass\createOrders;
+use App\CheckersClass\editUser;
 use Illuminate\Support\Facades\Auth;
 use App\CheckersClass\getItemData;
-
+use App\User;
 class HomeController extends Controller
 {
     public function __construct()
@@ -57,4 +58,15 @@ class HomeController extends Controller
        
         return $r;
     }
+    public function getUser()
+    {
+        return json_encode(Auth::user(), true);
+    }
+    
+    public function editUser(Request $request)
+    {
+        $editUser = editUser::getInstance();
+        return $editUser->editUser($request);
+    }
+
 }

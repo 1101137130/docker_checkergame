@@ -150,13 +150,8 @@
         };
         ajaxWithData(type, url, data, function(data) {
             if (data[0] === false) {
-                var yes = confirm(data[1])
-                if (yes) {
-                    location.reload();
-                } else {
-                    location.reload();
-                }
-
+                //放在layout.app.blade
+                backDataAppend(data);
             }
             if (data[0] === true) {
                 data.shift();

@@ -205,6 +205,26 @@
                 }
             })
         }
+
+        function backDataAppend(back) {
+        
+        if (back[0] === false) {
+            $("#alert-danger-status").remove();
+            $("#ajaxCallsBack").append('<div id ="alert-danger-status" class="alert alert-danger">' +
+                '<strong>' + back[1] + '' +
+                '</div>'
+            );
+            $("#alert-danger-status").delay(3000).hide(0);
+        }
+        if (back[0] === true) {
+            $("#alert-success-status").remove()
+            $("#ajaxCallsBack").append('<div id ="alert-success-status" class="alert alert-success">' +
+                '<strong>' + back[1] + '' +
+                '</div>'
+            )
+            $("#alert-success-status").delay(3000).hide(0);
+        }
+    }
     </script>
 
 </body>

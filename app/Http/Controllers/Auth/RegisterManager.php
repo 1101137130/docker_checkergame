@@ -7,14 +7,13 @@ use App\Http\Controllers\Controller;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\checkersValidator;
 
 class RegisterManager extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware('ManagerCreator');
     }
 
 
@@ -40,33 +39,9 @@ class RegisterManager extends Controller
             'email' => 'string|email|max:255|unique:users',
         ],$checkersValidator->messages());
     }
-    public function editUser(Request $request)
-    {
-        
-        $this->validatUser($request->all())->validate();
-        $user = User::find($request->id);
-        
-        if ($request->username == null) {
-            $request->username = $user->username;
-        }
-        if ($request->email == null) {
-            $request->email = $user->email;
-        }
-        try {
-            $user->update($request->all());
-            
-            return redirect('home');
-        } catch (Exception $e) {
-            return $e;
-        }
-    }
-    public function getUser()
-    {
-        return json_encode(Auth::user(), true);
-    }
+
     public function createManager(Request $data)
     {
-        $this->middleware('ManagerCreator');
         $this->validator($data->all())->validate();
         try {
             User::create([

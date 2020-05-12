@@ -127,9 +127,9 @@
                         @endif
                         @if ($view_orders == true)
                         <a href="{{ url('/orders') }}">查看所有注單</a>
-                        @endif
+                        @else
                         <a href="{{ url('/orders') }}">個人注單</a>
-
+                        @endif
                     </div>
                 </div>
 

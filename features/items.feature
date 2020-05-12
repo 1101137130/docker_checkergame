@@ -1,7 +1,5 @@
 Feature: 新增品項流程
 
-
-
 Scenario: 測試新增品項者 必須要有品項管理的權限 測試新增帳戶無權限訪問品項時
     Given I am on "/register"
     When I fill in the following:
