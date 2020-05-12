@@ -20,7 +20,7 @@ Scenario: 測試品項管理者 可以訪問"/item"
         | username | root |
         | password | 123456 |
     And I press "Login"
-    Then I should see "ITEMMANAGE"
+    Then I should see "項目管理"
     And I follow "itemManage"
     Then I should be on "/item"
     Then I press "Logout"
@@ -229,7 +229,41 @@ Scenario: 測試一次性修改多筆資料
     And I should see "修改完成"
     And I click dropdown
     Then I follow "Logout"
+    And I rollback all testing data
 
+@javascript
+Scenario: 測試進入品項修改記錄 並測試搜尋功能
+    Given I am on "/login"
+    When I fill in the following:
+        | username | root |
+        | password | 123456 |
+    And I press "Login"
+    And I go to "/item"
+    Then I follow "查看紀錄"
+    Then I should see "範圍搜索"
+    When I press "search"
+    And wait for JS
+    Then I should see a datatable contains the following
+        | 單號 | 修改者 | 修改項目 | 修改賠率 |
+        | 1 | root | 贏 | 2 |
+        | 2 | root | 輸 | 2 |
+        | 3 | root | 總數大於9 | 3 |
+        | 4 | root | 平 | 4 |
+        | 5 | root | 總數小於9 | 3 |
+        | 6 | root | 特殊-123 | 5 |
+        | 7 | root | 輸贏平 | 5 |
+
+@javascript
+Scenario: 測試沒有權限不能進入品項修改記錄頁面
+    Given I am on "/register"
+    When I fill in the following:
+        | username | User |
+        | email    | example@em.com |
+        | password | password |
+        | password_confirmation | password |
+    And I press "Register"
+    And I go to "/Raterecord"
+    Then I should be on "/home"
 
 Scenario: 該測試結束 將資料清除
     And I rollback all testing data

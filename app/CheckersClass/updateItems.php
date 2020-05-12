@@ -164,7 +164,7 @@ class updateItems extends ItemController
             } else {
                 $item->update(['status'=>2]);
                 Redis::set('isItemSetyet', false); //修改redis資料
-                $array = array(true,'無法刪除，因為注單有此資料，將此項目改為未開啟');
+                $array = array(false,'無法刪除，因為注單有此資料，將此項目改為未開啟');
 
                 return $array;
             }

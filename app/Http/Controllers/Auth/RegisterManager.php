@@ -16,7 +16,6 @@ class RegisterManager extends Controller
         $this->middleware('ManagerCreator');
     }
 
-
     public function showRegistrationForm()
     {
         return view('auth.managerRegister');
@@ -29,14 +28,6 @@ class RegisterManager extends Controller
             'username' => 'required|string|max:20|unique:users',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|confirmed',
-        ],$checkersValidator->messages());
-    }
-    protected function validatUser(array $data)
-    {
-        $checkersValidator = new checkersValidator();
-        return Validator::make($data, [
-            'username' => 'string|max:20|unique:users',
-            'email' => 'string|email|max:255|unique:users',
         ],$checkersValidator->messages());
     }
 

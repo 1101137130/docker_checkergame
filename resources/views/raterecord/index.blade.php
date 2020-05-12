@@ -10,7 +10,7 @@
         <input type="text" id="date_timepicker_start" name="date_timepicker_start">
         <label for="date_timepicker_end">結束日期</label>
         <input type="text" id="date_timepicker_end" name="date_timepicker_end">
-        <button class="btn btn-primary" onclick="getData()">範圍搜索</button>
+        <button id="search" class="btn btn-primary" onclick="getData()">範圍搜索</button>
     </div>
 
     <div id="tablelocation"></div>

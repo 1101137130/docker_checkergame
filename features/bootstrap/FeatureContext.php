@@ -4,10 +4,10 @@ use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Behat\Context\Context;
 use Behat\MinkExtension\Context\MinkContext;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
-use \Ingenerator\BehatTableAssert\TableParser\CSVTable;
 use Behat\Gherkin\Node\TableNode;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
+use \Ingenerator\BehatTableAssert\TableParser\HTMLTable;
 
 
 /**
@@ -147,7 +147,6 @@ class FeatureContext extends MinkContext implements Context
       ]
       );
     }
-
     /**
      * @Then I select the option :arg1 with :arg2 value
      * 
@@ -178,5 +177,19 @@ class FeatureContext extends MinkContext implements Context
         $click = $this->getSession()->getPage()->find('css','[id="'.$arg1.'"]');
         $click->click();
 
+    }
+
+    /**
+     * @Then I should see a datatable contains the following
+     */
+    public function iShouldSeeADatatableContainsTheFollowing(TableNode $expected)
+    {
+        $tableassert = new \Ingenerator\BehatTableAssert\AssertTable;
+        $assert = $this->getMink()->assertSession();
+        $actual = HTMLTable::fromMinkTable($assert->elementExists('css', 'table'));
+
+        $tableassert->containsColumns($expected, $actual, 'Optional extra message');
+
+        //TestCase::assertEquals($table,$actual);
     }
 }

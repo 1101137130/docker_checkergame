@@ -129,8 +129,6 @@ Scenario: 測試修改會員名稱username Email皆不能重複
     And I click dropdown
     Then I follow "Logout"
 
-    
-
 Scenario: 該測試結束 將資料清除
     And I rollback all testing data
 

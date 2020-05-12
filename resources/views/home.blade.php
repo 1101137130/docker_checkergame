@@ -63,7 +63,6 @@
         .m-b-md {
             margin-bottom: 30px;
         }
-
     </style>
 </head>
 
@@ -76,14 +75,11 @@
 
                 <div class="panel-body">
                     <div class="links">
-                        <a href="{{url('show')}}">Play</a>
+                        <a href="{{url('show')}}">遊玩</a>
                         @if ($manage_rate == true)
-                        <a id="itemManage" href="{{ url('/item') }}">ItemManage</a>
+                        <a id="itemManage" href="{{ url('/item') }}">項目管理</a>
                         @endif
-                        @if ($manager_editor == true)
-                        <a id="createManager" href="{{ url('registerManager') }}">Create a Manager User</a>
-                        @endif
-
+                        <a href="{{url('/amount')}}">存/取金額</a>
                     </div>
                 </div>
 
@@ -99,29 +95,26 @@
                             <div id="username" onclick="openrow(this.id)"></div>
                             <div class="form-group{{ $errors->has('username') ? ' has-error' : '' }}">
                                 <div id="usernameinput"></div>
-                                 @if ($errors->has('username'))
+                                @if ($errors->has('username'))
                                 <span class="help-block">
                                     <strong>{{ $errors->first('username') }}</strong>
                                 </span>
                                 @endif
                             </div>
-                                <label for="email"> Email</label>
+                            <label for="email"> Email</label>
                             <div id="email" onclick="openrow(this.id)"></div>
                             <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
                                 <div id="emailinput"></div>
-                                 @if ($errors->has('email'))
+                                @if ($errors->has('email'))
                                 <span class="help-block">
                                     <strong>{{ $errors->first('email') }}</strong>
                                 </span>
                                 @endif
                             </div>
                             <div id="savebtn"></div>
-                                <input id="userid" type="hidden" name="id">
-                                
+                            <input id="userid" type="hidden" name="id">
+
                         </form>
-
-
-
                         @if ($manager_editor == true)
                         <a href="{{ url('registerManager') }}">建立管理者</a>
                         @endif
@@ -130,6 +123,14 @@
                         @else
                         <a href="{{ url('/orders') }}">個人注單</a>
                         @endif
+                        <a href="{{ route('logout') }}" onclick="event.preventDefault();
+                                                     document.getElementById('logout-form').submit();">
+                            登出
+                        </a>
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                            {{ csrf_field() }}
+                            <input type="submit" id="Logout">
+                        </form>
                     </div>
                 </div>
 
@@ -176,12 +177,12 @@
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
-            success: function (data) {
+            success: function(data) {
                 $("#username").html(data['username'])
                 $("#email").html(data['email'])
                 $("#userid").val(data['id']);
             },
-            error: function (jqXHR) {
+            error: function(jqXHR) {
                 console.log(jqXHR)
             }
         })
@@ -199,5 +200,4 @@
         obj = '#' + obj;
         $(obj).remove();
     }
-
 </script>

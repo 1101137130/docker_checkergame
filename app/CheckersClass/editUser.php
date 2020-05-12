@@ -5,13 +5,11 @@ use App\User;
 use Exception;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Auth\RegisterManager;
+use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\checkersValidator;
 
 class editUser extends RegisterManager
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
     private static $_instance  = null ;
    
     public static function getInstance()
@@ -21,6 +19,14 @@ class editUser extends RegisterManager
         }
 
         return self::$_instance;
+    }
+    protected function validatUser(array $data)
+    {
+        $checkersValidator = new checkersValidator();
+        return Validator::make($data, [
+            'username' => 'string|max:20|unique:users',
+            'email' => 'string|email|max:255|unique:users',
+        ],$checkersValidator->messages());
     }
     public function editUser(Request $request)
     {

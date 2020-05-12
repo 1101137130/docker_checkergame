@@ -26,7 +26,6 @@ class gameEnd
         
         return $item;
     }
-
     public function alterData($result, $item, $orderid)
     {
         $updatorder = updateOrder::getInstance();

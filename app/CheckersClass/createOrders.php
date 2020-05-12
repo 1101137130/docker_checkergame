@@ -6,13 +6,14 @@ use App\Order;
 use Exception;
 use App\CheckersClass\checkUpdateUserAmount;
 use App\CheckersClass\checkRateTheSame;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Auth;
 
-class createOrders
+class createOrders extends Controller
 {
+
     private static $_instance  = null ;
-   
     public static function getInstance()
     {
         if (self::$_instance === null) {
@@ -52,6 +53,7 @@ class createOrders
             return $result;
         }
     }
+    //連續判斷 有金額->下單時的賠率跟當下賠率符合->確認扣款後->下單
     public function process($user, $item, $resultID)
     {
         $UserAmount = checkUpdateUserAmount::getInstance();
@@ -117,8 +119,9 @@ class createOrders
             $undoAmountStatus = $convertStatus->convertAmountStatus('error_restore');
             $checkandUpadate = checkUpdateUserAmount::getInstance();
             $checkandUpadate->update($userID, $item[3], $undoAmountStatus);
+            $data = array(false, $e->getMessage());
 
-            return array(false, $e->getMessage());
+            return $data;
         }
     }
 }
